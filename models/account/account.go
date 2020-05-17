@@ -14,7 +14,9 @@ type UserBean struct {
 	Role  string `gorm:"column:role"`
 }
 
-
+func (UserBean) TableName() string {
+	return "user"
+}
 
 // 通过email查询
 func GetUserByEmail(email string) (*UserBean, error) {
@@ -52,6 +54,10 @@ type AppIdBean struct {
 
 	AppId     string `gorm:"column:app_id"`
 	AppSecret string `gorm:"column:app_secret"`
+}
+
+func (AppIdBean) TableName() string {
+	return "user_app_id"
 }
 
 // 查询AppID
@@ -93,6 +99,10 @@ type TokenBean struct {
 	Token  string `gorm:"column:token"`
 }
 
+func (TokenBean) TableName() string {
+	return "user_token"
+}
+
 func GetTokenByUserId(userId, appId uint) (*TokenBean, error) {
 	ret := new(TokenBean)
 
@@ -126,6 +136,9 @@ func GetTokenBeanByToken(token string) (*TokenBean, error) {
 type RoleBean struct {
 	gorm.Model
 
-	RoleId string `gorm:"column:app_id"`
-	Name   string `gorm:"column:name"`
+	Name string `gorm:"column:name"`
+}
+
+func (RoleBean) TableName() string {
+	return "user_role"
 }

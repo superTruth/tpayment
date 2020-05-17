@@ -26,7 +26,7 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 创建 或者 更新  token记录
-	account, err := account.GetUserByEmail(req.Email)
+	accountBean, err := account.GetUserByEmail(req.Email)
 	if err != nil {
 		logger.Error("GetUserByEmail sql error->", err.Error())
 
@@ -34,14 +34,14 @@ func LoginHandle(ctx echo.Context) error {
 		return err
 	}
 
-	if account == nil {  // 用户不存在的情况
+	if accountBean == nil { // 用户不存在的情况
 		logger.Info("user not fund")
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
 	// 验证密码是否正确
-	if account.Pwd != req.Pwd {
+	if accountBean.Pwd != req.Pwd {
 		logger.Info("pwd error")
 		modules.BaseError(ctx, conf.ValidateError)
 		return errors.New("pwd error")
@@ -68,7 +68,7 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 查看是否已经存在这个账号的token，如果已经存在，直接update，如果不存在需要create
-	tokenBean, err := account.GetTokenByUserId(account.ID, appBean.ID)
+	tokenBean, err := account.GetTokenByUserId(accountBean.ID, appBean.ID)
 	if err != nil {
 		logger.Error("GetTokenByUserId sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -77,7 +77,7 @@ func LoginHandle(ctx echo.Context) error {
 
 	if tokenBean == nil {  // 如果不存在需要create
 		tokenBean = &account.TokenBean{
-			UserId: account.ID,
+			UserId: accountBean.ID,
 			AppId:  appBean.ID,
 			Token:  uuid.New().String(),
 		}
@@ -100,10 +100,10 @@ func LoginHandle(ctx echo.Context) error {
 		BaseResponse: modules.BaseResponse{
 			ErrorCode: conf.SUCCESS,
 		},
-		Token:        tokenBean.Token,
-		Role:         account.Role,
-		Name:         account.Name,
-		Email:        account.Email,
+		Token: tokenBean.Token,
+		Role:  accountBean.Role,
+		Name:  accountBean.Name,
+		Email: accountBean.Email,
 	}
 
 	modules.BaseSuccess(ctx, ret)

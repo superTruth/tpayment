@@ -21,3 +21,8 @@ const (
 	UrlLogin  = "/payment/account/login"
 	UrlLogout = "/payment/account/logout"
 )
+
+const (
+	DbType = "mysql"
+	DbConnectInfoTag = "TPAYMENT_DB_CONFIG"
+)
