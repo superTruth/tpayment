@@ -1,6 +1,7 @@
 package account
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"tpayment/models"
 )
@@ -38,6 +39,58 @@ func GetUserById(id uint) (*UserBean, error) {
 	ret := new(UserBean)
 
 	err := models.DB().Model(&UserBean{}).Where("id=?", id).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func QueryUserRecord(offset, limit uint, filters map[string]string) (uint, []UserBean, error) {
+
+	filterTmp := make(map[string]interface{})
+
+	for k,v := range filters {
+		filterTmp[k] = v
+	}
+
+	fmt.Println("filterTmp->", filterTmp)
+
+	// 统计总数
+	var total uint = 0
+	err := models.DB().Model(&UserBean{}).Where(filterTmp).Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+	fmt.Println("total->", total)
+
+	// 查询记录
+	var ret []UserBean
+
+	err = models.DB().Model(&UserBean{}).Where(filterTmp).Offset(offset).Limit(limit).Find(&ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return 0, ret, nil
+		}
+		return 0, nil, err
+	}
+
+	for _,k := range ret {
+		k.Pwd = "******"
+	}
+
+	return total, ret, nil
+}
+
+func GetUsersById(ids []uint) ([]UserBean, error) {
+	var ret []UserBean
+
+	err := models.DB().Model(&UserBean{}).Where(ids).First(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

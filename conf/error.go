@@ -12,6 +12,7 @@ const (
 	RecordAlreadyExist ResultCode = "08"
 	AuthFail           ResultCode = "09"
 	NoPermission       ResultCode = "10"
+	NeedTokenInHeader  ResultCode = "11"
 )
 
 var ResultCodeText = map[ResultCode]string{
@@ -23,6 +24,7 @@ var ResultCodeText = map[ResultCode]string{
 	RecordAlreadyExist: "record already exist",
 	AuthFail:           "auth fail",
 	NoPermission:       "no permission",
+	NeedTokenInHeader:  "need token in header",
 }
 
 func (this ResultCode) String() string {

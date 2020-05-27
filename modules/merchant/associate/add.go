@@ -1,18 +1,19 @@
-package user
+package associate
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
-	"tpayment/models/account"
+	"tpayment/models"
+	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(modules.BaseQueryRequest)
+	req := new(merchant.UserMerchantAssociate)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -21,20 +22,17 @@ func QueryHandle(ctx echo.Context) error {
 		return err
 	}
 
-	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
-		req.Limit = conf.MaxQueryCount
-	}
+	err = models.CreateBaseRecord(req)
 
-	total, dataRet, err := account.QueryUserRecord(req.Offset, req.Limit, req.Filters)
 	if err != nil {
-		logger.Info("QueryBaseRecord sql error->", err.Error())
+		logger.Info("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
 
-	ret := &modules.BaseQueryResponse{
-		Total: total,
-		Data:  dataRet,
+	//
+	ret := &modules.BaseResponse{
+		ErrorCode: conf.SUCCESS,
 	}
 
 	modules.BaseSuccess(ctx, ret)

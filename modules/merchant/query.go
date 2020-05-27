@@ -1,9 +1,10 @@
-package user
+package merchant
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models/account"
+	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
@@ -11,6 +12,7 @@ import (
 
 func QueryHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 
 	req := new(modules.BaseQueryRequest)
 
@@ -25,7 +27,12 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := account.QueryUserRecord(req.Offset, req.Limit, req.Filters)
+	var userId uint = 0
+	if userBean.Role != string(conf.RoleAdmin) {  // 管理员用户可以搜索所有商户
+		userId = userBean.ID
+	}
+
+	total, dataRet, err := merchant.QueryMerchantRecord(userId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

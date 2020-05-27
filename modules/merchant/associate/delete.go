@@ -1,21 +1,19 @@
-package user
+package associate
 
 import (
-	"fmt"
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/account"
+	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func DeleteHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
-	fmt.Println("user UpdateHandle")
 
-	req := new(account.UserBean)
+	req := new(modules.BaseIDRequest)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -25,34 +23,32 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	user,err := account.GetUserById(req.ID)
+	associateBean, err := merchant.GetUserMerchantAssociateById(req.ID)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
-	if user == nil {
+	if associateBean == nil {
 		logger.Warn(conf.RecordNotFund.String())
-		modules.BaseError(ctx, conf.RecordAlreadyExist)
+		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
-	// 生成新账号
-	err = models.UpdateBaseRecord(req)
+	err = models.DeleteBaseRecord(associateBean)
 
 	if err != nil {
-		logger.Info("UpdateBaseRecord sql error->", err.Error())
+		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
 
 	//
 	ret := &modules.BaseResponse{
-		ErrorCode:    conf.SUCCESS,
+		ErrorCode: conf.SUCCESS,
 	}
 
 	modules.BaseSuccess(ctx, ret)
 
 	return nil
 }
-

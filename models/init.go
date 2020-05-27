@@ -21,7 +21,7 @@ func InitDB() error {
 	db.DB().SetMaxOpenConns(256)
 	db.DB().SetMaxIdleConns(8)
 	db.DB().SetConnMaxLifetime(360 * time.Second)
-	db.LogMode(false)
+	db.LogMode(true)
 
 	return nil
 }

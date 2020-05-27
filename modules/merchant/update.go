@@ -1,11 +1,10 @@
-package user
+package merchant
 
 import (
-	"fmt"
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/account"
+	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
@@ -13,9 +12,8 @@ import (
 
 func UpdateHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
-	fmt.Println("user UpdateHandle")
 
-	req := new(account.UserBean)
+	req := new(merchant.Merchant)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -25,15 +23,15 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	user,err := account.GetUserById(req.ID)
+	merchantBean, err := merchant.GetMerchantById(req.ID)
 	if err != nil {
-		logger.Info("GetUserById sql error->", err.Error())
+		logger.Info("GetMerchantById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
-	if user == nil {
+	if merchantBean == nil {
 		logger.Warn(conf.RecordNotFund.String())
-		modules.BaseError(ctx, conf.RecordAlreadyExist)
+		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
