@@ -2,33 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7a3898e-6d6e-4f4c-aa28-e284f969fbe3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/merchant/associate.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/merchant/merchant.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/associate/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/associate/bean.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/associate/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/associate/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/bean.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/associate_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/merchant_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/user_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/agency/agency.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/agency/associate.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/tms/batchupdate.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/tms/deviceinfo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/tms/fileupload.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/agency/add.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/agency/query.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/agency/update.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/tms/clientapi/bean.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/tms/clientapi/heartbeat.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/goroutine/goroutine.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/agency_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/main_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/router/BaseContext.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/BaseContext.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/router.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/conf/constant.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/constant.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/error.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/error.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/account/account.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/account/account.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/base.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/base.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/basecontext.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/basecontext.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/user/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/user/auth.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/user/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/user/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/user/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/user/update.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/utils/body2json.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/query.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,24 +55,26 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/modules/merchant/associate" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/modules/agency" />
+      <recent name="$PROJECT_DIR$/pkg" />
+      <recent name="$PROJECT_DIR$/models/account" />
+      <recent name="$PROJECT_DIR$/modules/merchant/associate" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/models/tms" />
+      <recent name="$PROJECT_DIR$/modules/tms/hearbeat" />
       <recent name="$PROJECT_DIR$/pkg" />
       <recent name="$PROJECT_DIR$/api/handle" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/modules/merchant/associate" />
-      <recent name="$PROJECT_DIR$/modules/merchant" />
-      <recent name="$PROJECT_DIR$/modules/user" />
-      <recent name="$PROJECT_DIR$/modules" />
-      <recent name="$PROJECT_DIR$/utils/errorcode" />
-    </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestQueryUserInMerchant in tpayment/test">
+  <component name="RunManager" selected="Go Test.TestQueryAgency in tpayment/test">
     <configuration name="go build tpayment/api" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$" />
@@ -91,7 +84,7 @@
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
-    <configuration name="TestAddMerchantAssociate in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestAddAgency in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -99,10 +92,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestAddMerchantAssociate$" />
+      <pattern value="^TestAddAgency$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestAddUser in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestMyFunc in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -110,10 +103,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestAddUser$" />
+      <pattern value="^TestMyFunc$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestQueryUserInMerchant in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestQueryAgency in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -121,10 +114,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestQueryUserInMerchant$" />
+      <pattern value="^TestQueryAgency$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestQueryUserInStore in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestUpdateAgency in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -132,16 +125,16 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestQueryUserInStore$" />
+      <pattern value="^TestUpdateAgency$" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Test.TestQueryUserInMerchant in tpayment/test" />
+        <item itemvalue="Go Test.TestQueryAgency in tpayment/test" />
+        <item itemvalue="Go Test.TestUpdateAgency in tpayment/test" />
+        <item itemvalue="Go Test.TestAddAgency in tpayment/test" />
         <item itemvalue="Go Build.go build tpayment/api" />
-        <item itemvalue="Go Test.TestAddMerchantAssociate in tpayment/test" />
-        <item itemvalue="Go Test.TestAddUser in tpayment/test" />
-        <item itemvalue="Go Test.TestQueryUserInStore in tpayment/test" />
+        <item itemvalue="Go Test.TestMyFunc in tpayment/test" />
       </list>
     </recent_temporary>
   </component>
@@ -153,8 +146,8 @@
     <proxy>https://goproxy.cn</proxy>
   </component>
   <component name="WindowStateProjectService">
-    <state width="1573" height="331" key="GridCell.Tab.0.bottom" timestamp="1590552947317">
-      <screen x="0" y="23" width="1618" height="1027" />
+    <state width="1570" height="283" key="GridCell.Tab.0.bottom" timestamp="1591431701107">
+      <screen x="0" y="23" width="1615" height="1027" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127797" />
     <state width="1558" height="425" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1590292150221" />
@@ -162,12 +155,12 @@
     <state width="1558" height="246" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1590309495315" />
     <state width="1576" height="403" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1620.1027@0.23.1620.1027" timestamp="1589727760068" />
     <state width="1576" height="238" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528212" />
-    <state width="1558" height="393" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590490420998" />
-    <state width="1573" height="331" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1590552947317" />
+    <state width="1570" height="283" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1591431701107" />
+    <state width="1573" height="104" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1591072140378" />
     <state width="1576" height="276" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1620.1027@0.23.1620.1027" timestamp="1589939707467" />
-    <state width="1576" height="374" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1590149182654" />
-    <state width="1573" height="331" key="GridCell.Tab.0.center" timestamp="1590552947316">
-      <screen x="0" y="23" width="1618" height="1027" />
+    <state width="1573" height="104" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889616" />
+    <state width="1570" height="283" key="GridCell.Tab.0.center" timestamp="1591431701105">
+      <screen x="0" y="23" width="1615" height="1027" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127782" />
     <state width="1558" height="425" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1590292150220" />
@@ -175,12 +168,12 @@
     <state width="1558" height="246" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1590309495314" />
     <state width="1576" height="403" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1620.1027@0.23.1620.1027" timestamp="1589727760068" />
     <state width="1576" height="238" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528211" />
-    <state width="1558" height="393" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590490420995" />
-    <state width="1573" height="331" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1590552947316" />
+    <state width="1570" height="283" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1591431701105" />
+    <state width="1573" height="104" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1591072140377" />
     <state width="1576" height="276" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1620.1027@0.23.1620.1027" timestamp="1589939707466" />
-    <state width="1576" height="374" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1590149182653" />
-    <state width="1573" height="331" key="GridCell.Tab.0.left" timestamp="1590552947316">
-      <screen x="0" y="23" width="1618" height="1027" />
+    <state width="1573" height="104" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889615" />
+    <state width="1570" height="283" key="GridCell.Tab.0.left" timestamp="1591431701104">
+      <screen x="0" y="23" width="1615" height="1027" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127779" />
     <state width="1558" height="425" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1590292150220" />
@@ -188,12 +181,12 @@
     <state width="1558" height="246" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1590309495314" />
     <state width="1576" height="403" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1620.1027@0.23.1620.1027" timestamp="1589727760067" />
     <state width="1576" height="238" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528211" />
-    <state width="1558" height="393" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590490420994" />
-    <state width="1573" height="331" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1590552947316" />
+    <state width="1570" height="283" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1591431701104" />
+    <state width="1573" height="104" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1591072140377" />
     <state width="1576" height="276" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1620.1027@0.23.1620.1027" timestamp="1589939707466" />
-    <state width="1576" height="374" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1590149182652" />
-    <state width="1573" height="331" key="GridCell.Tab.0.right" timestamp="1590552947317">
-      <screen x="0" y="23" width="1618" height="1027" />
+    <state width="1573" height="104" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889614" />
+    <state width="1570" height="283" key="GridCell.Tab.0.right" timestamp="1591431701106">
+      <screen x="0" y="23" width="1615" height="1027" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127794" />
     <state width="1558" height="425" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1590292150221" />
@@ -201,11 +194,11 @@
     <state width="1558" height="246" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1590309495315" />
     <state width="1576" height="403" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1620.1027@0.23.1620.1027" timestamp="1589727760068" />
     <state width="1576" height="238" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528212" />
-    <state width="1558" height="393" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590490420996" />
-    <state width="1573" height="331" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1590552947317" />
+    <state width="1570" height="283" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1591431701106" />
+    <state width="1573" height="104" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1591072140378" />
     <state width="1576" height="276" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1620.1027@0.23.1620.1027" timestamp="1589939707467" />
-    <state width="1576" height="374" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1590149182653" />
-    <state x="-436" y="-1027" width="1242" height="980" key="dock-window-1" timestamp="1590370890723">
+    <state width="1573" height="104" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889615" />
+    <state x="-341" y="-1300" width="1029" height="944" key="dock-window-1" timestamp="1590634420053">
       <screen x="-462" y="-1417" width="2560" height="1417" />
     </state>
     <state x="-81" y="-1057" width="1240" height="979" key="dock-window-1/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590283065556" />
@@ -216,6 +209,7 @@
     <state x="322" y="36" width="1051" height="800" key="dock-window-1/-240.-1057.1920.1057/0.23.1620.1027@0.23.1620.1027" timestamp="1589727811010" />
     <state x="-240" y="-926" width="1258" height="713" key="dock-window-1/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590246634545" />
     <state x="-436" y="-1027" width="1242" height="980" key="dock-window-1/-462.-1417.2560.1417/0.23.1609.1027@-462.-1417.2560.1417" timestamp="1590370890723" />
+    <state x="-341" y="-1300" width="1029" height="944" key="dock-window-1/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590634420053" />
     <state x="32" y="-1070" width="1303" height="924" key="dock-window-1/-462.-1417.2560.1417/0.23.1618.1027@0.23.1618.1027" timestamp="1589804236817" />
     <state x="313" y="274" width="825" height="670" key="dock-window-1/-462.-1417.2560.1417/0.23.1620.1027@0.23.1620.1027" timestamp="1589891434866" />
     <state x="357" y="-1236" width="1258" height="713" key="dock-window-1/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1590202543375" />

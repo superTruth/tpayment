@@ -1,16 +1,18 @@
-package associate
+package agency
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
-	"tpayment/models/merchant"
+	"tpayment/models/account"
+	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func QueryUserInMerchantHandle(ctx echo.Context) error {
+func QueryHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 
 	req := new(modules.BaseQueryRequest)
 
@@ -25,7 +27,12 @@ func QueryUserInMerchantHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := merchant.QueryUsersByMerchantId(req.MerchantId, req.Offset, req.Limit, req.Filters)
+	var userId uint = 0
+	if userBean.Role != string(conf.RoleAdmin) {  // 管理员用户可以搜索所有商户
+		userId = userBean.ID
+	}
+
+	total, dataRet, err := agency.QueryAgencyRecord(userId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
