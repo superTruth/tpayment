@@ -23,7 +23,7 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	merchantBean, err := agency.GetAgencyById(req.ID)
+	merchantBean, err := agency.GetAgencyById(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Info("GetAgencyById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -44,13 +44,7 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
-	//
-	ret := &modules.BaseResponse{
-		ErrorCode:    conf.SUCCESS,
-	}
-
-	modules.BaseSuccess(ctx, ret)
+	modules.BaseSuccess(ctx, nil)
 
 	return nil
 }
-

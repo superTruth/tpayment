@@ -17,7 +17,7 @@ Response:
 ## 账号部分
 ### 登录
 ***POST***
-```https://{base_url}/payment/login```
+```https://{base_url}/payment/account/login```
 Request Example:
 ```json
 {
@@ -31,7 +31,7 @@ Response Example:
 ```json
 {
     "token":"123456789",
-    "role": "admin",  // "admin" "machine" "normal"
+    "role": "admin",  // "admin" "machine" "user"
     "name":"xxx",
     "email":"xxx"
 }
@@ -39,11 +39,24 @@ Response Example:
 
 ### 登出
 ***POST***
-```https://{base_url}/payment/logout```
+```https://{base_url}/payment/account/logout```
+
+### 验证登录状态
+***POST***
+```https://{base_url}/payment/account/validate```
+
+Response Example:
+```json
+{
+    "role": "admin",  // "admin" "machine" "user"
+    "name":"xxx",
+    "email":"xxx"
+}
+```
 
 ### 添加账号(只有admin才有此权限)
 ***POST***
-```https://{base_url}/payment/createaccount```
+```https://{base_url}/payment/account/create```
 Request Example:
 ```json
 {
@@ -56,7 +69,7 @@ Request Example:
 
 ### 删除账号(只有admin才有此权限)
 ***POST***
-```https://{base_url}/payment/delaccount```
+```https://{base_url}/payment/account/delete```
 Request Example:
 ```json
 {

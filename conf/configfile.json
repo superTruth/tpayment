@@ -1,0 +1,10 @@
+{
+  "domain": "http://localhost:80/",
+
+  "email_host": "smtp.office365.com",
+  "email_host_port": 587,
+  "email_user_account":"fang.qiang@bindo.com",
+  "email_user_pwd": "F1a2n3g4",
+  "email_user_name":"no_reply"
+}
+

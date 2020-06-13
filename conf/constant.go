@@ -1,10 +1,11 @@
 package conf
 
-const HeaderTagRequestId = "RequestId"
+const HeaderTagRequestId = "X-ACCESS-REQUEST-ID"
 const HeaderTagToken = "Token"
 
 const ContextTagLog = "Log"
 const ContextTagUser = "User"
+const ContextTagAgency = "Agency"
 
 type UserRole string
 
@@ -17,16 +18,21 @@ const (
 const MaxQueryCount = 100
 
 const (
-	UrlAccountLogin  = "/payment/account/login"
-	UrlAccountLogout = "/payment/account/logout"
-	UrlAccountAdd    = "/payment/account/add"
-	UrlAccountDelete = "/payment/account/delete"
-	UrlAccountUpdate = "/payment/account/update"
-	UrlAccountQuery  = "/payment/account/query"
+	UrlAccountLogin    = "/payment/account/login"
+	UrlAccountLogout   = "/payment/account/logout"
+	UrlAccountValidate = "/payment/account/validate"
+	UrlAccountAdd      = "/payment/account/add"
+	UrlAccountDelete   = "/payment/account/delete"
+	UrlAccountUpdate   = "/payment/account/update"
+	UrlAccountQuery    = "/payment/account/query"
+	UrlAccountRegister = "/payment/account/register"
+	UrlAccountActive   = "/payment/account/active/:user"
 
 	UrlAgencyAdd    = "/payment/agency/add"
 	UrlAgencyUpdate = "/payment/agency/update"
 	UrlAgencyQuery  = "/payment/agency/query"
+
+	UrlAgencyAssociateAdd = "/payment/agency_associate/query"
 
 	UrlMerchantAdd    = "/payment/merchant/add"
 	UrlMerchantUpdate = "/payment/merchant/update"
@@ -35,7 +41,7 @@ const (
 	UrlMerchantAssociateAdd     = "/payment/merchant_associate/add"
 	UrlMerchantAssociateDelete  = "/payment/merchant_associate/delete"
 	UrlMerchantAssociateQuery   = "/payment/merchant_associate/query"
-	UrlQueryUserInMerchantQuery = "/payment/merchant_associate/queryuserinmerchant"
+	UrlQueryUserInMerchantQuery = "/payment/merchant_associate/query_user_in_merchant"
 )
 
 const (

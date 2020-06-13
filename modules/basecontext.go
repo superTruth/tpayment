@@ -24,15 +24,21 @@ func BaseError(context echo.Context, err conf.ResultCode) {
 
 func BaseSuccess(context echo.Context, data interface{}) {
 	logger := tlog.GetLogger(context)
-	resp, _ := json.Marshal(data)
+
+	baseResponse := BaseResponse{
+		ErrorCode: conf.SUCCESS,
+		Data:      data,
+	}
+	resp, _ := json.Marshal(baseResponse)
 	logger.Info("response->", string(resp))
 
-	context.JSON(http.StatusOK, data)
+	context.JSON(http.StatusOK, baseResponse)
 }
 
 type BaseResponse struct {
 	ErrorCode    conf.ResultCode `json:"error_code"`
 	ErrorMessage string          `json:"error_message"`
+	Data         interface{}     `json:"data"`
 }
 
 type BaseIDRequest struct {

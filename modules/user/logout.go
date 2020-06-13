@@ -26,12 +26,7 @@ func LogoutHandle(ctx echo.Context) error {
 		_ = models.DeleteBaseRecord(tokenBean)
 	}
 
-	//
-	ret := &modules.BaseResponse{
-		ErrorCode:    conf.SUCCESS,
-	}
-
-	modules.BaseSuccess(ctx, ret)
+	modules.BaseSuccess(ctx, nil)
 
 	return nil
 }

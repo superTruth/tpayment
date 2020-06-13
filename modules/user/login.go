@@ -40,6 +40,13 @@ func LoginHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 验证账号是否激活
+	if !accountBean.Active {
+		logger.Info("user not active")
+		modules.BaseError(ctx, conf.UserNotActive)
+		return err
+	}
+
 	// 验证密码是否正确
 	if accountBean.Pwd != req.Pwd {
 		logger.Info("pwd error")
@@ -55,7 +62,7 @@ func LoginHandle(ctx echo.Context) error {
 		return err
 	}
 
-	if appBean == nil {  // App id不存在
+	if appBean == nil { // App id不存在
 		logger.Info("app not fund")
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
@@ -75,7 +82,7 @@ func LoginHandle(ctx echo.Context) error {
 		return err
 	}
 
-	if tokenBean == nil {  // 如果不存在需要create
+	if tokenBean == nil { // 如果不存在需要create
 		tokenBean = &account.TokenBean{
 			UserId: accountBean.ID,
 			AppId:  appBean.ID,
@@ -97,9 +104,6 @@ func LoginHandle(ctx echo.Context) error {
 
 	// 拼接response数据
 	ret := &LoginResponse{
-		BaseResponse: modules.BaseResponse{
-			ErrorCode: conf.SUCCESS,
-		},
 		Token: tokenBean.Token,
 		Role:  accountBean.Role,
 		Name:  accountBean.Name,

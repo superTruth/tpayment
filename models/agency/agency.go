@@ -2,7 +2,10 @@ package agency
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
+	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/account"
 )
 
 type Agency struct {
@@ -12,21 +15,23 @@ type Agency struct {
 	Tel  string `json:"tel"  gorm:"column:tel"`
 	Addr string `json:"addr" gorm:"column:addr"`
 }
+
 func (Agency) TableName() string {
 	return "agency"
 }
 
-func QueryAgencyRecord(userId, offset, limit uint, filters map[string]string) (uint, []Agency, error) {
+func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []Agency, error) {
 	filterTmp := make(map[string]interface{})
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 
 	for k, v := range filters {
 		filterTmp[k] = v
 	}
 
 	// conditions
-	tmpDb := models.DB().Table("agency").Where(filterTmp)
-	if userId != 0 {
-		tmpDb = tmpDb.Joins("JOIN agency_user_associate ass ON ass.agency_id = agency.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userId)
+	tmpDb := db.Table("agency").Where(filterTmp)
+	if userBean.Role != string(conf.RoleAdmin) {
+		tmpDb = tmpDb.Joins("JOIN agency_user_associate ass ON ass.agency_id = agency.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
 
 	// 统计总数
@@ -44,10 +49,10 @@ func QueryAgencyRecord(userId, offset, limit uint, filters map[string]string) (u
 	return total, ret, nil
 }
 
-func GetAgencyById(id uint) (*Agency, error) {
+func GetAgencyById(db *models.MyDB, ctx echo.Context, id uint) (*Agency, error) {
 	ret := new(Agency)
 
-	err := models.DB().Model(&Agency{}).Where("id=?", id).First(ret).Error
+	err := db.Model(&Agency{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

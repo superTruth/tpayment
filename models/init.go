@@ -9,23 +9,30 @@ import (
 )
 
 var (
-	db *gorm.DB
+	db *MyDB
 )
+
+type MyDB struct {
+	*gorm.DB
+}
 
 func InitDB() error {
 	var err error
-	db, err = gorm.Open(conf.DbType, os.Getenv(conf.DbConnectInfoTag))
+
+	db = new(MyDB)
+
+	db.DB, err = gorm.Open(conf.DbType, os.Getenv(conf.DbConnectInfoTag))
 	if err != nil {
 		panic("open Db fail->" + err.Error())
 	}
-	db.DB().SetMaxOpenConns(256)
-	db.DB().SetMaxIdleConns(8)
-	db.DB().SetConnMaxLifetime(360 * time.Second)
-	db.LogMode(true)
+	db.DB.DB().SetMaxOpenConns(256)
+	db.DB.DB().SetMaxIdleConns(8)
+	db.DB.DB().SetConnMaxLifetime(360 * time.Second)
+	db.DB.LogMode(true)
 
 	return nil
 }
 
-func DB() *gorm.DB {
+func DB() *MyDB {
 	return db
 }

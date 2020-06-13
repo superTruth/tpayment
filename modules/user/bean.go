@@ -1,9 +1,5 @@
 package user
 
-import (
-	"tpayment/modules"
-)
-
 type LoginRequest struct {
 	Email     string `json:"email"`
 	Pwd       string `json:"pwd"`
@@ -12,8 +8,6 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	modules.BaseResponse
-
 	Token string `json:"token"`
 	Role  string `json:"role"`
 	Name  string `json:"name"`

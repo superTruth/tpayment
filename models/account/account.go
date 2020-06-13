@@ -8,11 +8,13 @@ import (
 
 type UserBean struct {
 	gorm.Model
+	AgencyId uint `gorm:"column:agency_id"`
 
-	Email string `gorm:"column:email"`
-	Pwd   string `gorm:"column:pwd"`
-	Name  string `gorm:"column:name"`
-	Role  string `gorm:"column:role"`
+	Email  string `gorm:"column:email"`
+	Pwd    string `gorm:"column:pwd"`
+	Name   string `gorm:"column:name"`
+	Role   string `gorm:"column:role"`
+	Active bool   `gorm:"column:active"`
 }
 
 func (UserBean) TableName() string {
@@ -54,7 +56,7 @@ func QueryUserRecord(offset, limit uint, filters map[string]string) (uint, []Use
 
 	filterTmp := make(map[string]interface{})
 
-	for k,v := range filters {
+	for k, v := range filters {
 		filterTmp[k] = v
 	}
 
@@ -80,7 +82,7 @@ func QueryUserRecord(offset, limit uint, filters map[string]string) (uint, []Use
 		return 0, nil, err
 	}
 
-	for _,k := range ret {
+	for _, k := range ret {
 		k.Pwd = "******"
 	}
 

@@ -43,12 +43,7 @@ func DeleteHandle(ctx echo.Context) error {
 		return err
 	}
 
-	//
-	ret := &modules.BaseResponse{
-		ErrorCode: conf.SUCCESS,
-	}
-
-	modules.BaseSuccess(ctx, ret)
+	modules.BaseSuccess(ctx, nil)
 
 	return nil
 }

@@ -23,7 +23,7 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	user,err := account.GetUserByEmail(req.Email)
+	user, err := account.GetUserByEmail(req.Email)
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -51,13 +51,7 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	//
-	ret := &modules.BaseResponse{
-		ErrorCode:    conf.SUCCESS,
-	}
-
-	modules.BaseSuccess(ctx, ret)
+	modules.BaseSuccess(ctx, nil)
 
 	return nil
 }
-
