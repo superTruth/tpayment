@@ -22,13 +22,13 @@ func TestAddMerchantAssociate(t *testing.T) {
 
 	reqBean := &merchant.UserMerchantAssociate{
 		MerchantId: 4,
-		UserId:     5,
+		UserId:     8,
 		Role:       string(conf.RoleAdmin),
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantAssociateAdd, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantAssociateAdd, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -42,17 +42,17 @@ func TestDeleteMerchantAssociate(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID:1}
+	reqBean := &modules.BaseIDRequest{ID: 4}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantAssociateDelete, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantAssociateDelete, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
 
 func TestQueryMerchantAssociate(t *testing.T) {
-	token := Login("fang.qiang3@bindo.com", "123456")
+	token := Login("fang.qiang6@bindo.com", "123456")
 
 	fmt.Println("query user", line)
 	header := http.Header{
@@ -60,8 +60,9 @@ func TestQueryMerchantAssociate(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset:  0,
-		Limit:   100,
+		MerchantId: 4,
+		Offset:     0,
+		Limit:      100,
 		//Filters: map[string]string{
 		//	"pwd": "123456",
 		//},
@@ -69,31 +70,8 @@ func TestQueryMerchantAssociate(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, "http://localhost:80/payment/account/query", time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantAssociateQuery, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 
-}
-
-func TestQueryUserInMerchant(t *testing.T) {
-	token := Login("fang.qiang3@bindo.com", "123456")
-	fmt.Println("query user in merchant", line)
-	header := http.Header{
-		conf.HeaderTagToken: []string{token},
-	}
-
-	reqBean := &modules.BaseQueryRequest{
-		MerchantId: 3,
-		Offset:  0,
-		Limit:   100,
-		//Filters: map[string]string{
-		//	"pwd": "123456",
-		//},
-	}
-
-	reqByte, _ := json.Marshal(reqBean)
-
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlQueryUserInMerchantQuery, time.Second*10)
-
-	fmt.Println("rep->", string(repByte))
 }

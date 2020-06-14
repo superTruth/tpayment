@@ -1,11 +1,10 @@
-package merchant
+package acquirer
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/agency"
-	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
@@ -14,7 +13,7 @@ import (
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(merchant.Merchant)
+	req := new(agency.Acquirer)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {

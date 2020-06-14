@@ -38,7 +38,7 @@ func TestAddAgency(t *testing.T) {
 func TestUpdateAgency(t *testing.T) {
 	TestLogin(t)
 
-	fmt.Println("UpdateMerchant", line)
+	fmt.Println("TestUpdateAgency", line)
 
 	header := http.Header{
 		conf.HeaderTagToken: []string{token},
@@ -46,7 +46,7 @@ func TestUpdateAgency(t *testing.T) {
 
 	reqBean := &merchant.Merchant{
 		Model: gorm.Model{
-			ID:        1,
+			ID:        3,
 		},
 		Name: "merc",
 		Tel:  "",

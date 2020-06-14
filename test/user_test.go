@@ -37,6 +37,16 @@ var (
 	line  = "--------------------------------------"
 )
 
+func ParseResponse(resp []byte, data interface{}) error {
+	baseResponse := new(modules.BaseResponse)
+
+	baseResponse.Data = data
+
+	json.Unmarshal(resp, &baseResponse)
+
+	return nil
+}
+
 func TestLogin(t *testing.T) {
 	fmt.Println("login", line)
 	reqBean := &user.LoginRequest{
@@ -51,7 +61,8 @@ func TestLogin(t *testing.T) {
 
 	respBean := &user.LoginResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	ParseResponse(repByte, respBean)
+	//json.Unmarshal(repByte, respBean)
 
 	token = respBean.Token
 
@@ -60,17 +71,20 @@ func TestLogin(t *testing.T) {
 
 func Login(account, pwd string) string {
 	reqBean := &user.LoginRequest{
-		Email: "fang.qiang@bindo.com",
-		Pwd:   "123456",
+		Email: account,
+		Pwd:   pwd,
 		AppId: "123456",
+		AppSecret: "123456",
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
-	repByte, _ := post(reqByte, nil, "http://localhost:80/payment/account/login", time.Second*10)
+	repByte, _ := post(reqByte, nil, BaseUrl+conf.UrlAccountLogin, time.Second*10)
 
 	respBean := &user.LoginResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	ParseResponse(repByte, respBean)
+
+	fmt.Println("rep->", string(repByte))
 
 	return respBean.Token
 }
@@ -121,7 +135,7 @@ func TestAddUser(t *testing.T) {
 	}
 
 	reqBean := &user.AddUserRequest{
-		Email: "fang.qiang6@bindo.com",
+		Email: "fang.qiang7@bindo.com",
 		Pwd:   "123456",
 		Role:  string(conf.RoleUser),
 		Name:  "Fang",

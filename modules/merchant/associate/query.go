@@ -9,7 +9,7 @@ import (
 	"tpayment/pkg/utils"
 )
 
-func QueryUserInMerchantHandle(ctx echo.Context) error {
+func QueryHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)

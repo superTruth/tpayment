@@ -31,7 +31,7 @@ func AddHandle(ctx echo.Context) error {
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
-	if associateBean == nil {
+	if associateBean != nil {
 		logger.Warn(conf.UserCanOnlyInOneAgency)
 		modules.BaseError(ctx, conf.UserCanOnlyInOneAgency)
 		return errors.New(conf.UserCanOnlyInOneAgency.String())

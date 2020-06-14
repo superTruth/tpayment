@@ -9,8 +9,9 @@ Header:
 Response:
 ```json
 {
-    "code":0,
-    "msg":"OK"
+    "code":"00",
+    "msg":"OK",
+    "data":{}
 }
 ```
 
@@ -62,7 +63,7 @@ Request Example:
 {
     "email":"123455@qq.com",
     "pwd":"123456",
-    "role": "admin",  // "admin" "machine" "normal"
+    "role": "admin",  // "admin" "machine" "user"
     "name":"xxx"
 }
 ```
@@ -86,7 +87,7 @@ Request Example:
     "id":123,
     "account_num":"123455@qq.com",
     "pwd":"123456",
-    "role": "admin",  // "admin" "machine" "normal"    只有管理员才可以更改这个字段
+    "role": "admin",  // "admin" "machine" "user"    只有管理员才可以更改这个字段
     "name":"xxx",
     "email":"xxx"
 }
@@ -101,7 +102,7 @@ Request Example:
     "offset": 1234,
     "limit": 123,
     "filters": {
-      "account_num": "123455@qq.com",
+      "email": "123455@qq.com",
       "id": 123
     } 
 }
@@ -115,7 +116,7 @@ Response Example:
         "id":123,
         "account_num":"123455@qq.com",
         "pwd_hash":"abcd",
-        "role": "admin",  // "admin" "machine" "normal"    只有管理员才可以更改这个字段
+        "role": "admin",  // "admin" "machine" "user"    只有管理员才可以更改这个字段
         "name":"xxx",
         "email":"xxx"
       }     
@@ -123,29 +124,215 @@ Response Example:
 }
 ```
 
-## 商户部分
-### 获取此账号关联的商户信息
+## 机构部分
+### 添加机构
 ***POST***
-```https://{base_url}/payment/merchants```
-Response Example:
-```json
-{
-  "merchants": [
-    {
-      "id": 123,
-      "name": "213",
-      "tel": "123",
-      "addr": "",
-      "role": "sales"  // "admin", "sales"，此账号在这个店里面的角色
-    }
-  ]
-}
-```
-### admin获取关联的商户信息
-```https://{base_url}/payment/querymerchants```
+```https://{base_url}/payment/agency/add```
 Request Example:
 ```json
 {
+    "name": "asdf",
+    "tel": "123",
+    "addr": "asdf"
+}
+```
+
+### 更新机构
+***POST***
+```https://{base_url}/payment/agency/update```
+Request Example:
+```json
+{
+    "id": 123,
+    "name": "asdf",
+    "tel": "123",
+    "addr": "asdf"
+}
+```
+
+### 查询机构信息
+***POST***
+```https://{base_url}/payment/agency/query```
+Request Example:
+```json
+{
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+      "name": "123455@qq.com",
+      "id": 123
+    } 
+}
+```
+Response Example:
+```json
+{
+    "total": 1234,   // 一共有多少记录
+    "data": [
+      {
+        "id":123,
+        "name":"123123",
+        "tel":"123123",
+        "addr": "asdfdf",
+        "create_at": "2020-06-13T15:41:16.142489+08:00",
+        "update_at":"2020-06-13T15:41:16.142489+08:00"
+      }     
+    ]
+}
+```
+
+### 添加机构账号关联
+***POST***
+```https://{base_url}/payment/agency_associate/add```
+Request Example:
+```json
+{
+    "agency_id": 123,
+    "user_id": 456
+}
+```
+
+### 删除机构账号关联
+***POST***
+```https://{base_url}/payment/agency_associate/delete```
+Request Example:
+```json
+{
+    "id": 1
+}
+```
+### 查询机构账号关联
+***POST***
+```https://{base_url}/payment/agency_associate/query```
+```json
+{
+    "agency_id": 123,
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+    } 
+}
+```
+Response Example:
+```json
+{
+    "total": 1234,
+    "data": [
+      {
+        "id":123,
+        "email":"123123",
+        "name":"123123",
+        "create_at": "2020-06-13T15:41:16.142489+08:00",
+        "update_at":"2020-06-13T15:41:16.142489+08:00"
+      }     
+    ]
+}
+```
+
+### 添加acquirer
+***POST***
+```https://{base_url}/payment/agency_acquirer/add```
+Request Example:
+```json
+{
+    "agency_id": 123,
+    "name": "",
+    "addition": "",
+    "config_file_url": ""
+}
+```
+### 更新acquirer
+***POST***
+```https://{base_url}/payment/agency_acquirer/update```
+Request Example:
+```json
+{
+    "acquirer_id": 123,
+    "name": "",
+    "addition": "",
+    "config_file_url": ""
+}
+```
+### 删除acquirer
+***POST***
+```https://{base_url}/payment/agency_acquirer/delete```
+Request Example:
+```json
+{
+    "acquirer_id": 123
+}
+```
+### 查询acquirer
+***POST***
+```https://{base_url}/payment/agency_acquirer/query```
+Request Example:
+```json
+{
+    "agency_id": 123,
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+    } 
+}
+```
+Response Example:
+```json
+{
+    "total": 1234,   // 一共有多少记录
+    "data": [
+      {
+        "id":123,
+        "name": "",
+        "addition": "",
+        "config_file_url": ""
+      }     
+    ]
+}
+```
+
+### 获取payment methods
+***GET***
+```https://{base_url}/payment/agency_acquirer/payment_methods```
+Response Example:
+```json
+{
+    "data": [
+      "visa","mastercard","jcb","cup"   
+    ]
+}
+```
+
+### 获取entry types
+***GET***
+```https://{base_url}/payment/agency_acquirer/entry_types```
+Response Example:
+```json
+{
+    "data": [
+      "swipe","contact","contactless"
+    ]
+}
+```
+
+### 获取payment types
+***GET***
+```https://{base_url}/payment/agency_acquirer/payment_types```
+Response Example:
+```json
+{
+    "data": [
+      "sale","void","refund"
+    ]
+}
+```
+
+## 商户部分
+### 获取商户信息
+```https://{base_url}/payment/merchant/query```
+Request Example:
+```json
+{
+    "agency_id": 123,   // 如果是获取所有商户信息，和机构无关，则不传
     "offset": 1234,
     "limit": 123,
     "filters": {
@@ -158,7 +345,7 @@ Response Example:
 ```json
 {
     "total": 1234,   // 一共有多少店铺
-    "merchants": [
+    "data": [
       {
             "id": 123,
             "name": "213",
@@ -169,32 +356,22 @@ Response Example:
 }
 ```
 
-### 创建店铺(只有超级管理员才能做)
+### 创建店铺
 ***POST***
-```https://{base_url}/payment/createmerchant```
+```https://{base_url}/payment/merchant/add```
 Request Example:
 ```json
 {
+    "agency_id": 123,
     "name": "213",
     "tel": "123",
     "addr": ""
 }
 ```
-Response Example:
-```json
-{
-    "total": 1234,   // 一共有多少店铺
-    "merchants":{
-            "id": 123,
-            "name": "213",
-            "tel": "123",
-            "addr": ""
-      }    
-}
-```
+
 ### 删除店铺(不允许使用)
 ***POST***
-```https://{base_url}/payment/delmerchant```
+```https://{base_url}/payment/merchant/delete```
 Request Example:
 ```json
 {
@@ -204,7 +381,7 @@ Request Example:
 
 ### 修改店铺信息
 ***POST***
-```https://{base_url}/payment/updatemerchant```
+```https://{base_url}/payment/merchant/update```
 Request Example:
 ```json
 {
@@ -215,158 +392,194 @@ Request Example:
 }
 ```
 
-### 给店铺添加关联账号(只有超级管理员和店铺管理员才可以使用)
+### 给店铺添加关联账号(只有超级管理员，机构管理员，店铺管理员才可以使用)
 ***POST***
-```https://{base_url}/payment/addaccount2merchant```
+```https://{base_url}/payment/merchant_associate/add```
 Request Example:
 ```json
 {
     "merchant_id": 123,
-    "account_id": 213
+    "account_id": 213,
+    "role": "admin"   // "admin", "stuff"
 }
 ```
 
 ### 查询店铺所有的关联账号
 ***POST***
-```https://{base_url}/payment/account2merchant```
+```https://{base_url}/payment/merchant_associate/query```
 Request Example:
 ```json
 {
-    "merchant_id": 123
+    "merchant_id": 123,
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+    }
 }
 ```
 Response Example:
 ```json
-{
-  "accounts": [
+{ 
+    "total": 1234,   // 一共有多少数据
+    "data": [
       {
         "id":123,
-        "account_num":"123455@qq.com",
-        "pwd_hash":"abcd",
-        "role": "admin",  // "admin" "machine" "normal"    只有管理员才可以更改这个字段
+        "role": "admin",  // "admin", "stuff"    只有管理员才可以更改这个字段
         "name":"xxx",
-        "email":"xxx"
+        "email":"xxx",
+        "created_at":"2020-06-14T14:34:13.058434+08:00",
+        "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }     
     ]
 }
 ```
 
-
-### 给店铺添加关联账号(只有超级管理员和店铺管理员才可以使用)
-***POST***
-```https://{base_url}/payment/addaccount2merchant```
-Request Example:
-```json
-{
-    "merchant_id": 123,
-    "account_id": 213
-}
-```
-
 ### 给店铺删除关联账号(只有超级管理员和店铺管理员才可以使用)
 ***POST***
-```https://{base_url}/payment/delaccount2merchant```
+```https://{base_url}/payment/merchant_associate/delete```
 Request Example:
 ```json
 {
-    "merchant_id": 123,
-    "account_id": 213
+    "id": 123
 }
 ```
 
 ### 给店铺添加设备
 ***POST***
-```https://{base_url}/payment/adddevice2merchant```
+```https://{base_url}/payment/merchant_device/add```
 Request Example:
 ```json
 {
   "merchant_id": 123,
-  "device_id": "123"
+  "device_id": 123
 }
 ```
 
-## 支付参数部分
-### 查询支付参数
+### 给店铺删除设备
 ***POST***
-```https://{base_url}/payment/parameter/query```
+```https://{base_url}/payment/merchant_device/delete```
 Request Example:
-```json
-{
-    "merchant_id": 123,
-    "device_id": "123"
-}
-```
-
-Response Example:
-```json
-{
-  "parameters": [
-    {
-        "payment_method": ["sale", "void","refund"],
-        "payment_type": ["visa", "mastercard", "cup", "amex"],
-        "entry_type": ["swipe", "contact", "contactless"],
-        "mid":"1234545",
-        "tid":"123354",
-        "url":"123445",
-        "addition":""   // 附加参数
-    }
-  ]
-}
-```
-
-### 添加支付参数
-***POST***
-```https://{base_url}/payment/parameter/add```
-Request Example:
-```json
-{
-    "merchant_id": 123,
-    "device_id": "123",
-    "parameter":{
-        "payment_method": ["sale", "void","refund"],
-        "payment_type": ["visa", "mastercard", "cup", "amex"],
-        "entry_type": ["swipe", "contact", "contactless"],
-        "mid":"1234545",
-        "tid":"123354",
-        "url":"192.168.1.1:8080",
-        "addition":""   // 附加参数
-    }
-}
-```
-
-Response Example:
 ```json
 {
   "id": 123
 }
 ```
 
-### 更新支付参数
+### 给店铺修改设备
 ***POST***
-```https://{base_url}/payment/parameter/update```
+```https://{base_url}/payment/merchant_device/update```
 Request Example:
 ```json
 {
-    "id": 123,
-    "parameter":{
-        "payment_method": ["sale", "void","refund"],
-        "payment_type": ["visa", "mastercard", "cup", "amex"],
-        "entry_type": ["swipe", "contact", "contactless"],
-        "mid":"1234545",
-        "tid":"123354",
-        "url":"192.168.1.1:8080",
-        "addition":""   // 附加参数
-    }
+  "id": 123,
+  "device_id": 123
 }
 ```
 
-### 删除支付参数
+### 查询店铺设备
 ***POST***
-```https://{base_url}/payment/parameter/del```
+```https://{base_url}/payment/merchant_device/query```
 Request Example:
 ```json
 {
-    "id": 123
+    "merchant_id": 123,
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+    }
+}
+```
+Response Example:
+```json
+{
+    "total": 1234,   // 一共有多少店铺
+    "data": [
+      {
+        "id":123,
+        "device_sn": "asdfsdf",
+        "created_at":"2020-06-14T14:34:13.058434+08:00",
+        "updated_at":"2020-06-14T14:34:13.058434+08:00"
+      }     
+    ]
+}
+```
+
+### 给店铺设备添加支付参数
+***POST***
+```https://{base_url}/payment/merchant_device_payment/add```
+Request Example:
+```json
+{
+  "merchant_device_id": 123,
+  "payment_methods": ["visa","mastercard","jcb"],
+  "entry_types": ["swipe","contact","contactless"],
+  "payment_types": ["sale", "void", "refund"],
+  "acquirer_id": 123,
+  "mid": "",
+  "tid": "",
+  "addition": ""
+}
+```
+
+### 给店铺设备添加删除参数
+***POST***
+```https://{base_url}/payment/merchant_device_payment/delete```
+Request Example:
+```json
+{
+  "id": 123
+}
+```
+
+### 给店铺设备更新支付参数
+***POST***
+```https://{base_url}/payment/merchant_device_payment/update```
+Request Example:
+```json
+{
+  "id": 123,
+  "payment_methods": ["visa","mastercard","jcb"],
+  "entry_types": ["swipe","contact","contactless"],
+  "payment_types": ["sale", "void", "refund"],
+  "acquirer_id": 123,
+  "mid": "",
+  "tid": "",
+  "addition": ""
+}
+```
+
+### 查询店铺设备支付参数
+***POST***
+```https://{base_url}/payment/merchant_device_payment/query```
+Request Example:
+```json
+{
+    "merchant_id": 123, 
+    "device_id": 123,
+    "offset": 1234,
+    "limit": 123,
+    "filters": {
+    }
+}
+```
+Response Example:
+```json
+{
+    "total": 1234,   // 一共有多少店铺
+    "data": [
+      {
+        "id": 123,
+        "payment_methods": ["visa","mastercard","jcb"],
+        "entry_types": ["swipe","contact","contactless"],
+        "payment_types": ["sale", "void", "refund"],
+        "acquirer_id": 123,
+        "mid": "",
+        "tid": "",
+        "addition": "",
+        "created_at":"2020-06-14T14:34:13.058434+08:00",
+        "updated_at":"2020-06-14T14:34:13.058434+08:00"
+      }
+    ]
 }
 ```
 
@@ -377,8 +590,6 @@ Request Example:
 Request Example:
 ```json
 {
-    "merchant_id": 123,  // 不带这个参数可以查询所有设备（超级管理员才有此权限）
-
     "offset": 1234,
     "limit": 123,
     "filters": {
@@ -402,7 +613,13 @@ Response Example:
         "reboot_day_in_week": 1,
         "location_lat": "",
         "location_lin": "",
-        "push_token": ""
+        "push_token": "",
+        "tags": [
+          {
+            "id": 123,
+            "name": "123"
+          }
+        ]
       }
     ]
 }
@@ -415,7 +632,6 @@ Request Example:
 {
     "id": "123",
     "csn": "123",
-    "model": "N5",
     "alias": "123",
     "reboot_model": "every_day",
     "reboot_time": "05:30",
@@ -423,7 +639,13 @@ Request Example:
     "reboot_day_in_week": 1,
     "location_lat": "",
     "location_lin": "",
-    "push_token": ""
+    "push_token": "",
+    "tags": [
+      {
+        "id": 123,
+        "name": "123"
+      }
+    ]
 }
 ```
 
@@ -436,7 +658,6 @@ Request Example:
     "device_id": "123"
 }
 ```
-
 Response Example:
 ```json
 {
@@ -447,9 +668,15 @@ Response Example:
         "package_id": "",
         "version_name": "",
         "version_code": "",
-        "status": "",
-        "app_id": 12,
-        "app_file_id": 123
+        "status": "Pending Install",   // "Pending Install", "Installed", "Pending Uninstall", "Warning Installed"
+        "app": {
+          "id": 123,
+          "package_name": ""
+        },
+        "app_file": {
+          "id": 123,
+          "name": ""
+        }
       }
     ]
 }
@@ -466,9 +693,13 @@ Request Example:
     "package_id": "",
     "version_name": "",
     "version_code": "",
-    "status": "",
-    "app_id": 12,
-    "app_file_id": 123
+    "status": "Pending Install",   // "Pending Install", "Installed", "Pending Uninstall", "Warning Installed"
+    "app": {
+      "id": 123
+    },
+    "app_file": {
+      "id": 123
+    }
 }
 ```
 
@@ -478,14 +709,17 @@ Request Example:
 Request Example:
 ```json
 {
-    "id": 123,
     "name": "",
     "package_id": "",
     "version_name": "",
     "version_code": "",
     "status": "",
-    "app_id": 12,
-    "app_file_id": 123
+    "app": {
+      "id": 123
+    },
+    "app_file": {
+      "id": 123
+    }
 }
 ```
 
@@ -503,7 +737,7 @@ Request Example:
 
 ### 删除app
 ***POST***
-```https://{base_url}/payment/tms/app/del```
+```https://{base_url}/payment/tms/app/delete```
 Request Example:
 ```json
 {
@@ -542,7 +776,7 @@ Response Example:
 ```json
 {
   "total": 1234,   // 一共有app
-   "devices":[
+   "data":[
     {
         "id": 123,
         "name": "",
@@ -606,14 +840,14 @@ Response Example:
 ```json
 {
   "total": 1234,   // 一共有app file
-   "devices":[
+   "data":[
     {
         "id": 123,
         "file_name": "",
         "version_code": 123,
         "version_name": "v1.0.0",
         "desc": "",
-        "decode_status": "",
+        "decode_status": "",  // "Success", "Fail"
         "decode_error_msg": ""
     }
   ]
@@ -678,7 +912,6 @@ Response Example:
   ]
 }
 ```
-
 
 ### 新增批量更新任务
 ***POST***
@@ -745,7 +978,23 @@ Response Example:
 }
 ```
 
-
-
-
-
+## 上送文件管理
+### 新建上传文件任务
+***POST***
+```https://{base_url}/payment/file/add```
+Request Example:
+```json
+{
+    "md5": "",
+    "file_size": 123,
+    "tag": "apk files"
+}
+```
+Response Example:
+```json
+{
+    "upload_url": "https://asdfadfdf",
+    "download_url": "https://asdfasdf",
+    "expired_at": "2020-06-13T15:41:16.142489+08:00"
+}
+```

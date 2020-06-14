@@ -22,6 +22,7 @@ func TestAddMerchant(t *testing.T) {
 	}
 
 	reqBean := &merchant.Merchant{
+		AgencyId: 4,
 		Name: "merchant 1",
 		Tel:  "123456789",
 		Addr: "wuxicun",
@@ -67,6 +68,7 @@ func TestQueryMerchant(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
+		AgencyId: 4,
 		Offset:  0,
 		Limit:   100,
 		//Filters: map[string]string{
@@ -76,7 +78,7 @@ func TestQueryMerchant(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, "http://localhost:80/payment/account/query", time.Second*10)
+	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }

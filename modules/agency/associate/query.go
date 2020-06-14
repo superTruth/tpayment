@@ -1,16 +1,16 @@
-package merchant
+package associate
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/merchant"
+	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func QueryAssociateHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
@@ -26,7 +26,7 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := merchant.QueryMerchantRecord(models.DB(), ctx, req.AgencyId, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := agency.QueryUsersByAgencyId(models.DB(), ctx, req.AgencyId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

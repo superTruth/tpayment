@@ -36,8 +36,8 @@ func BaseSuccess(context echo.Context, data interface{}) {
 }
 
 type BaseResponse struct {
-	ErrorCode    conf.ResultCode `json:"error_code"`
-	ErrorMessage string          `json:"error_message"`
+	ErrorCode    conf.ResultCode `json:"code"`
+	ErrorMessage string          `json:"msg"`
 	Data         interface{}     `json:"data"`
 }
 
@@ -47,6 +47,7 @@ type BaseIDRequest struct {
 
 type BaseQueryRequest struct {
 	MerchantId uint              `json:"merchant_id"`
+	AgencyId   uint              `json:"agency_id"`
 	Offset     uint              `json:"offset"`
 	Limit      uint              `json:"limit"`
 	Filters    map[string]string `json:"filters"`

@@ -1,20 +1,19 @@
-package merchant
+package acquirer
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/agency"
-	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func AddHandle(ctx echo.Context) error {
+func DeleteHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(merchant.Merchant)
+	req := new(modules.BaseIDRequest)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -23,24 +22,23 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, req.AgencyId)
+	// 查询是否已经存在的账号
+	acquirer, err := agency.GetAcquirerById(req.ID)
 	if err != nil {
-		logger.Error("GetAgencyById sql error->", err.Error())
+		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
-
-	if agencyBean == nil {
-		logger.Info("GetAgencyById sql error->", err.Error())
+	if acquirer == nil {
+		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
-	err = models.CreateBaseRecord(req)
+	err = models.DeleteBaseRecord(acquirer)
 
 	if err != nil {
-		logger.Error("CreateBaseRecord sql error->", err.Error())
+		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}

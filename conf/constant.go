@@ -32,7 +32,9 @@ const (
 	UrlAgencyUpdate = "/payment/agency/update"
 	UrlAgencyQuery  = "/payment/agency/query"
 
-	UrlAgencyAssociateAdd = "/payment/agency_associate/query"
+	UrlAgencyAssociateAdd    = "/payment/agency_associate/add"
+	UrlAgencyAssociateDelete = "/payment/agency_associate/delete"
+	UrlAgencyAssociateQuery  = "/payment/agency_associate/query"
 
 	UrlMerchantAdd    = "/payment/merchant/add"
 	UrlMerchantUpdate = "/payment/merchant/update"
@@ -41,7 +43,6 @@ const (
 	UrlMerchantAssociateAdd     = "/payment/merchant_associate/add"
 	UrlMerchantAssociateDelete  = "/payment/merchant_associate/delete"
 	UrlMerchantAssociateQuery   = "/payment/merchant_associate/query"
-	UrlQueryUserInMerchantQuery = "/payment/merchant_associate/query_user_in_merchant"
 )
 
 const (

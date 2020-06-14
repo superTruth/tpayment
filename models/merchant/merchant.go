@@ -2,16 +2,21 @@ package merchant
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
+	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/account"
 )
 
 type Merchant struct {
 	gorm.Model
 
-	Name string `json:"name" gorm:"column:name"`
-	Tel  string `json:"tel"  gorm:"column:tel"`
-	Addr string `json:"addr" gorm:"column:addr"`
+	AgencyId uint   `json:"agency_id" gorm:"column:agency_id"`
+	Name     string `json:"name" gorm:"column:name"`
+	Tel      string `json:"tel"  gorm:"column:tel"`
+	Addr     string `json:"addr" gorm:"column:addr"`
 }
+
 func (Merchant) TableName() string {
 	return "merchant"
 }
@@ -60,17 +65,22 @@ func GetMerchantById(id uint) (*Merchant, error) {
 //	return total, ret, nil
 //}
 
-func QueryMerchantRecord(userId, offset, limit uint, filters map[string]string) (uint, []Merchant, error) {
+func QueryMerchantRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []Merchant, error) {
 	filterTmp := make(map[string]interface{})
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 
 	for k, v := range filters {
 		filterTmp[k] = v
 	}
 
+	if agencyId != 0 {
+		filterTmp["agency_id"] = agencyId
+	}
+
 	// conditions
-	tmpDb := models.DB().Table("merchant").Where(filterTmp)
-	if userId != 0 {
-		tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = merchant.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userId)
+	tmpDb := db.Table("merchant").Where(filterTmp)
+	if userBean.Role != string(conf.RoleAdmin) {  // 管理员账户可以忽略这个选项
+		tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = merchant.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
 
 	// 统计总数

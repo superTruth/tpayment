@@ -35,15 +35,20 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlAgencyUpdate, agency.UpdateHandle) // 更新机构
 	e.POST(conf.UrlAgencyQuery, agency.QueryHandle)   // 查找机构
 
-	e.POST(conf.UrlAgencyAssociateAdd, associate2.AddHandle) //
+	e.POST(conf.UrlAgencyAssociateAdd, associate2.AddHandle)              // 添加机构账户关联
+	e.POST(conf.UrlAgencyAssociateDelete, associate2.DeleteHandle)        // 删除机构账户关联
+	e.POST(conf.UrlAgencyAssociateQuery, associate2.QueryAssociateHandle) // 删除机构账户关联
 
 	e.POST(conf.UrlMerchantAdd, merchant.AddHandle)       // 新增商户
 	e.POST(conf.UrlMerchantUpdate, merchant.UpdateHandle) // 更新商户
 	e.POST(conf.UrlMerchantQuery, merchant.QueryHandle)   // 查找商户
 
-	e.POST(conf.UrlMerchantAssociateAdd, associate.AddHandle)                     // 新增商户
-	e.POST(conf.UrlMerchantAssociateDelete, associate.DeleteHandle)               // 删除关联
-	e.POST(conf.UrlQueryUserInMerchantQuery, associate.QueryUserInMerchantHandle) // 查询
+	e.POST(conf.UrlMerchantAssociateAdd, associate.AddHandle)       // 新增商户
+	e.POST(conf.UrlMerchantAssociateDelete, associate.DeleteHandle) // 删除关联
+	e.POST(conf.UrlMerchantAssociateQuery, associate.QueryHandle)   // 查询
+
+
+
 
 	return e, nil
 }

@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 	"tpayment/models"
 )
 
@@ -96,7 +97,7 @@ type AssociateMerchantUserBean struct {
 	Role  string `json:"role"`
 }
 
-func QueryUsersByMerchantId(merchantId, offset, limit uint, filters map[string]string) (uint, []AssociateMerchantUserBean, error) {
+func QueryUsersByMerchantId(db *models.MyDB, ctx echo.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []AssociateMerchantUserBean, error) {
 	filterTmp := make(map[string]interface{})
 
 	for k, v := range filters {
@@ -104,7 +105,7 @@ func QueryUsersByMerchantId(merchantId, offset, limit uint, filters map[string]s
 	}
 
 	// conditions
-	tmpDb := models.DB().Table("user").Where(filterTmp)
+	tmpDb := db.Table("user").Where(filterTmp)
 	tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
