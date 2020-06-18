@@ -40,7 +40,7 @@ type RequestBathUpdate struct {
 type UploadFileRequest struct {
 	FileName string `json:"file_name,omitempty"`
 	FileSize uint   `json:"file_size,omitempty"`
-	Tag      string `json:"tag,omitempty"`
+	Tag      string `json:"devicetag,omitempty"`
 }
 
 type CreateFileRequest struct {

@@ -1,10 +1,10 @@
-package associate
+package uploadfile
 
 import (
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/merchant"
+	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
@@ -26,9 +26,9 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := merchant.QueryUsersByMerchantId(models.DB(), ctx, req.MerchantId, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := tms.QueryUploadFileRecord(models.DB(), ctx, req.Offset, req.Limit, req.Filters)
 	if err != nil {
-		logger.Info("QueryBaseRecord sql error->", err.Error())
+		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}

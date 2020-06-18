@@ -32,6 +32,10 @@ const (
 	UrlAgencyUpdate = "/payment/agency/update"
 	UrlAgencyQuery  = "/payment/agency/query"
 
+	UrlAgencyPaymentMethods = "/payment/agency_acquirer/payment_methods"
+	UrlAgencyPaymentTypes   = "/payment/agency_acquirer/payment_types"
+	UrlAgencyEntryTypes     = "/payment/agency_acquirer/entry_types"
+
 	UrlAgencyAssociateAdd    = "/payment/agency_associate/add"
 	UrlAgencyAssociateDelete = "/payment/agency_associate/delete"
 	UrlAgencyAssociateQuery  = "/payment/agency_associate/query"
@@ -40,9 +44,23 @@ const (
 	UrlMerchantUpdate = "/payment/merchant/update"
 	UrlMerchantQuery  = "/payment/merchant/query"
 
-	UrlMerchantAssociateAdd     = "/payment/merchant_associate/add"
-	UrlMerchantAssociateDelete  = "/payment/merchant_associate/delete"
-	UrlMerchantAssociateQuery   = "/payment/merchant_associate/query"
+	UrlMerchantAssociateAdd    = "/payment/merchant_associate/add"
+	UrlMerchantAssociateDelete = "/payment/merchant_associate/delete"
+	UrlMerchantAssociateQuery  = "/payment/merchant_associate/query"
+
+	UrlMerchantDevicePaymentAdd    = "/payment/merchant_device_payment/add"
+	UrlMerchantDevicePaymentDelete = "/payment/merchant_device_payment/delete"
+	UrlMerchantDevicePaymentUpdate = "/payment/merchant_device_payment/update"
+	UrlMerchantDevicePaymentQuery  = "/payment/merchant_device_payment/query"
+
+	UrlTmsDeviceDelete        = "/payment/tms/device/delete"
+	UrlTmsDevicePaymentUpdate = "/payment/tms/device/update"
+	UrlTmsDevicePaymentQuery  = "/payment/tms/device/query"
+
+	UrlTmsAppInDeviceAdd           = "/payment/tms/deviceapp/add"
+	UrlTmsAppInDeviceDelete        = "/payment/tms/deviceapp/delete"
+	UrlTmsAppInDevicePaymentUpdate = "/payment/tms/deviceapp/update"
+	UrlTmsAppInDevicePaymentQuery  = "/payment/tms/deviceapp/query"
 )
 
 const (

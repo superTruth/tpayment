@@ -9,6 +9,8 @@ import (
 
 type DeviceInfo struct {
 	gorm.Model
+	AgencyId string `gorm:"column:agency_id"`
+
 	DeviceSn    string `gorm:"column:device_sn"`
 	DeviceCsn   string `gorm:"column:device_csn"`
 	DeviceModel uint   `gorm:"column:device_model"`
@@ -42,7 +44,7 @@ func GenerateDeviceInfo() *DeviceInfo {
 }
 
 const (
-	AppInDeviceExternalIdTypeDevice      = "device"
+	AppInDeviceExternalIdTypeDevice      = "merchantdevice"
 	AppInDeviceExternalIdTypeBatchUpdate = "batch"
 )
 
@@ -218,7 +220,7 @@ func UpdateDevice(device *DeviceInfo) error {
 	return nil
 }
 
-// 更新app in device
+// 更新app in merchantdevice
 func UpdateAppInDevice(appInDevice *AppInDevice) error {
 	err := models.DB().Model(appInDevice).Updates(appInDevice).Error
 	if err != nil {
@@ -228,7 +230,7 @@ func UpdateAppInDevice(appInDevice *AppInDevice) error {
 	return nil
 }
 
-// 删除掉app in device
+// 删除掉app in merchantdevice
 func DeleteAppInDevice(appInDevice *AppInDevice) error {
 	err := models.DB().Delete(appInDevice).Error
 	if err != nil {
@@ -333,11 +335,12 @@ func GetApp(id uint) (*App, error) {
 	return ret, nil
 }
 
-// tag
+// devicetag
 type DeviceTag struct {
 	gorm.Model
 
-	Name *string `gorm:"column:name"` // 外键
+	AgencyId string  `gorm:"column:agency_id"`
+	Name     *string `gorm:"column:name"` // 外键
 }
 
 type _DeviceAndTagMid struct {
@@ -405,7 +408,7 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 	return deviceUuids, nil
 }
 
-// device model
+// merchantdevice model
 type DeviceModel struct {
 	gorm.Model
 
