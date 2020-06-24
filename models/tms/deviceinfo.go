@@ -165,10 +165,10 @@ func GetAppsInDevice(externalId uint, externalIdType string, offset int, limit i
 		//	appInDevice.AppFile = nil
 		//}
 
-		if appInDevice.AppID == nil || *appInDevice.AppID == 0 {
+		if appInDevice.AppID == 0 || appInDevice.AppID == 0 {
 			appInDevice.App = nil
 		}
-		if appInDevice.AppFileId == nil || *appInDevice.AppFileId == 0 {
+		if appInDevice.AppFileId == 0 || appInDevice.AppFileId == 0 {
 			appInDevice.AppFile = nil
 		}
 

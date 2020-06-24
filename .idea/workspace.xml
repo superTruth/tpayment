@@ -2,53 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7a3898e-6d6e-4f4c-aa28-e284f969fbe3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/agency/payment.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/merchant/payment.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tms/app.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tms/appfile.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tms/appindevice.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tms/device.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/tms/devicetag.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/agency/payment/EntryTypes.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/agency/payment/PaymentMethod.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/agency/payment/PaymentTypes.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/app/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/app/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/app/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/app/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appfile/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appfile/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appfile/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appfile/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appindevice/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appindevice/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appindevice/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/appindevice/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/device/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/device/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/device/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/devicetag/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/devicetag/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/devicetag/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/devicetag/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/uploadfile/add.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/uploadfile/delete.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/uploadfile/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/uploadfile/update.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/payment_type_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deployment/docker/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deployment/docker/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deployment/docker/build_binary.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deployment/docker/build_image.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/constant.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/constant.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/merchant/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/merchant/device.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/tms/deviceinfo.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/deviceinfo.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/tms/fileupload.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/fileupload.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/basecontext.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/basecontext.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/clientapi/bean.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/clientapi/bean.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/tms/uploadfile/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/uploadfile/add.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,24 +45,24 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/modules/tms/uploadfile" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/deployment/docker" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/deployment/docker" />
+      <recent name="$PROJECT_DIR$/modules/tms/uploadfile" />
+      <recent name="$PROJECT_DIR$/modules/tms/tag" />
+      <recent name="$PROJECT_DIR$/models/tms" />
+      <recent name="$PROJECT_DIR$/modules/tms/appfile" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/modules/agency/associate" />
       <recent name="$PROJECT_DIR$/models/tms" />
       <recent name="$PROJECT_DIR$/modules/tms/hearbeat" />
       <recent name="$PROJECT_DIR$/pkg" />
       <recent name="$PROJECT_DIR$/api/handle" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/modules/tms/uploadfile" />
-      <recent name="$PROJECT_DIR$/modules/tms/tag" />
-      <recent name="$PROJECT_DIR$/models/tms" />
-      <recent name="$PROJECT_DIR$/modules/tms/appfile" />
-      <recent name="$PROJECT_DIR$/modules/tms/app" />
     </key>
   </component>
   <component name="RunManager" selected="Go Test.TestQueryEntryTypes in tpayment/test">
