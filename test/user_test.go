@@ -15,15 +15,18 @@ import (
 
 const BaseUrl = "http://localhost:80"
 
+//const BaseUrl = "http://paymentstg.horizonpay.cn:80"
+
 func post(reqBody []byte, header http.Header, destUrl string, timeOut time.Duration) (respBody []byte, err error) {
 	req, err := http.NewRequest("POST", destUrl, bytes.NewBuffer(reqBody))
 	req.Header = header
 	defer req.Body.Close()
 
 	client := &http.Client{Timeout: timeOut}
-	resp, error := client.Do(req)
-	if error != nil {
-		return nil, error
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("post fail->", err.Error())
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -71,9 +74,9 @@ func TestLogin(t *testing.T) {
 
 func Login(account, pwd string) string {
 	reqBean := &user.LoginRequest{
-		Email: account,
-		Pwd:   pwd,
-		AppId: "123456",
+		Email:     account,
+		Pwd:       pwd,
+		AppId:     "123456",
 		AppSecret: "123456",
 	}
 
@@ -210,4 +213,13 @@ func TestRegister(t *testing.T) {
 	json.Unmarshal(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
+}
+
+func formatJson(str []byte) {
+	var dataMap interface{}
+	json.Unmarshal(str, &dataMap)
+
+	ret, _ := json.MarshalIndent(dataMap, "", "\t")
+
+	fmt.Println("formatJson->", string(ret))
 }

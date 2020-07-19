@@ -4,6 +4,7 @@ type ResultCode string
 
 const (
 	SUCCESS                ResultCode = "00"
+	UnknownError           ResultCode = "99"
 	ParameterError         ResultCode = "03"
 	TokenInvalid           ResultCode = "04"
 	DBError                ResultCode = "05"

@@ -23,20 +23,6 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	bean, err := tms.GetAppByID(models.DB(), ctx, req.ID)
-	if err != nil {
-		logger.Error("GetAppByID sql error->", err.Error())
-		modules.BaseError(ctx, conf.DBError)
-		return err
-	}
-
-	if bean == nil {
-		logger.Info("GetAppByID sql error->", err.Error())
-		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
-	}
-
 	err = models.CreateBaseRecord(req)
 
 	if err != nil {

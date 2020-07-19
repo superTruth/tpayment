@@ -16,7 +16,7 @@ Response:
 ```
 
 ## 账号部分
-### 登录
+### 登录(画面 1)
 ***POST***
 ```https://{base_url}/payment/account/login```
 Request Example:
@@ -38,11 +38,11 @@ Response Example:
 }
 ```
 
-### 登出
+### 登出(画面 7)
 ***POST***
 ```https://{base_url}/payment/account/logout```
 
-### 验证登录状态
+### 验证登录状态:本地保存了token的情况下，再次启动时验证token的有效性并且获取用户信息
 ***POST***
 ```https://{base_url}/payment/account/validate```
 
@@ -55,7 +55,7 @@ Response Example:
 }
 ```
 
-### 添加账号(只有admin才有此权限)
+### 添加账号(只有admin才有此权限)(画面 2)
 ***POST***
 ```https://{base_url}/payment/account/create```
 Request Example:
@@ -68,7 +68,7 @@ Request Example:
 }
 ```
 
-### 删除账号(只有admin才有此权限)
+### 删除账号(只有admin才有此权限)(画面 2)
 ***POST***
 ```https://{base_url}/payment/account/delete```
 Request Example:
@@ -78,7 +78,7 @@ Request Example:
 }
 ```
 
-### 更新账号数据（只发送需要更新的字段）
+### 更新账号数据（只发送需要更新的字段）(画面 5)
 ***POST***
 ```https://{base_url}/payment/updateaccount```
 Request Example:
@@ -93,7 +93,7 @@ Request Example:
 }
 ```
 
-### 批量查询的账号信息
+### 批量查询的账号信息(画面 2)
 ***POST***
 ```https://{base_url}/payment/queryaccount```
 Request Example:
@@ -125,7 +125,7 @@ Response Example:
 ```
 
 ## 机构部分
-### 添加机构
+### 添加机构(画面 Agency管理-Agency 信息)
 ***POST***
 ```https://{base_url}/payment/agency/add```
 Request Example:
@@ -133,11 +133,12 @@ Request Example:
 {
     "name": "asdf",
     "tel": "123",
-    "addr": "asdf"
+    "addr": "asdf",
+    "email": ""
 }
 ```
 
-### 更新机构
+### 更新机构(画面 Agency管理-Agency 信息)
 ***POST***
 ```https://{base_url}/payment/agency/update```
 Request Example:
@@ -146,11 +147,22 @@ Request Example:
     "id": 123,
     "name": "asdf",
     "tel": "123",
-    "addr": "asdf"
+    "addr": "asdf",
+    "email": ""
 }
 ```
 
-### 查询机构信息
+### 删除机构(画面 Agency管理-Agency 信息)
+***POST***
+```https://{base_url}/payment/agency/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+
+### 查询机构信息(画面 Agency管理-Agency list)
 ***POST***
 ```https://{base_url}/payment/agency/query```
 Request Example:
@@ -174,14 +186,14 @@ Response Example:
         "name":"123123",
         "tel":"123123",
         "addr": "asdfdf",
-        "create_at": "2020-06-13T15:41:16.142489+08:00",
+        "email": "",
         "update_at":"2020-06-13T15:41:16.142489+08:00"
       }     
     ]
 }
 ```
 
-### 添加机构账号关联
+### 添加机构账号关联,UI错了，Agency这里也应该有一个一样的画面，但是不需要Role属性(画面 15新增商户 设备 员工 - 员工)
 ***POST***
 ```https://{base_url}/payment/agency_associate/add```
 Request Example:
@@ -192,7 +204,7 @@ Request Example:
 }
 ```
 
-### 删除机构账号关联
+### 删除机构账号关联(画面 15新增商户 设备 员工 - 员工)
 ***POST***
 ```https://{base_url}/payment/agency_associate/delete```
 Request Example:
@@ -201,7 +213,7 @@ Request Example:
     "id": 1
 }
 ```
-### 查询机构账号关联
+### 查询机构账号关联(画面 15新增商户 设备 员工 - 员工)
 ***POST***
 ```https://{base_url}/payment/agency_associate/query```
 ```json
@@ -222,20 +234,18 @@ Response Example:
         "id":123,
         "email":"123123",
         "name":"123123",
-        "create_at": "2020-06-13T15:41:16.142489+08:00",
         "update_at":"2020-06-13T15:41:16.142489+08:00"
       }     
     ]
 }
 ```
 
-### 添加acquirer
+### 添加acquirer(画面 新6-商户-acquirer2)
 ***POST***
 ```https://{base_url}/payment/agency_acquirer/add```
 Request Example:
 ```json
 {
-    "agency_id": 123,
     "name": "",
     "addition": "",
     "config_file_url": ""
@@ -247,7 +257,7 @@ Request Example:
 Request Example:
 ```json
 {
-    "acquirer_id": 123,
+    "id": 123,
     "name": "",
     "addition": "",
     "config_file_url": ""
@@ -259,16 +269,15 @@ Request Example:
 Request Example:
 ```json
 {
-    "acquirer_id": 123
+    "id": 123
 }
 ```
-### 查询acquirer
+### 查询acquirer(画面 新5-商户-acquirer)
 ***POST***
 ```https://{base_url}/payment/agency_acquirer/query```
 Request Example:
 ```json
 {
-    "agency_id": 123,
     "offset": 1234,
     "limit": 123,
     "filters": {
@@ -284,7 +293,8 @@ Response Example:
         "id":123,
         "name": "",
         "addition": "",
-        "config_file_url": ""
+        "config_file_url": "",
+        "update_at":"2020-06-13T15:41:16.142489+08:00"
       }     
     ]
 }
@@ -326,8 +336,45 @@ Response Example:
 }
 ```
 
+### 创建店铺（画面 Agency-new merchant）
+***POST***
+```https://{base_url}/payment/merchant/add```
+Request Example:
+```json
+{
+    "agency_id": 123,
+    "name": "213",
+    "tel": "123",
+    "addr": "",
+    "email": ""
+}
+```
+
+### 删除店铺(不允许使用)（画面 Agency-new merchant）
+***POST***
+```https://{base_url}/payment/merchant/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+
+### 修改店铺信息（画面 Agency-new merchant）
+***POST***
+```https://{base_url}/payment/merchant/update```
+Request Example:
+```json
+{
+    "id": 123,
+    "name": "213",
+    "tel": "123",
+    "addr": ""  
+}
+```
+
 ## 商户部分
-### 获取商户信息
+### 获取商户信息(画面 8商户管理-商户列表)
 ```https://{base_url}/payment/merchant/query```
 Request Example:
 ```json
@@ -350,49 +397,15 @@ Response Example:
             "id": 123,
             "name": "213",
             "tel": "123",
-            "addr": ""
+            "email": "",
+            "addr": "",
+            "update_at":"2020-06-13T15:41:16.142489+08:00"
       }    
     ]
 }
 ```
 
-### 创建店铺
-***POST***
-```https://{base_url}/payment/merchant/add```
-Request Example:
-```json
-{
-    "agency_id": 123,
-    "name": "213",
-    "tel": "123",
-    "addr": ""
-}
-```
-
-### 删除店铺(不允许使用)
-***POST***
-```https://{base_url}/payment/merchant/delete```
-Request Example:
-```json
-{
-    "id": 123
-}
-```
-
-### 修改店铺信息
-***POST***
-```https://{base_url}/payment/merchant/update```
-Request Example:
-```json
-{
-    "id": 123,
-    "name": "213",
-    "tel": "123",
-    "addr": ""  
-}
-```
-
-### 给店铺添加关联账号(只有超级管理员，机构管理员，店铺管理员才可以使用)
+### 给店铺添加关联账号(只有超级管理员，机构管理员，店铺管理员才可以使用)(画面 新4-商户-新增员工4)
 ***POST***
 ```https://{base_url}/payment/merchant_associate/add```
 Request Example:
@@ -404,7 +417,7 @@ Request Example:
 }
 ```
 
-### 查询店铺所有的关联账号
+### 查询店铺所有的关联账号(画面 15新增商户 设备 员工 - 员工)
 ***POST***
 ```https://{base_url}/payment/merchant_associate/query```
 Request Example:
@@ -427,14 +440,25 @@ Response Example:
         "role": "admin",  // "admin", "stuff"    只有管理员才可以更改这个字段
         "name":"xxx",
         "email":"xxx",
-        "created_at":"2020-06-14T14:34:13.058434+08:00",
         "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }     
     ]
 }
 ```
 
-### 给店铺删除关联账号(只有超级管理员和店铺管理员才可以使用)
+### 给店铺更新关联账号(只有超级管理员，机构管理员，店铺管理员才可以使用)(画面 新4-商户-新增员工4)
+***POST***
+```https://{base_url}/payment/merchant_associate/update```
+Request Example:
+```json
+{
+    "id": 123,
+    "account_id": 213,
+    "role": "admin"   // "admin", "stuff"
+}
+```
+
+### 给店铺删除关联账号(只有超级管理员和店铺管理员才可以使用)(15新增商户 设备 员工 - 员工)
 ***POST***
 ```https://{base_url}/payment/merchant_associate/delete```
 Request Example:
@@ -444,7 +468,7 @@ Request Example:
 }
 ```
 
-### 给店铺添加设备
+### 给店铺添加设备(新-商户-新增设备1)
 ***POST***
 ```https://{base_url}/payment/merchant_device/add```
 Request Example:
@@ -496,15 +520,15 @@ Response Example:
     "data": [
       {
         "id":123,
-        "device_sn": "asdfsdf",
-        "created_at":"2020-06-14T14:34:13.058434+08:00",
+        "terminal_id": "asdfsdf",
+        "cdid": "1234",
         "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }     
     ]
 }
 ```
 
-### 给店铺设备添加支付参数
+### 给店铺设备添加支付参数(画面 新3-商户-新增设备3)
 ***POST***
 ```https://{base_url}/payment/merchant_device_payment/add```
 Request Example:
@@ -576,7 +600,6 @@ Response Example:
         "mid": "",
         "tid": "",
         "addition": "",
-        "created_at":"2020-06-14T14:34:13.058434+08:00",
         "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }
     ]
@@ -584,7 +607,7 @@ Response Example:
 ```
 
 ## 设备管理部分
-### 查询设备信息
+### 查询设备信息(画面 17设备列表)
 ***POST***
 ```https://{base_url}/payment/tms/device/query```
 Request Example:
@@ -604,22 +627,25 @@ Response Example:
     "devices":[
       {
         "id": "123",
-        "csn": "123",
-        "model": "N5",
+        "device_sn": "1234134",
+        "battery": "123",
+        "device_csn": "123",
+        "device_model": "N5",
         "alias": "123",
-        "reboot_model": "every_day",
+        "reboot_mode": "every_day",
         "reboot_time": "05:30",
         "reboot_day_in_month": 1,
         "reboot_day_in_week": 1,
         "location_lat": "",
-        "location_lin": "",
+        "location_lon": "",
         "push_token": "",
         "tags": [
           {
             "id": 123,
             "name": "123"
           }
-        ]
+        ],
+        "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }
     ]
 }
@@ -637,9 +663,6 @@ Request Example:
     "reboot_time": "05:30",
     "reboot_day_in_month": 1,
     "reboot_day_in_week": 1,
-    "location_lat": "",
-    "location_lin": "",
-    "push_token": "",
     "tags": [
       {
         "id": 123,
@@ -649,7 +672,7 @@ Request Example:
 }
 ```
 
-### 查询设备内部app信息
+### 查询设备内部app信息(画面 新10新增内部APP信息)
 ***POST***
 ```https://{base_url}/payment/tms/deviceapp/query```
 Request Example:
@@ -676,7 +699,8 @@ Response Example:
         "app_file": {
           "id": 123,
           "name": ""
-        }
+        },
+        "updated_at":"2020-06-14T14:34:13.058434+08:00"
       }
     ]
 }

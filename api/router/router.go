@@ -10,6 +10,7 @@ import (
 	"tpayment/modules/merchant"
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
+	"tpayment/modules/tms/app"
 	"tpayment/modules/tms/appindevice"
 	"tpayment/modules/tms/device"
 	"tpayment/modules/user"
@@ -38,6 +39,7 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlAgencyAdd, agency.AddHandle)       // 添加机构
 	e.POST(conf.UrlAgencyUpdate, agency.UpdateHandle) // 更新机构
 	e.POST(conf.UrlAgencyQuery, agency.QueryHandle)   // 查找机构
+	e.POST(conf.UrlAgencyDelete, agency.DeleteHandle) // 删除机构
 
 	e.POST(conf.UrlAgencyPaymentMethods, payment.QueryPaymentMethodsHandle) // 查询支付方式
 	e.POST(conf.UrlAgencyPaymentTypes, payment.QueryPaymentTypesHandle)     // 查询用卡方式
@@ -54,20 +56,26 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlMerchantAssociateAdd, associate.AddHandle)       // 新增商户员工
 	e.POST(conf.UrlMerchantAssociateDelete, associate.DeleteHandle) // 删除商户员工
 	e.POST(conf.UrlMerchantAssociateQuery, associate.QueryHandle)   // 查询商户员工
+	e.POST(conf.UrlMerchantAssociateUpdate, associate.UpdateHandle) // 查询商户员工
 
 	e.POST(conf.UrlMerchantDevicePaymentAdd, merchantdevice.AddHandle)       // 新增商户设备
 	e.POST(conf.UrlMerchantDevicePaymentDelete, merchantdevice.DeleteHandle) // 删除关联
 	e.POST(conf.UrlMerchantDevicePaymentUpdate, merchantdevice.UpdateHandle) // 更新
 	e.POST(conf.UrlMerchantDevicePaymentQuery, merchantdevice.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsDeviceDelete, device.DeleteHandle)        // 删除关联
-	e.POST(conf.UrlTmsDevicePaymentUpdate, device.UpdateHandle) // 更新
-	e.POST(conf.UrlTmsDevicePaymentQuery, device.QueryHandle)   // 查询
+	e.POST(conf.UrlTmsDeviceDelete, device.DeleteHandle) // 删除关联
+	e.POST(conf.UrlTmsDeviceUpdate, device.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsDeviceQuery, device.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsAppInDeviceAdd, appindevice.AddHandle)              // 添加app
-	e.POST(conf.UrlTmsAppInDeviceDelete, appindevice.DeleteHandle)        // 删除
-	e.POST(conf.UrlTmsAppInDevicePaymentUpdate, appindevice.UpdateHandle) // 更新
-	e.POST(conf.UrlTmsAppInDevicePaymentQuery, appindevice.QueryHandle)   // 查询
+	e.POST(conf.UrlTmsAppInDeviceAdd, appindevice.AddHandle)       // 添加app
+	e.POST(conf.UrlTmsAppInDeviceDelete, appindevice.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsAppInDeviceUpdate, appindevice.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsAppInDeviceQuery, appindevice.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsAppAdd, app.AddHandle)       // 添加app
+	e.POST(conf.UrlTmsAppDelete, app.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsAppUpdate, app.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsAppQuery, app.QueryHandle)   // 查询
 
 	return e, nil
 }

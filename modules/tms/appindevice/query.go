@@ -33,6 +33,23 @@ func QueryHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 整理数据
+	for i := 0; i < len(dataRet); i++ {
+		// 等待安装或者等待卸载时， 需要把配置的app信息显示替换掉已存在的显示出来
+		if (dataRet[i].Status == conf.TmsStatusPendingInstall) ||
+			(dataRet[i].Status == conf.TmsStatusPendingUninstalled) {
+			if dataRet[i].App != nil {
+				dataRet[i].PackageId = dataRet[i].App.PackageId
+			}
+
+			if dataRet[i].AppFile != nil {
+				dataRet[i].VersionName = dataRet[i].AppFile.VersionName
+				dataRet[i].VersionCode = dataRet[i].AppFile.VersionCode
+			}
+		}
+
+	}
+
 	ret := &modules.BaseQueryResponse{
 		Total: total,
 		Data:  dataRet,

@@ -7,42 +7,6 @@ import (
 	"tpayment/models"
 )
 
-type DeviceInfo struct {
-	gorm.Model
-	AgencyId string `gorm:"column:agency_id"`
-
-	DeviceSn    string `gorm:"column:device_sn"`
-	DeviceCsn   string `gorm:"column:device_csn"`
-	DeviceModel uint   `gorm:"column:device_model"`
-	Alias       string `gorm:"column:alias"`
-
-	RebootMode       int    `gorm:"column:reboot_mode"`
-	RebootTime       string `gorm:"column:reboot_time"`
-	RebootDayInWeek  int    `gorm:"column:reboot_day_in_week"`
-	RebootDayInMonth int    `gorm:"column:reboot_day_in_month"`
-
-	Power int `gorm:"column:power"`
-
-	LocationLat string `gorm:"column:location_lat"`
-	LocationLon string `gorm:"column:location_lon"`
-	PushToken   string `gorm:"column:push_token"`
-
-	CustomAttributes string `gorm:"column:custom_attributes"`
-}
-
-func (DeviceInfo) TableName() string {
-	return "mdm2_device_infos"
-}
-
-func GenerateDeviceInfo() *DeviceInfo {
-	device := new(DeviceInfo)
-
-	device.RebootMode = 1
-	device.RebootTime = "03:00"
-
-	return device
-}
-
 const (
 	AppInDeviceExternalIdTypeDevice      = "merchantdevice"
 	AppInDeviceExternalIdTypeBatchUpdate = "batch"
@@ -51,41 +15,24 @@ const (
 type AppInDevice struct {
 	gorm.Model
 
-	ExternalId     uint   `gorm:"column:external_id"`      // 外键
-	ExternalIdType string `gorm:"column:external_id_type"` // 外键
+	ExternalId     uint   `gorm:"column:external_id" json:"external_id"`           // 外键
+	ExternalIdType string `gorm:"column:external_id_type" json:"external_id_type"` // 外键
 
-	Name        string `gorm:"column:name"`
-	PackageId   string `gorm:"column:package_id"`
-	VersionName string `gorm:"column:version_name"`
-	VersionCode int    `gorm:"column:version_code"`
-	Status      string `gorm:"column:status"`
+	Name        string `gorm:"column:name" json:"name"`
+	PackageId   string `gorm:"column:package_id" json:"package_id"`
+	VersionName string `gorm:"column:version_name" json:"version_name"`
+	VersionCode int    `gorm:"column:version_code" json:"version_code"`
+	Status      string `gorm:"column:status" json:"status"`
 
-	AppID     uint `gorm:"column:app_id"`
-	AppFileId uint `gorm:"column:app_file_id"`
+	AppID     uint `gorm:"column:app_id" json:"app_id"`
+	AppFileId uint `gorm:"column:app_file_id" json:"app_file_id"`
 
-	App     *App     `gorm:"-"`
-	AppFile *AppFile `gorm:"-"`
+	App     *App     `gorm:"-" json:"app"`
+	AppFile *AppFile `gorm:"-" json:"app_file"`
 }
 
 func (AppInDevice) TableName() string {
 	return "mdm2_app_in_device"
-}
-
-// 根据Device SN 获取设备信息
-func GetDevice(deviceSn string) (*DeviceInfo, error) {
-
-	deviceInfo := new(DeviceInfo)
-
-	err := models.DB().Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
-	if err != nil {
-		if gorm.ErrRecordNotFound == err { // 没有记录
-			return nil, nil
-		}
-
-		return nil, err
-	}
-
-	return deviceInfo, nil
 }
 
 // 批量获取device
@@ -102,7 +49,7 @@ func GetDevices(deviceSns []string) ([]DeviceInfo, error) {
 	}
 
 	// 查找出所有device id
-	rows, err := models.DB().Model(&_DeviceAndTagMid{}).
+	rows, err := models.DB().Model(&DeviceAndTagMid{}).
 		Where("device_sn in ( ? )", sb.String()).
 		Rows()
 
@@ -252,6 +199,7 @@ func CreateAppInDevice(appInDevice *AppInDevice) error {
 type App struct {
 	gorm.Model
 
+	AgencyId    uint   `gorm:"column:agency_id"`
 	Name        string `gorm:"column:name"`
 	PackageId   string `gorm:"column:package_id"`
 	Description string `gorm:"column:description"`
@@ -264,13 +212,13 @@ func (App) TableName() string {
 type AppFile struct {
 	gorm.Model
 
-	VersionName       string   `gorm:"column:version_name"`
-	VersionCode       int      `gorm:"column:version_code"`
-	UpdateDescription string   `gorm:"column:update_description"`
-	FileName          string   `gorm:"column:file_name"`
-	FileUrl           []string `gorm:"column:file_url"`
-	Status            int      `gorm:"column:decode_status"`
-	DecodeFailMsg     string   `gorm:"column:decode_fail_msg"`
+	VersionName       string `gorm:"column:version_name"`
+	VersionCode       int    `gorm:"column:version_code"`
+	UpdateDescription string `gorm:"column:update_description"`
+	FileName          string `gorm:"column:file_name"`
+	FileUrl           string `gorm:"column:file_url"`
+	Status            int    `gorm:"column:decode_status"`
+	DecodeFailMsg     string `gorm:"column:decode_fail_msg"`
 
 	AppId *uint `gorm:"column:app_id"`
 }
@@ -343,14 +291,23 @@ type DeviceTag struct {
 	Name     *string `gorm:"column:name"` // 外键
 }
 
-type _DeviceAndTagMid struct {
-	gorm.Model
-
-	TagID    *uint `gorm:"column:tag_id"`
-	DeviceId *uint `gorm:"column:device_id"`
+func (DeviceTag) TableName() string {
+	return "mdm2_tags"
 }
 
-func (_DeviceAndTagMid) TableName() string {
+type DeviceTagFull struct {
+	DeviceTag
+	MidId uint `gorm:"column:mid_id"`
+}
+
+type DeviceAndTagMid struct {
+	gorm.Model
+
+	TagID    uint `gorm:"column:tag_id"`
+	DeviceId uint `gorm:"column:device_id"`
+}
+
+func (DeviceAndTagMid) TableName() string {
 	return "mdm2_device_and_tag_mid"
 }
 
@@ -360,7 +317,7 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 
 	// 全选
 	if len(tagsUuid) == 0 {
-		err := models.DB().Model(&_DeviceAndTagMid{}).
+		err := models.DB().Model(&DeviceAndTagMid{}).
 			Offset(offset).Limit(offset).
 			Select("device_sn").
 			Find(deviceUuids).Error
@@ -385,7 +342,7 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 	}
 
 	// 查找出所有device id
-	rows, err := models.DB().Model(&_DeviceAndTagMid{}).
+	rows, err := models.DB().Model(&DeviceAndTagMid{}).
 		Where("tag_uuid in ( ? )", sb.String()).
 		Select("device_sn").
 		Offset(offset).Limit(limit).

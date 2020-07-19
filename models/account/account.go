@@ -161,7 +161,7 @@ func (TokenBean) TableName() string {
 func GetTokenByUserId(userId, appId uint) (*TokenBean, error) {
 	ret := new(TokenBean)
 
-	err := models.DB().Model(&TokenBean{}).Where("user_id=? & app_id=?", userId, appId).First(ret).Error
+	err := models.DB().Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

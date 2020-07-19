@@ -1,0 +1,28 @@
+{
+  "code": "00",
+  "msg": "",
+  "data": {
+    "total": 1,
+    "data": [
+      {
+        "ID": 1505156075807081492,
+        "CreatedAt": "2020-04-02T08:42:53.065968+08:00",
+        "UpdatedAt": "2020-07-11T03:19:15.009538+08:00",
+        "DeletedAt": null,
+        "agency_id": "2221",
+        "device_sn": "PAX-A920-0821157228",
+        "device_csn": "",
+        "device_model": 17,
+        "alias": "",
+        "reboot_mode": 1,
+        "reboot_time": "03:00:",
+        "reboot_day_in_week": 0,
+        "reboot_day_in_month": 0,
+        "battery": 19,
+        "location_lat": "22.546992",
+        "location_lon": "113.94653",
+        "push_token": "18071adc0391497837f"
+      }
+    ]
+  }
+}

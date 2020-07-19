@@ -51,9 +51,9 @@ func HearBeat(ctx echo.Context) error {
 	}
 
 	// 查询出当前设备的信息
-	deviceInfo, err := tms.GetDevice(bean.DeviceSn)
+	deviceInfo, err := tms.GetDeviceBySn(bean.DeviceSn)
 	if err != nil {
-		logger.Info("GetDevice sql error->", err.Error())
+		logger.Info("GetDeviceBySn sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
@@ -380,7 +380,7 @@ func copyRequestInfo2DeviceInfo(requestDevice *RequestBean, deviceInfo *tms.Devi
 	}
 
 	if requestDevice.Power != 0 {
-		deviceInfo.Power = requestDevice.Power
+		deviceInfo.Battery = requestDevice.Power
 	}
 
 }
@@ -410,8 +410,8 @@ func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 	if configApp.AppFile.FileName != "" {
 		retApp.FileInfo.Name = configApp.AppFile.FileName
 	}
-	if len(configApp.AppFile.FileUrl) != 0 {
-		retApp.FileInfo.Url = configApp.AppFile.FileUrl[0]
+	if configApp.AppFile.FileUrl != "" {
+		retApp.FileInfo.Url = configApp.AppFile.FileUrl
 	}
 
 	return retApp
