@@ -18,8 +18,8 @@ func TestQueryPaymentTypes(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset:  0,
-		Limit:   100,
+		Offset: 0,
+		Limit:  100,
 		//Filters: map[string]string{
 		//	"pwd": "123456",
 		//},
@@ -27,7 +27,7 @@ func TestQueryPaymentTypes(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlAgencyPaymentTypes, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAgencyPaymentTypes, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -40,8 +40,8 @@ func TestQueryPaymentMethods(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset:  0,
-		Limit:   100,
+		Offset: 0,
+		Limit:  100,
 		//Filters: map[string]string{
 		//	"pwd": "123456",
 		//},
@@ -49,7 +49,7 @@ func TestQueryPaymentMethods(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlAgencyPaymentMethods, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAgencyPaymentMethods, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -62,8 +62,8 @@ func TestQueryEntryTypes(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset:  0,
-		Limit:   100,
+		Offset: 0,
+		Limit:  100,
 		//Filters: map[string]string{
 		//	"pwd": "123456",
 		//},
@@ -71,7 +71,7 @@ func TestQueryEntryTypes(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlAgencyEntryTypes, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAgencyEntryTypes, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }

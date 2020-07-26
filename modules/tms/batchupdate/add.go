@@ -1,20 +1,20 @@
-package merchantdevice
+package batchupdate
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/merchant"
+	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 )
 
-func DeleteHandle(ctx echo.Context) error {
+// TODO 未完成
+func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(modules.BaseIDRequest)
+	req := new(tms.BatchUpdate)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -23,15 +23,10 @@ func DeleteHandle(ctx echo.Context) error {
 		return err
 	}
 
-	bean := &merchant.DeviceInMerchant{
-		Model: gorm.Model{
-			ID: req.ID,
-		},
-	}
-	err = models.DeleteBaseRecord(bean)
+	err = models.CreateBaseRecord(req)
 
 	if err != nil {
-		logger.Info("DeleteBaseRecord sql error->", err.Error())
+		logger.Error("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}

@@ -36,7 +36,7 @@ func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint,
 		filterTmp[k] = v
 	}
 
-	if userBean.Role != string(conf.RoleAdmin) {  // 管理员，不需要过滤机构
+	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
 		if len(agencys) == 0 {
 			return 0, nil, errors.New("user not agency admin")
 		}
@@ -60,4 +60,3 @@ func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint,
 
 	return total, ret, nil
 }
-

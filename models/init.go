@@ -3,7 +3,6 @@ package models
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"os"
 	"time"
 	"tpayment/conf"
 )
@@ -21,7 +20,7 @@ func InitDB() error {
 
 	db = new(MyDB)
 
-	db.DB, err = gorm.Open(conf.DbType, os.Getenv(conf.DbConnectInfoTag))
+	db.DB, err = gorm.Open(conf.DbType, conf.GetConfigData().DBAccount)
 	if err != nil {
 		panic("open Db fail->" + err.Error())
 	}

@@ -17,7 +17,7 @@ func Body2Json(body io.Reader, destBean interface{}) error {
 }
 
 func Struct2Map(src interface{}) []map[string]interface{} {
-	srcByte,_ := json.Marshal(src)
+	srcByte, _ := json.Marshal(src)
 
 	var ret []map[string]interface{}
 
@@ -28,7 +28,7 @@ func Struct2Map(src interface{}) []map[string]interface{} {
 
 // 只保留剩余的key数据，删除多余的
 func FilterMapData(src map[string]interface{}, keys map[string]bool) {
-	for k,_ := range src {
+	for k, _ := range src {
 		if !keys[k] {
 			delete(src, k)
 		}

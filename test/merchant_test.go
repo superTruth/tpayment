@@ -23,14 +23,14 @@ func TestAddMerchant(t *testing.T) {
 
 	reqBean := &merchant.Merchant{
 		AgencyId: 4,
-		Name: "merchant 1",
-		Tel:  "123456789",
-		Addr: "wuxicun",
+		Name:     "merchant 1",
+		Tel:      "123456789",
+		Addr:     "wuxicun",
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantAdd, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantAdd, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -46,7 +46,7 @@ func TestUpdateMerchant(t *testing.T) {
 
 	reqBean := &merchant.Merchant{
 		Model: gorm.Model{
-			ID:        3,
+			ID: 3,
 		},
 		Name: "merc",
 		Tel:  "",
@@ -55,7 +55,7 @@ func TestUpdateMerchant(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantUpdate, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantUpdate, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -69,8 +69,8 @@ func TestQueryMerchant(t *testing.T) {
 
 	reqBean := &modules.BaseQueryRequest{
 		AgencyId: 4,
-		Offset:  0,
-		Limit:   100,
+		Offset:   0,
+		Limit:    100,
 		//Filters: map[string]string{
 		//	"pwd": "123456",
 		//},
@@ -78,7 +78,7 @@ func TestQueryMerchant(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte,_ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
 }

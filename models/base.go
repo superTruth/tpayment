@@ -21,7 +21,7 @@ func QueryBaseRecord(orgModel interface{}, offset, limit uint, filters map[strin
 
 	filterTmp := make(map[string]interface{})
 
-	for k,v := range filters {
+	for k, v := range filters {
 		filterTmp[k] = v
 	}
 

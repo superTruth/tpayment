@@ -68,6 +68,28 @@ const (
 	UrlTmsAppDelete = "/payment/tms/app/delete"
 	UrlTmsAppUpdate = "/payment/tms/app/update"
 	UrlTmsAppQuery  = "/payment/tms/app/query"
+
+	UrlTmsAppFileAdd    = "/payment/tms/app_file/add"
+	UrlTmsAppFileDelete = "/payment/tms/app_file/delete"
+	UrlTmsAppFileUpdate = "/payment/tms/app_file/update"
+	UrlTmsAppFileQuery  = "/payment/tms/app_file/query"
+
+	UrlTmsTagAdd    = "/payment/tms/tag/add"
+	UrlTmsTagDelete = "/payment/tms/tag/delete"
+	UrlTmsTagUpdate = "/payment/tms/tag/update"
+	UrlTmsTagQuery  = "/payment/tms/tag/query"
+
+	UrlTmsBatchUpdateAdd    = "/payment/tms/batchupdate/add"
+	UrlTmsBatchUpdateDelete = "/payment/tms/batchupdate/delete"
+	UrlTmsBatchUpdateUpdate = "/payment/tms/batchupdate/update"
+	UrlTmsBatchUpdateQuery  = "/payment/tms/batchupdate/query"
+
+	UrlTmsAppInBatchUpdateAdd    = "/payment/tms/appinbatchupdate/add"
+	UrlTmsAppInBatchUpdateDelete = "/payment/tms/appinbatchupdate/delete"
+	UrlTmsAppInBatchUpdateUpdate = "/payment/tms/appinbatchupdate/update"
+	UrlTmsAppInBatchUpdateQuery  = "/payment/tms/appinbatchupdate/query"
+
+	UrlFileAdd = "/payment/file/add"
 )
 
 const (
@@ -85,4 +107,11 @@ const (
 	TmsStatusInstalled          = "installed"
 	TmsStatusPendingUninstalled = "pending uninstall"
 	TmsStatusWarningInstalled   = "warning installed"
+)
+
+const (
+	AppFileStatusPending  = "pending"
+	AppFileStatusDecoding = "decoding"
+	AppFileStatusDone     = "done"
+	AppFileStatusFail     = "fail"
 )

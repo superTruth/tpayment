@@ -15,7 +15,7 @@ func Auth(ctx echo.Context, token string) (*account.UserBean, *account.AppIdBean
 		return nil, nil, err
 	}
 
-	if tokenBean == nil {  // 没有对应的token记录
+	if tokenBean == nil { // 没有对应的token记录
 		return nil, nil, nil
 	}
 

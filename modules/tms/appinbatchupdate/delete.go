@@ -1,4 +1,4 @@
-package appfile
+package appinbatchupdate
 
 import (
 	"github.com/labstack/echo"
@@ -10,10 +10,10 @@ import (
 	"tpayment/pkg/utils"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func DeleteHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(tms.AppFile)
+	req := new(modules.BaseIDRequest)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -23,9 +23,9 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetAppFileByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetAppInDeviceByID(models.DB(), ctx, req.ID)
 	if err != nil {
-		logger.Info("GetDeviceByID sql error->", err.Error())
+		logger.Info("GetAppInDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
@@ -35,11 +35,10 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// 生成新账号
-	err = models.UpdateBaseRecord(req)
+	err = models.DeleteBaseRecord(bean)
 
 	if err != nil {
-		logger.Info("UpdateBaseRecord sql error->", err.Error())
+		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}

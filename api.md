@@ -747,6 +747,16 @@ Request Example:
 }
 ```
 
+### 删除设备内部app
+***POST***
+```https://{base_url}/payment/tms/deviceapp/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+
 ### 新增app
 ***POST***
 ```https://{base_url}/payment/tms/app/add```
@@ -1010,6 +1020,7 @@ Request Example:
 ```json
 {
     "md5": "",
+    "file_name": "",
     "file_size": 123,
     "tag": "apk files"
 }

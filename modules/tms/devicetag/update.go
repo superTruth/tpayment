@@ -13,7 +13,7 @@ import (
 func UpdateHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(tms.DeviceInfo)
+	req := new(tms.DeviceTag)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {

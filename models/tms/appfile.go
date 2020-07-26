@@ -6,6 +6,24 @@ import (
 	"tpayment/models"
 )
 
+type AppFile struct {
+	gorm.Model
+
+	VersionName       string `gorm:"column:version_name"`
+	VersionCode       int    `gorm:"column:version_code"`
+	UpdateDescription string `gorm:"column:update_description"`
+	FileName          string `gorm:"column:file_name"`
+	FileUrl           string `gorm:"column:file_url"`
+	Status            string `gorm:"column:decode_status"`
+	DecodeFailMsg     string `gorm:"column:decode_fail_msg"`
+
+	AppId *uint `gorm:"column:app_id"`
+}
+
+func (AppFile) TableName() string {
+	return "mdm2_app_files"
+}
+
 // 根据device ID获取设备信息
 func GetAppFileByID(db *models.MyDB, ctx echo.Context, id uint) (*AppFile, error) {
 
@@ -49,4 +67,3 @@ func QueryAppFileRecord(db *models.MyDB, ctx echo.Context, appId, offset, limit 
 
 	return total, ret, nil
 }
-

@@ -17,6 +17,13 @@ type ConfigData struct {
 	EmailUserAccount string `json:"email_user_account"`
 	EmailUserPwd     string `json:"email_user_pwd"`
 	EmailUserName    string `json:"email_user_name"`
+
+	DBAccount string `json:"db_account"`
+
+	S3Region string `json:"s3_region"`
+	S3Key    string `json:"s3_key"`
+	S3Secret string `json:"s3_secret"`
+	S3Bucket string `json:"s3_bucket"`
 }
 
 var configData *ConfigData

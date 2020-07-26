@@ -8,9 +8,9 @@ import (
 
 func main() {
 
-	models.InitDB()
-
 	conf.InitConfigData()
+
+	models.InitDB()
 
 	h, err := router.Init()
 	if err != nil {

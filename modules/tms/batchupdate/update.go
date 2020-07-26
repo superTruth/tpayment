@@ -1,4 +1,4 @@
-package appfile
+package batchupdate
 
 import (
 	"github.com/labstack/echo"
@@ -13,7 +13,7 @@ import (
 func UpdateHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(tms.AppFile)
+	req := new(tms.BatchUpdate)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -23,7 +23,7 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetAppFileByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetBatchUpdateRecord(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Info("GetDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -7,12 +7,17 @@ import (
 	"tpayment/modules/agency"
 	associate2 "tpayment/modules/agency/associate"
 	"tpayment/modules/agency/payment"
+	"tpayment/modules/fileupload"
 	"tpayment/modules/merchant"
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
 	"tpayment/modules/tms/app"
+	"tpayment/modules/tms/appfile"
+	"tpayment/modules/tms/appinbatchupdate"
 	"tpayment/modules/tms/appindevice"
+	"tpayment/modules/tms/batchupdate"
 	"tpayment/modules/tms/device"
+	"tpayment/modules/tms/devicetag"
 	"tpayment/modules/user"
 )
 
@@ -76,6 +81,28 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlTmsAppDelete, app.DeleteHandle) // 删除
 	e.POST(conf.UrlTmsAppUpdate, app.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppQuery, app.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsAppFileAdd, appfile.AddHandle)       // 添加app file
+	e.POST(conf.UrlTmsAppFileDelete, appfile.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsAppFileUpdate, appfile.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsAppFileQuery, appfile.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsTagAdd, devicetag.AddHandle)       // 添加device tag
+	e.POST(conf.UrlTmsTagDelete, devicetag.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsTagUpdate, devicetag.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsTagQuery, devicetag.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)       // 添加batch update
+	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsBatchUpdateUpdate, batchupdate.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsBatchUpdateQuery, batchupdate.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsAppInBatchUpdateAdd, appinbatchupdate.AddHandle)       // 添加app in batch update
+	e.POST(conf.UrlTmsAppInBatchUpdateDelete, appinbatchupdate.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsAppInBatchUpdateUpdate, appinbatchupdate.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsAppInBatchUpdateQuery, appinbatchupdate.QueryHandle)   // 查询
+
+	e.POST(conf.UrlFileAdd, fileupload.RequestUploadFileUrl) // 创建文件
 
 	return e, nil
 }

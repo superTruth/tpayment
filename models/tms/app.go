@@ -10,6 +10,19 @@ import (
 	"tpayment/models/agency"
 )
 
+type App struct {
+	gorm.Model
+
+	AgencyId    uint   `gorm:"column:agency_id"`
+	Name        string `gorm:"column:name"`
+	PackageId   string `gorm:"column:package_id"`
+	Description string `gorm:"column:description"`
+}
+
+func (App) TableName() string {
+	return "mdm2_apps"
+}
+
 // 根据device ID获取设备信息
 func GetAppByID(db *models.MyDB, ctx echo.Context, id uint) (*App, error) {
 
@@ -36,7 +49,7 @@ func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filte
 		filterTmp[k] = v
 	}
 
-	if userBean.Role != string(conf.RoleAdmin) {  // 管理员，不需要过滤机构
+	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
 		if len(agencys) == 0 {
 			return 0, nil, errors.New("user not agency admin")
 		}
@@ -60,4 +73,3 @@ func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filte
 
 	return total, ret, nil
 }
-

@@ -2,6 +2,7 @@ package tms
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 	"tpayment/models"
 )
 
@@ -24,7 +25,7 @@ func (BatchUpdate) TableName() string {
 	return "mdm2_batch_update"
 }
 
-func GetBatchUpdateRecord(id uint) (*BatchUpdate, error) {
+func GetBatchUpdateRecord(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpdate, error) {
 	batchUpdate := new(BatchUpdate)
 
 	err := models.DB().Where(&BatchUpdate{

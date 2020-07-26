@@ -79,7 +79,7 @@ func QueryMerchantRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, li
 
 	// conditions
 	tmpDb := db.Table("merchant").Where(filterTmp)
-	if userBean.Role != string(conf.RoleAdmin) {  // 管理员账户可以忽略这个选项
+	if userBean.Role != string(conf.RoleAdmin) { // 管理员账户可以忽略这个选项
 		tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = merchant.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
 

@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/goroutine"
@@ -61,11 +62,11 @@ func HearBeat(ctx echo.Context) error {
 		logger.Info("设备未创建的情况，需要创建")
 		deviceInfo = tms.GenerateDeviceInfo()
 		copyRequestInfo2DeviceInfo(bean, deviceInfo) // 新上送的数据覆盖旧数据
-		err = tms.CreateDevice(deviceInfo)
+		err = models.DB().Create(deviceInfo).Error
 	} else {
 		logger.Info("设备已经创建的情况")
 		copyRequestInfo2DeviceInfo(bean, deviceInfo) // 新上送的数据覆盖旧数据
-		err = tms.UpdateDevice(deviceInfo)
+		err = models.DB().Update(deviceInfo).Error
 	}
 	if err != nil {
 		logger.Error("设备更新或者创建失败->", err.Error())
@@ -120,7 +121,7 @@ func HearBeat(ctx echo.Context) error {
 		appInDevice.VersionCode = requestApps[i].VersionCode
 		appInDevice.ExternalIdType = tms.AppInDeviceExternalIdTypeDevice
 
-		tms.CreateAppInDevice(appInDevice)
+		models.DB().Create(appInDevice)
 	}
 
 	//BaseSuccess(context)
@@ -205,7 +206,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				dbApp.VersionCode = requestApps[i].VersionCode
 				dbApp.PackageId = requestApps[i].PackageId
 				dbApp.Name = requestApps[i].Name
-				tms.UpdateAppInDevice(dbApp)
+				models.DB().Updates(&dbApp)
 			}
 
 			if dbApp.Status == "" {
@@ -229,12 +230,12 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 
 				if requestApps[i].VersionCode == dbApp.AppFile.VersionCode { // 上报app version code等于当前，变成Installed状态，并且不下发
 					dbApp.Status = conf.TmsStatusInstalled
-					tms.UpdateAppInDevice(dbApp)
+					models.DB().Updates(dbApp)
 					continue
 				}
 				// 上报app version code大于当前配置，更新数据为上报的数据，并且不下发，状态改为Warning Installed
 				dbApp.Status = conf.TmsStatusWarningInstalled
-				tms.UpdateAppInDevice(dbApp)
+				models.DB().Updates(dbApp)
 				continue
 				break
 
@@ -247,7 +248,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				if requestApps[i].VersionCode < dbApp.AppFile.VersionCode { // 上报app version code小于当前，下发当前配置数据，状态改为Pending Install
 					newApp := generateAppFromConfig(dbApp)
 					dbApp.Status = conf.TmsStatusPendingInstall
-					tms.UpdateAppInDevice(dbApp)
+					models.DB().Updates(dbApp)
 
 					newApp.Status = conf.TmsStatusPendingInstall
 					needReturnApp = append(needReturnApp, *newApp)
@@ -260,7 +261,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 
 				// 上报app version code大于当前配置，更新数据为上报的数据，并且不下发，状态改为Warning Installed
 				dbApp.Status = conf.TmsStatusWarningInstalled
-				tms.UpdateAppInDevice(dbApp)
+				models.DB().Updates(dbApp)
 				break
 
 			case conf.TmsStatusPendingUninstalled:
@@ -281,7 +282,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				if requestApps[i].VersionCode < dbApp.AppFile.VersionCode { // 上报app version code小于当前，下发当前配置数据，状态改为Pending Install
 					newApp := generateAppFromConfig(dbApp)
 					dbApp.Status = conf.TmsStatusPendingInstall
-					tms.UpdateAppInDevice(dbApp)
+					models.DB().Updates(dbApp)
 
 					newApp.Status = conf.TmsStatusPendingInstall
 					needReturnApp = append(needReturnApp, *newApp)
@@ -290,7 +291,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 
 				if requestApps[i].VersionCode == dbApp.AppFile.VersionCode { // 等于当前，更新状态为Installed，不下发
 					dbApp.Status = conf.TmsStatusInstalled
-					tms.UpdateAppInDevice(dbApp)
+					models.DB().Updates(dbApp)
 					continue
 				}
 
@@ -323,16 +324,16 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 			newApp.Status = conf.TmsStatusPendingInstall
 			needReturnApp = append(needReturnApp, *newApp)
 			dbApp.Status = conf.TmsStatusPendingInstall
-			tms.UpdateAppInDevice(dbApp)
+			models.DB().Updates(dbApp)
 			continue
 			break
 		case conf.TmsStatusPendingUninstalled: // 不下发配置，删除掉这个记录
-			tms.DeleteAppInDevice(dbApp)
+			models.DB().Delete(&dbApp)
 			break
 
 		case conf.TmsStatusWarningInstalled:
 			if dbApp.AppFile == nil || dbApp.AppFile.VersionCode == 0 { // 从来没有配置过的情况，删除掉
-				tms.DeleteAppInDevice(dbApp)
+				models.DB().Delete(&dbApp)
 				continue
 			}
 
@@ -342,7 +343,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 			newApp.Status = conf.TmsStatusPendingInstall
 			needReturnApp = append(needReturnApp, *newApp)
 			dbApp.Status = conf.TmsStatusPendingInstall
-			tms.UpdateAppInDevice(dbApp)
+			models.DB().Updates(&dbApp)
 			continue
 
 			break

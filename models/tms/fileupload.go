@@ -30,7 +30,6 @@ func CreateFileUpload(bean *FileUpload) error {
 	return nil
 }
 
-
 // 根据device ID获取设备信息
 func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*FileUpload, error) {
 
@@ -72,4 +71,3 @@ func QueryUploadFileRecord(db *models.MyDB, ctx echo.Context, offset, limit uint
 
 	return total, ret, nil
 }
-

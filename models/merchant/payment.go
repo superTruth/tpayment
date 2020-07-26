@@ -18,5 +18,3 @@ type PaymentSettingInDevice struct {
 func (PaymentSettingInDevice) TableName() string {
 	return "payment_setting_in_device"
 }
-
-

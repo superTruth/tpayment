@@ -1,4 +1,4 @@
-package appindevice
+package appinbatchupdate
 
 import (
 	"github.com/labstack/echo"
@@ -26,7 +26,7 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.QueryAppInDeviceRecord(models.DB(), ctx, req.DeviceId, req.Offset, req.Limit, tms.AppInDeviceExternalIdTypeDevice, req.Filters)
+	total, dataRet, err := tms.QueryAppInDeviceRecord(models.DB(), ctx, req.DeviceId, req.Offset, req.Limit, tms.AppInDeviceExternalIdTypeBatchUpdate, req.Filters)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

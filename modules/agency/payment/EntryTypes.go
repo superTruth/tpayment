@@ -28,4 +28,3 @@ func QueryEntryTypesHandle(ctx echo.Context) error {
 
 	return nil
 }
-

@@ -1,4 +1,4 @@
-package appindevice
+package batchupdate
 
 import (
 	"github.com/labstack/echo"
@@ -26,28 +26,11 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.QueryAppInDeviceRecord(models.DB(), ctx, req.DeviceId, req.Offset, req.Limit, tms.AppInDeviceExternalIdTypeDevice, req.Filters)
+	total, dataRet, err := tms.QueryAppRecord(models.DB(), ctx, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
-	}
-
-	// 整理数据
-	for i := 0; i < len(dataRet); i++ {
-		// 等待安装或者等待卸载时， 需要把配置的app信息显示替换掉已存在的显示出来
-		if (dataRet[i].Status == conf.TmsStatusPendingInstall) ||
-			(dataRet[i].Status == conf.TmsStatusPendingUninstalled) {
-			if dataRet[i].App != nil {
-				dataRet[i].PackageId = dataRet[i].App.PackageId
-			}
-
-			if dataRet[i].AppFile != nil {
-				dataRet[i].VersionName = dataRet[i].AppFile.VersionName
-				dataRet[i].VersionCode = dataRet[i].AppFile.VersionCode
-			}
-		}
-
 	}
 
 	ret := &modules.BaseQueryResponse{
