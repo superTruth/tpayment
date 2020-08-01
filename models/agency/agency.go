@@ -1,49 +1,47 @@
 package agency
 
 import (
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/conf"
-	"tpayment/models"
-	"tpayment/models/account"
 )
 
 type Agency struct {
-	gorm.Model
+	models.BaseModel
 
-	Name string `json:"name" gorm:"column:name"`
-	Tel  string `json:"tel"  gorm:"column:tel"`
-	Addr string `json:"addr" gorm:"column:addr"`
+	Name string `gorm:"column:name" json:"name"`
+	Tel  string `gorm:"column:tel" json:"tel"`
+	Addr string `gorm:"column:addr" json:"addr"`
 }
 
 func (Agency) TableName() string {
 	return "agency"
 }
 
-func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []Agency, error) {
-	filterTmp := make(map[string]interface{})
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*Agency, error) {
+	var ret []*Agency
 
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
+	equalData := make(map[string]string)
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	// conditions
-	tmpDb := db.Table("agency").Where(filterTmp)
-	if userBean.Role != string(conf.RoleAdmin) {
-		tmpDb = tmpDb.Joins("JOIN agency_user_associate ass ON ass.agency_id = agency.id AND ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
-	}
+	tmpDB := db.Model(&Agency{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
-	err := tmpDb.Count(&total).Error
+	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
-	var ret []Agency
-	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	// 查询记录
+	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return 0, ret, nil
+		}
+		return 0, nil, err
 	}
 
 	return total, ret, nil

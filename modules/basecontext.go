@@ -2,10 +2,11 @@ package modules
 
 import (
 	"encoding/json"
-	"github.com/labstack/echo"
 	"net/http"
 	"tpayment/conf"
 	"tpayment/pkg/tlog"
+
+	"github.com/labstack/echo"
 )
 
 func BaseError(context echo.Context, err conf.ResultCode) {
@@ -19,7 +20,8 @@ func BaseError(context echo.Context, err conf.ResultCode) {
 	resp, _ := json.Marshal(baseResp)
 	logger.Info("response->", string(resp))
 
-	context.JSON(http.StatusBadRequest, baseResp)
+	// nolint
+	_ = context.JSON(http.StatusBadRequest, baseResp)
 }
 
 func BaseSuccess(context echo.Context, data interface{}) {
@@ -32,7 +34,8 @@ func BaseSuccess(context echo.Context, data interface{}) {
 	resp, _ := json.Marshal(baseResponse)
 	logger.Info("response->", string(resp))
 
-	context.JSON(http.StatusOK, baseResponse)
+	// nolint
+	_ = context.JSON(http.StatusOK, baseResponse)
 }
 
 type BaseResponse struct {

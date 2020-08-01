@@ -2,14 +2,15 @@ package apkparser
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/shogo82148/androidbinary/apk"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/shogo82148/androidbinary/apk"
 )
 
 type ApkParser struct {
@@ -51,7 +52,11 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 		fmt.Println("[*] Create temp file failed:", err)
 		return nil, err
 	}
-	io.Copy(f, res.Body)
+	_, err = io.Copy(f, res.Body)
+	if err != nil {
+		return nil, err
+	}
+	// nolint
 	defer f.Close()
 	return a.GetApkInfo(filePath)
 
@@ -59,6 +64,7 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 
 func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {
 	pkg, err := apk.OpenFile(filePath)
+	// nolint
 	defer pkg.Close()
 	if err != nil {
 		fmt.Println("打开APK文件错误:", err)
@@ -72,19 +78,21 @@ func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {
 	return &apkInfo, nil
 }
 
-func (a *ApkParser) isFileExist(filePath string) bool {
-	info, err := os.Stat(filePath)
-	if os.IsNotExist(err) {
-		fmt.Println(info)
-		return false
-	}
-	return true
-}
+//func (a *ApkParser) isFileExist(filePath string) bool {
+//	info, err := os.Stat(filePath)
+//	if os.IsNotExist(err) {
+//		fmt.Println(info)
+//		return false
+//	}
+//	return true
+//}
 
 // 创建本地缓存文件夹
 func checkAndCreateLocalPath() (string, error) {
 	if b, _ := isPathExists(localPath); !b {
-		os.MkdirAll(localPath, os.ModePerm)
+		if err := os.MkdirAll(localPath, os.ModePerm); err != nil {
+			return "", err
+		}
 	}
 
 	//

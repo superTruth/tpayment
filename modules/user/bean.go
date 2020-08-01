@@ -8,8 +8,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
-	Role  string `json:"role"`
+	Token string `json:"token,omitempty"`
+	Role  string `json:"role,omitempty"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }

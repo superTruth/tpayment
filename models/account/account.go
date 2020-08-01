@@ -1,20 +1,22 @@
 package account
 
 import (
-	"fmt"
-	"github.com/jinzhu/gorm"
+	"strconv"
 	"tpayment/models"
+
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 )
 
 type UserBean struct {
-	gorm.Model
-	AgencyId uint `gorm:"column:agency_id"`
+	models.BaseModel
+	AgencyId uint `gorm:"column:agency_id" json:"agency_id,omitempty"`
 
-	Email  string `gorm:"column:email"`
-	Pwd    string `gorm:"column:pwd"`
-	Name   string `gorm:"column:name"`
-	Role   string `gorm:"column:role"`
-	Active bool   `gorm:"column:active"`
+	Email  string `gorm:"column:email" json:"email,omitempty"`
+	Pwd    string `gorm:"column:pwd" json:"pwd,omitempty"`
+	Name   string `gorm:"column:name" json:"name,omitempty"`
+	Role   string `gorm:"column:role" json:"role,omitempty"`
+	Active bool   `gorm:"column:active" json:"active,omitempty"`
 }
 
 func (UserBean) TableName() string {
@@ -22,10 +24,10 @@ func (UserBean) TableName() string {
 }
 
 // 通过email查询
-func GetUserByEmail(email string) (*UserBean, error) {
+func GetUserByEmail(db *models.MyDB, ctx echo.Context, email string) (*UserBean, error) {
 	ret := new(UserBean)
 
-	err := models.DB().Model(&UserBean{}).Where("email=?", email).First(ret).Error
+	err := db.Model(&UserBean{}).Where("email=?", email).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -37,10 +39,10 @@ func GetUserByEmail(email string) (*UserBean, error) {
 	return ret, nil
 }
 
-func GetUserById(id uint) (*UserBean, error) {
+func GetUserById(db *models.MyDB, ctx echo.Context, id uint) (*UserBean, error) {
 	ret := new(UserBean)
 
-	err := models.DB().Model(&UserBean{}).Where("id=?", id).First(ret).Error
+	err := db.Model(&UserBean{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -52,28 +54,26 @@ func GetUserById(id uint) (*UserBean, error) {
 	return ret, nil
 }
 
-func QueryUserRecord(offset, limit uint, filters map[string]string) (uint, []UserBean, error) {
+func QueryUserRecord(db *models.MyDB, ctx echo.Context, offset, limit, agencyId uint, filters map[string]string) (uint, []*UserBean, error) {
+	var ret []*UserBean
 
-	filterTmp := make(map[string]interface{})
-
-	for k, v := range filters {
-		filterTmp[k] = v
+	equalData := make(map[string]string)
+	if agencyId != 0 {
+		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	fmt.Println("filterTmp->", filterTmp)
+	tmpDB := db.Model(&UserBean{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
-	err := models.DB().Model(&UserBean{}).Where(filterTmp).Count(&total).Error
+	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
-	fmt.Println("total->", total)
 
 	// 查询记录
-	var ret []UserBean
-
-	err = models.DB().Model(&UserBean{}).Where(filterTmp).Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -82,33 +82,18 @@ func QueryUserRecord(offset, limit uint, filters map[string]string) (uint, []Use
 		return 0, nil, err
 	}
 
-	for _, k := range ret {
-		k.Pwd = "******"
+	for i := 0; i < len(ret); i++ {
+		ret[i].Pwd = ""
 	}
 
 	return total, ret, nil
 }
 
-func GetUsersById(ids []uint) ([]UserBean, error) {
-	var ret []UserBean
-
-	err := models.DB().Model(&UserBean{}).Where(ids).First(&ret).Error
-
-	if err != nil {
-		if gorm.ErrRecordNotFound == err { // 没有记录
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return ret, nil
-}
-
 type AppIdBean struct {
-	gorm.Model
+	models.BaseModel
 
-	AppId     string `gorm:"column:app_id"`
-	AppSecret string `gorm:"column:app_secret"`
+	AppId     string `gorm:"column:app_id" json:"app_id,omitempty"`
+	AppSecret string `gorm:"column:app_secret" json:"app_secret,omitempty"`
 }
 
 func (AppIdBean) TableName() string {
@@ -116,10 +101,10 @@ func (AppIdBean) TableName() string {
 }
 
 // 查询AppID
-func GetAppIdByAppID(appId string) (*AppIdBean, error) {
+func GetAppIdByAppID(db *models.MyDB, ctx echo.Context, appId string) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
-	err := models.DB().Model(&AppIdBean{}).Where("app_id=?", appId).First(ret).Error
+	err := db.Model(&AppIdBean{}).Where("app_id=?", appId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -131,10 +116,10 @@ func GetAppIdByAppID(appId string) (*AppIdBean, error) {
 	return ret, nil
 }
 
-func GetAppIdByID(id uint) (*AppIdBean, error) {
+func GetAppIdByID(db *models.MyDB, ctx echo.Context, id uint) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
-	err := models.DB().Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
+	err := db.Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -147,21 +132,21 @@ func GetAppIdByID(id uint) (*AppIdBean, error) {
 }
 
 type TokenBean struct {
-	gorm.Model
+	models.BaseModel
 
-	UserId uint   `gorm:"column:user_id"`
-	AppId  uint   `gorm:"column:app_id"`
-	Token  string `gorm:"column:token"`
+	UserId uint   `gorm:"column:user_id" json:"user_id,omitempty"`
+	AppId  uint   `gorm:"column:app_id" json:"app_id,omitempty"`
+	Token  string `gorm:"column:token" json:"token,omitempty"`
 }
 
 func (TokenBean) TableName() string {
 	return "user_token"
 }
 
-func GetTokenByUserId(userId, appId uint) (*TokenBean, error) {
+func GetTokenByUserId(db *models.MyDB, ctx echo.Context, userId, appId uint) (*TokenBean, error) {
 	ret := new(TokenBean)
 
-	err := models.DB().Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
+	err := db.Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -173,10 +158,10 @@ func GetTokenByUserId(userId, appId uint) (*TokenBean, error) {
 	return ret, nil
 }
 
-func GetTokenBeanByToken(token string) (*TokenBean, error) {
+func GetTokenBeanByToken(db *models.MyDB, ctx echo.Context, token string) (*TokenBean, error) {
 	ret := new(TokenBean)
 
-	err := models.DB().Model(&TokenBean{}).Where("token=?", token).First(ret).Error
+	err := db.Model(&TokenBean{}).Where("token=?", token).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -189,9 +174,8 @@ func GetTokenBeanByToken(token string) (*TokenBean, error) {
 }
 
 type RoleBean struct {
-	gorm.Model
-
-	Name string `gorm:"column:name"`
+	models.BaseModel
+	Name string `gorm:"column:name" json:"name,omitempty"`
 }
 
 func (RoleBean) TableName() string {

@@ -2,7 +2,6 @@ package associate
 
 import (
 	"errors"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -10,6 +9,8 @@ import (
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func AddHandle(ctx echo.Context) error {
@@ -24,6 +25,37 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
+	if req.AgencyId == 0 || req.UserId == 0 {
+		logger.Warn("ParameterError")
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+
+	// 查询是否存在这2个ID
+	userBean, err := account.GetUserById(models.DB(), ctx, req.UserId)
+	if err != nil {
+		logger.Info("GetUserById sql error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+	if userBean == nil {
+		logger.Warn("User Not Exist")
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+
+	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, req.AgencyId)
+	if err != nil {
+		logger.Info("GetAssociateById sql error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+	if agencyBean == nil {
+		logger.Warn("Agency Not Exist")
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+
 	// 一个用户只可以关联一个agency
 	associateBean, err := agency.GetAssociateByUserId(models.DB(), ctx, req.UserId)
 	if err != nil {
@@ -32,24 +64,13 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 	if associateBean != nil {
-		logger.Warn(conf.UserCanOnlyInOneAgency)
+		logger.Warn(conf.UserCanOnlyInOneAgency.String())
 		modules.BaseError(ctx, conf.UserCanOnlyInOneAgency)
 		return errors.New(conf.UserCanOnlyInOneAgency.String())
 	}
 
 	// 如果是系统管理员，则无法关联
-	userBean, err := account.GetUserById(req.UserId)
-	if err != nil {
-		logger.Info("GetUserById sql error->", err.Error())
-		modules.BaseError(ctx, conf.DBError)
-		return err
-	}
-	if userBean == nil { // 账号无法找到
-		logger.Info("cant find the user")
-		modules.BaseError(ctx, conf.RecordNotFund)
-		return errors.New(conf.RecordNotFund.String())
-	}
-	if userBean.Role == string(conf.RoleAdmin) { // 系统管理员已经拥有所有权限，所以不运行添加关联
+	if userBean.Role != string(conf.RoleUser) { // 只有普通用户可以关联
 		logger.Info(conf.AdminCantAssociate.String())
 		modules.BaseError(ctx, conf.AdminCantAssociate)
 		return errors.New(conf.AdminCantAssociate.String())

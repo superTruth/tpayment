@@ -2,12 +2,13 @@ package tms
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/models/agency"
+
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 )
 
 type DeviceInfo struct {
@@ -83,7 +84,7 @@ func GetDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInfo, err
 func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []DeviceInfo, error) {
 	filterTmp := make(map[string]interface{})
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]agency.Agency)
+	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
 
 	for k, v := range filters {
 		filterTmp[k] = v
@@ -118,7 +119,7 @@ func QueryTags(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([]DeviceT
 	var ret []DeviceTagFull
 	filterTmp := make(map[string]interface{})
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]agency.Agency)
+	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
 	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
 		if len(agencys) == 0 {
 			return ret, errors.New("user not agency admin")

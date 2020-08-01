@@ -1,15 +1,17 @@
 package user
 
 import (
-	"github.com/labstack/echo"
+	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/pkg/tlog"
+
+	"github.com/labstack/echo"
 )
 
 func Auth(ctx echo.Context, token string) (*account.UserBean, *account.AppIdBean, error) {
 	logger := tlog.GetLogger(ctx)
 	// 创建 或者 更新  token记录
-	tokenBean, err := account.GetTokenBeanByToken(token)
+	tokenBean, err := account.GetTokenBeanByToken(models.DB(), ctx, token)
 	if err != nil {
 		logger.Warn("GetTokenBeanByToken fail->", err.Error())
 		return nil, nil, err
@@ -20,13 +22,13 @@ func Auth(ctx echo.Context, token string) (*account.UserBean, *account.AppIdBean
 	}
 
 	//
-	accountBean, err := account.GetUserById(tokenBean.UserId)
+	accountBean, err := account.GetUserById(models.DB(), ctx, tokenBean.UserId)
 	if err != nil {
 		logger.Warn("GetUserById fail->", err.Error())
 		return nil, nil, err
 	}
 
-	appBean, err := account.GetAppIdByID(tokenBean.AppId)
+	appBean, err := account.GetAppIdByID(models.DB(), ctx, tokenBean.AppId)
 	if err != nil {
 		logger.Warn("GetUserById fail->", err.Error())
 		return nil, nil, err

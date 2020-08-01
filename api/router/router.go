@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
 	"tpayment/conf"
 	"tpayment/modules/agency"
@@ -19,13 +18,16 @@ import (
 	"tpayment/modules/tms/device"
 	"tpayment/modules/tms/devicetag"
 	"tpayment/modules/user"
+
+	"github.com/labstack/echo"
 )
 
 func Init() (*echo.Echo, error) {
 	e := echo.New()
 
-	e.Use(PreHandle())  // 前置过滤
-	e.Use(AuthHandle()) // 授权过滤
+	e.Use(PreHandle())        // 前置过滤
+	e.Use(AuthHandle())       // 授权过滤
+	e.Use(PermissionFilter()) // 权限过滤
 
 	e.GET("/", func(context echo.Context) error {
 		return context.String(http.StatusOK, "Hello, world!")

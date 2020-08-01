@@ -2,12 +2,13 @@ package tms
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/models/agency"
+
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 )
 
 // 根据device ID获取设备信息
@@ -30,7 +31,7 @@ func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, e
 func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []DeviceTag, error) {
 	filterTmp := make(map[string]interface{})
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]agency.Agency)
+	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
 
 	for k, v := range filters {
 		filterTmp[k] = v

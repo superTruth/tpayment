@@ -15,7 +15,7 @@ type MyDB struct {
 	*gorm.DB
 }
 
-func InitDB() error {
+func InitDB() {
 	var err error
 
 	db = new(MyDB)
@@ -28,8 +28,6 @@ func InitDB() error {
 	db.DB.DB().SetMaxIdleConns(8)
 	db.DB.DB().SetConnMaxLifetime(360 * time.Second)
 	db.DB.LogMode(true)
-
-	return nil
 }
 
 func DB() *MyDB {

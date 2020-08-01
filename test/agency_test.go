@@ -3,7 +3,6 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"testing"
 	"time"
@@ -11,6 +10,8 @@ import (
 	"tpayment/models/agency"
 	"tpayment/models/merchant"
 	"tpayment/modules"
+
+	"github.com/jinzhu/gorm"
 )
 
 func TestAddAgency(t *testing.T) {
@@ -46,7 +47,7 @@ func TestUpdateAgency(t *testing.T) {
 
 	reqBean := &merchant.Merchant{
 		Model: gorm.Model{
-			ID: 3,
+			ID: 5,
 		},
 		Name: "merc",
 		Tel:  "",
@@ -68,16 +69,16 @@ func TestQueryAgency(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset: 0,
-		Limit:  100,
-		//Filters: map[string]string{
-		//	"pwd": "123456",
-		//},
+		Offset:  0,
+		Limit:   100,
+		Filters: map[string]string{
+			//"name": "mer",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAgencyQuery, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 }

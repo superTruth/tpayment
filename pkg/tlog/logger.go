@@ -1,9 +1,10 @@
 package tlog
 
 import (
+	"tpayment/conf"
+
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
-	"tpayment/conf"
 )
 
 type Logger struct {
@@ -15,7 +16,12 @@ type Logger struct {
 func (this *Logger) Init(tag string) {
 	this.tag = tag
 	this.logger, _ = zap.NewProduction()
-	this.logger = this.logger.With(zap.String("Request ID", this.tag))
+	this.logger = this.logger.With(zap.String(conf.HeaderTagRequestId, this.tag))
+	this.sugar = this.logger.Sugar()
+}
+
+func (this *Logger) SetTag(key, value string) {
+	this.logger = this.logger.With(zap.String(key, value))
 	this.sugar = this.logger.Sugar()
 }
 

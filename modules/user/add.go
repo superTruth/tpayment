@@ -1,13 +1,15 @@
 package user
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
+	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func AddHandle(ctx echo.Context) error {
@@ -22,8 +24,16 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 机构管理员
+	agencyId := uint(0)
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
+		agencyId = agencys[0].ID
+	}
+
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(req.Email)
+	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -36,14 +46,16 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	// 生成新账号
-	account := &account.UserBean{
-		Email: req.Email,
-		Pwd:   req.Pwd,
-		Name:  req.Name,
-		Role:  req.Role,
+	bean := &account.UserBean{
+		AgencyId: agencyId,
+		Email:    req.Email,
+		Pwd:      req.Pwd,
+		Name:     req.Name,
+		Role:     req.Role,
+		Active:   true,
 	}
 
-	err = models.CreateBaseRecord(account)
+	err = models.CreateBaseRecord(bean)
 
 	if err != nil {
 		logger.Info("CreateBaseRecord sql error->", err.Error())

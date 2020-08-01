@@ -3,13 +3,14 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"testing"
 	"time"
 	"tpayment/conf"
 	"tpayment/models/tms"
 	"tpayment/modules"
+
+	"github.com/jinzhu/gorm"
 )
 
 func TestUpdateTmsDevice(t *testing.T) {
@@ -22,7 +23,7 @@ func TestUpdateTmsDevice(t *testing.T) {
 	}
 
 	var deviceTags []tms.DeviceTagFull
-	json.Unmarshal([]byte(`[
+	_ = json.Unmarshal([]byte(`[
 					{
 						"ID": 25,
 						"Name": "tag1"

@@ -45,15 +45,23 @@ func ParseResponse(resp []byte, data interface{}) error {
 
 	baseResponse.Data = data
 
-	json.Unmarshal(resp, &baseResponse)
+	_ = json.Unmarshal(resp, &baseResponse)
 
 	return nil
 }
 
 func TestLogin(t *testing.T) {
 	fmt.Println("login", line)
+	//reqBean := &user.LoginRequest{
+	//	Email:     "fang.qiang@bindo.com",
+	//	Pwd:       "123456",
+	//	AppId:     "123456",
+	//	AppSecret: "123456",
+	//}
+
+	// agency
 	reqBean := &user.LoginRequest{
-		Email:     "fang.qiang@bindo.com",
+		Email:     "fang.qiang7@bindo.com",
 		Pwd:       "123456",
 		AppId:     "123456",
 		AppSecret: "123456",
@@ -64,7 +72,7 @@ func TestLogin(t *testing.T) {
 
 	respBean := &user.LoginResponse{}
 
-	ParseResponse(repByte, respBean)
+	_ = ParseResponse(repByte, respBean)
 	//json.Unmarshal(repByte, respBean)
 
 	token = respBean.Token
@@ -85,7 +93,7 @@ func Login(account, pwd string) string {
 
 	respBean := &user.LoginResponse{}
 
-	ParseResponse(repByte, respBean)
+	_ = ParseResponse(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
 
@@ -105,7 +113,7 @@ func TestLogout(t *testing.T) {
 
 	respBean := &modules.BaseResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	_ = json.Unmarshal(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -123,13 +131,14 @@ func TestValidate(t *testing.T) {
 
 	respBean := &modules.BaseResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	_ = json.Unmarshal(repByte, respBean)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 }
 
 func TestAddUser(t *testing.T) {
 	TestLogin(t)
+	//token := Login("fang.qiang7@bindo.com", "123456")
 
 	fmt.Println("add user", line)
 
@@ -138,7 +147,7 @@ func TestAddUser(t *testing.T) {
 	}
 
 	reqBean := &user.AddUserRequest{
-		Email: "fang.qiang7@bindo.com",
+		Email: "fang.qiang8@bindo.com",
 		Pwd:   "123456",
 		Role:  string(conf.RoleUser),
 		Name:  "Fang",
@@ -150,7 +159,7 @@ func TestAddUser(t *testing.T) {
 
 	respBean := &modules.BaseResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	_ = json.Unmarshal(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
 }
@@ -184,17 +193,16 @@ func TestQueryUser(t *testing.T) {
 	reqBean := &modules.BaseQueryRequest{
 		Offset: 0,
 		Limit:  100,
-		//Filters: map[string]string{
-		//	"pwd": "123456",
-		//},
+		Filters: map[string]string{
+			"email": "fang.qiang",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte, _ := post(reqByte, header, "http://localhost:80/payment/account/query", time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAccountQuery, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
-
+	formatJson(repByte)
 }
 
 func TestRegister(t *testing.T) {
@@ -210,14 +218,14 @@ func TestRegister(t *testing.T) {
 
 	respBean := &modules.BaseResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	_ = json.Unmarshal(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
 }
 
 func formatJson(str []byte) {
 	var dataMap interface{}
-	json.Unmarshal(str, &dataMap)
+	_ = json.Unmarshal(str, &dataMap)
 
 	ret, _ := json.MarshalIndent(dataMap, "", "\t")
 

@@ -1,16 +1,18 @@
 package agency
 
 import (
+	"tpayment/models"
+	"tpayment/models/account"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type UserAgencyAssociate struct {
-	gorm.Model
+	models.BaseModel
 
-	AgencyId uint `json:"agency_id" gorm:"column:agency_id"`
-	UserId   uint `json:"user_id" gorm:"column:user_id"`
+	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
+	UserId   uint `gorm:"column:user_id" json:"user_id"`
 }
 
 func (UserAgencyAssociate) TableName() string {
@@ -48,22 +50,15 @@ func GetAssociateByUserId(db *models.MyDB, ctx echo.Context, userId uint) (*User
 }
 
 type AssociateAgencyUserBean struct {
-	gorm.Model
+	models.BaseModel
 
-	Email string `json:"email"`
-	Name  string `json:"name"`
-	Role  string `json:"role"`
+	Email string `gorm:"column:email" json:"email"`
+	Name  string `gorm:"column:name" json:"name"`
 }
 
-func QueryUsersByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []AssociateAgencyUserBean, error) {
-	filterTmp := make(map[string]interface{})
-
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
-
+func QueryUsersByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint) (uint, []*AssociateAgencyUserBean, error) {
 	// conditions
-	tmpDb := db.Table("user").Where(filterTmp)
+	tmpDb := db.Table("user").Model(&account.UserBean{})
 	tmpDb = tmpDb.Joins("JOIN agency_user_associate ass ON ass.agency_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", agencyId)
 
 	// 统计总数
@@ -73,8 +68,11 @@ func QueryUsersByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, l
 		return 0, nil, err
 	}
 
-	var ret []AssociateAgencyUserBean
-	if err = tmpDb.Offset(offset).Limit(limit).Select("user.id as id, ass.created_at as created_at, ass.updated_at as updated_at, user.name as name, user.email as email").Find(&ret).Error; err != nil {
+	var ret []*AssociateAgencyUserBean
+	if err = tmpDb.Offset(offset).Limit(limit).Select(
+		"ass.id as id, ass.created_at as created_at, " +
+			"ass.updated_at as updated_at, user.name as name, " +
+			"user.email as email").Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
 

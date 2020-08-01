@@ -1,9 +1,10 @@
 package tms
 
 import (
-	"github.com/jinzhu/gorm"
 	"strings"
 	"tpayment/models"
+
+	"github.com/jinzhu/gorm"
 )
 
 const (
@@ -76,6 +77,7 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 		Offset(offset).Limit(limit).
 		Rows()
 
+	// nolint
 	defer rows.Close()
 
 	if err != nil {

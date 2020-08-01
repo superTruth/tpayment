@@ -2,8 +2,6 @@ package clientapi
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/labstack/echo"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -14,6 +12,9 @@ import (
 	"tpayment/modules"
 	"tpayment/pkg/goroutine"
 	"tpayment/pkg/tlog"
+
+	"github.com/google/uuid"
+	"github.com/labstack/echo"
 )
 
 /**
@@ -146,7 +147,7 @@ func HearBeat(ctx echo.Context) error {
 		ret.RebootDayInWeek = deviceInfo.RebootDayInWeek
 	}
 	ret.AppInfos = retApps
-	ctx.JSON(http.StatusOK, ret)
+	_ = ctx.JSON(http.StatusOK, ret)
 
 	return nil
 }
@@ -237,7 +238,6 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				dbApp.Status = conf.TmsStatusWarningInstalled
 				models.DB().Updates(dbApp)
 				continue
-				break
 
 			case conf.TmsStatusInstalled:
 				if dbApp.AppFile == nil || dbApp.AppFile.VersionCode == 0 {
@@ -262,7 +262,6 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				// 上报app version code大于当前配置，更新数据为上报的数据，并且不下发，状态改为Warning Installed
 				dbApp.Status = conf.TmsStatusWarningInstalled
 				models.DB().Updates(dbApp)
-				break
 
 			case conf.TmsStatusPendingUninstalled:
 				logger.Info("conf.STATUS_PENDING_UNINSTALL", requestApps[i].VersionCode)
@@ -271,7 +270,6 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				newApp.PackageId = requestApps[i].PackageId
 				newApp.Status = conf.TmsStatusPendingUninstalled
 				needReturnApp = append(needReturnApp, *newApp)
-				break
 
 			case conf.TmsStatusWarningInstalled:
 				logger.Info("conf.STATUS_WARNING_INSTALLED", requestApps[i].VersionCode)
@@ -296,10 +294,8 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 				}
 
 				// 大于当前，不下发
-				break
 			default:
 				logger.Error("conf.default")
-				break
 			}
 		}
 	}
@@ -317,7 +313,6 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 			newApp.Status = conf.TmsStatusPendingInstall
 			needReturnApp = append(needReturnApp, *newApp)
 			continue
-			break
 		case conf.TmsStatusInstalled: // 下发当前配置数据，并且状态改为Pending Install
 			newApp := generateAppFromConfig(dbApp)
 
@@ -326,10 +321,8 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 			dbApp.Status = conf.TmsStatusPendingInstall
 			models.DB().Updates(dbApp)
 			continue
-			break
 		case conf.TmsStatusPendingUninstalled: // 不下发配置，删除掉这个记录
 			models.DB().Delete(&dbApp)
-			break
 
 		case conf.TmsStatusWarningInstalled:
 			if dbApp.AppFile == nil || dbApp.AppFile.VersionCode == 0 { // 从来没有配置过的情况，删除掉
@@ -346,10 +339,7 @@ func compareApps(ctx echo.Context, requestApps []AppInfo, dbApps []tms.AppInDevi
 			models.DB().Updates(&dbApp)
 			continue
 
-			break
-
 		default:
-			break
 		}
 	}
 
@@ -424,7 +414,7 @@ func readDeviceModels(ctx echo.Context) {
 	goroutine.Go(func() {
 		logger := tlog.Logger{}
 		logger.Init(uuid.New().String())
-		for true {
+		for {
 			modelArray, err := tms.GetModels()
 			if err == nil {
 				deviceModelTmp := make(map[string]uint)

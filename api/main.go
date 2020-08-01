@@ -16,5 +16,7 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.Start(":80")
+	if err = h.Start(":80"); err != nil {
+		panic(err)
+	}
 }

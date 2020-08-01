@@ -3,13 +3,14 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"testing"
 	"time"
 	"tpayment/conf"
 	"tpayment/models/tms"
 	"tpayment/modules"
+
+	"github.com/jinzhu/gorm"
 )
 
 func TestCreateTmsAppInDevice(t *testing.T) {
@@ -38,7 +39,7 @@ func TestCreateTmsAppInDevice(t *testing.T) {
 
 	respBean := &modules.BaseResponse{}
 
-	json.Unmarshal(repByte, respBean)
+	_ = json.Unmarshal(repByte, respBean)
 
 	fmt.Println("rep->", string(repByte))
 }

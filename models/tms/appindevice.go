@@ -1,9 +1,10 @@
 package tms
 
 import (
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type AppInDevice struct {
@@ -43,6 +44,7 @@ func GetAppsInDevice(externalId uint, externalIdType string, offset int, limit i
 	if err != nil {
 		return ret, err
 	}
+	// nolint
 	defer rows.Close()
 
 	for rows.Next() {
@@ -58,6 +60,7 @@ func GetAppsInDevice(externalId uint, externalIdType string, offset int, limit i
 			&appInDevice.AppFile.VersionCode, &appInDevice.AppFile.UpdateDescription, &appInDevice.AppFile.FileName, &appInDevice.AppFile.FileUrl)
 
 		if err != nil {
+			return ret, err
 		}
 
 		// 只有这2种状态是有配置数据
@@ -69,10 +72,10 @@ func GetAppsInDevice(externalId uint, externalIdType string, offset int, limit i
 		//	appInDevice.AppFile = nil
 		//}
 
-		if appInDevice.AppID == 0 || appInDevice.AppID == 0 {
+		if appInDevice.AppID == 0 {
 			appInDevice.App = nil
 		}
-		if appInDevice.AppFileId == 0 || appInDevice.AppFileId == 0 {
+		if appInDevice.AppFileId == 0 {
 			appInDevice.AppFile = nil
 		}
 

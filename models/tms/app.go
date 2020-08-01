@@ -2,12 +2,13 @@ package tms
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/models/agency"
+
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 )
 
 type App struct {
@@ -43,7 +44,7 @@ func GetAppByID(db *models.MyDB, ctx echo.Context, id uint) (*App, error) {
 func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []App, error) {
 	filterTmp := make(map[string]interface{})
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]agency.Agency)
+	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
 
 	for k, v := range filters {
 		filterTmp[k] = v

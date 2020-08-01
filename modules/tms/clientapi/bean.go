@@ -9,8 +9,8 @@ type RequestBean struct {
 	LocationLat string    `json:"location_lat,omitempty"`
 	LocationLon string    `json:"location_lon,omitempty"`
 	PushToken   string    `json:"push_token,omitempty"`
-	Power       int       `json:"power", omitempty`
-	StoreID     int       `json:"store_id", omitempty`
+	Power       int       `json:"power,omitempty"`
+	StoreID     int       `json:"store_id,omitempty"`
 	AppInfos    []AppInfo `json:"app_infos,omitempty"`
 }
 

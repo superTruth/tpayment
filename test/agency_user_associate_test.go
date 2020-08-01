@@ -21,8 +21,8 @@ func TestAddAgencyAssociate(t *testing.T) {
 	}
 
 	reqBean := &agency.UserAgencyAssociate{
-		AgencyId: 4,
-		UserId:   7,
+		AgencyId: 5,
+		UserId:   8,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
@@ -41,7 +41,7 @@ func TestDeleteAgencyAssociate(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 1}
+	reqBean := &modules.BaseIDRequest{ID: 3}
 
 	reqByte, _ := json.Marshal(reqBean)
 
@@ -51,7 +51,8 @@ func TestDeleteAgencyAssociate(t *testing.T) {
 }
 
 func TestQueryAgencyAssociate(t *testing.T) {
-	token := Login("fang.qiang6@bindo.com", "123456")
+	//token := Login("fang.qiang7@bindo.com", "123456")
+	TestLogin(t)
 
 	fmt.Println("query user", line)
 	fmt.Println("token->", token)
@@ -60,18 +61,15 @@ func TestQueryAgencyAssociate(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		AgencyId: 4,
+		AgencyId: 5,
 		Offset:   0,
 		Limit:    100,
-		//Filters: map[string]string{
-		//	"pwd": "123456",
-		//},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAgencyAssociateQuery, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 
 }

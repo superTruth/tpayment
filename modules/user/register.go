@@ -3,14 +3,15 @@ package user
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/go-gomail/gomail"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/go-gomail/gomail"
+	"github.com/labstack/echo"
 )
 
 func RegisterHandle(ctx echo.Context) error {
@@ -26,7 +27,7 @@ func RegisterHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(req.Email)
+	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -102,7 +103,7 @@ func ActiveHandel(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(string(email))
+	user, err := account.GetUserByEmail(models.DB(), ctx, string(email))
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

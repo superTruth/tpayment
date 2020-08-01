@@ -2,14 +2,15 @@ package user
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/google/uuid"
+	"github.com/labstack/echo"
 )
 
 // 登录
@@ -26,7 +27,7 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 创建 或者 更新  token记录
-	accountBean, err := account.GetUserByEmail(req.Email)
+	accountBean, err := account.GetUserByEmail(models.DB(), ctx, req.Email)
 	if err != nil {
 		logger.Error("GetUserByEmail sql error->", err.Error())
 
@@ -55,7 +56,7 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 验证App id
-	appBean, err := account.GetAppIdByAppID(req.AppId)
+	appBean, err := account.GetAppIdByAppID(models.DB(), ctx, req.AppId)
 	if err != nil {
 		logger.Error("GetAppIdByAppID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -75,7 +76,7 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 查看是否已经存在这个账号的token，如果已经存在，直接update，如果不存在需要create
-	tokenBean, err := account.GetTokenByUserId(accountBean.ID, appBean.ID)
+	tokenBean, err := account.GetTokenByUserId(models.DB(), ctx, accountBean.ID, appBean.ID)
 	if err != nil {
 		logger.Error("GetTokenByUserId sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
