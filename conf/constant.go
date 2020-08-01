@@ -41,6 +41,11 @@ const (
 	UrlAgencyAssociateDelete = "/payment/agency_associate/delete"
 	UrlAgencyAssociateQuery  = "/payment/agency_associate/query"
 
+	UrlAgencyAcquirerAdd    = "/payment/agency_acquirer/add"
+	UrlAgencyAcquirerUpdate = "/payment/agency_acquirer/update"
+	UrlAgencyAcquirerQuery  = "/payment/agency_acquirer/query"
+	UrlAgencyAcquirerDelete = "/payment/agency_acquirer/delete"
+
 	UrlMerchantAdd    = "/payment/merchant/add"
 	UrlMerchantUpdate = "/payment/merchant/update"
 	UrlMerchantQuery  = "/payment/merchant/query"

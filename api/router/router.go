@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"tpayment/conf"
 	"tpayment/modules/agency"
+	"tpayment/modules/agency/acquirer"
 	associate2 "tpayment/modules/agency/associate"
 	"tpayment/modules/agency/payment"
 	"tpayment/modules/fileupload"
@@ -55,6 +56,11 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlAgencyAssociateAdd, associate2.AddHandle)              // 添加机构账户关联
 	e.POST(conf.UrlAgencyAssociateDelete, associate2.DeleteHandle)        // 删除机构账户关联
 	e.POST(conf.UrlAgencyAssociateQuery, associate2.QueryAssociateHandle) // 删除机构账户关联
+
+	e.POST(conf.UrlAgencyAcquirerAdd, acquirer.AddHandle)       // 添加acquirer
+	e.POST(conf.UrlAgencyAcquirerUpdate, acquirer.UpdateHandle) // 更新
+	e.POST(conf.UrlAgencyAcquirerQuery, acquirer.QueryHandle)   // 查找
+	e.POST(conf.UrlAgencyAcquirerDelete, acquirer.DeleteHandle) // 删除
 
 	e.POST(conf.UrlMerchantAdd, merchant.AddHandle)       // 新增商户
 	e.POST(conf.UrlMerchantUpdate, merchant.UpdateHandle) // 更新商户

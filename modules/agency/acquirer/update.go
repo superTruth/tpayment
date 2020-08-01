@@ -1,13 +1,16 @@
 package acquirer
 
 import (
-	"github.com/labstack/echo"
+	"errors"
 	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func UpdateHandle(ctx echo.Context) error {
@@ -35,7 +38,19 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 判断当前agency是否有权限
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	if userBean.Role != string(conf.RoleAdmin) {
+		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		if agencys[0].ID != acquirerBean.AgencyId {
+			logger.Warn("this acquirer is not belong to the agency")
+			modules.BaseError(ctx, conf.NoPermission)
+			return errors.New("this acquirer is not belong to the agency")
+		}
+	}
+
 	// 生成新账号
+	req.AgencyId = 0 // 不允许更新agency id
 	err = models.UpdateBaseRecord(req)
 
 	if err != nil {

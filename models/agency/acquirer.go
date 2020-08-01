@@ -1,13 +1,15 @@
 package agency
 
 import (
+	"strconv"
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type Acquirer struct {
-	gorm.Model
+	models.BaseModel
 
 	Name          string `json:"name" gorm:"column:name"`
 	Addition      string `json:"addition"  gorm:"column:addition"`
@@ -34,19 +36,16 @@ func GetAcquirerById(id uint) (*Acquirer, error) {
 	return ret, nil
 }
 
-func QueryAcquirerRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []Acquirer, error) {
-	filterTmp := make(map[string]interface{})
+func QueryAcquirerRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Acquirer, error) {
 
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
-
+	equalData := make(map[string]string)
 	if agencyId != 0 {
-		filterTmp["agency_id"] = agencyId
+		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table("acquirer").Where(filterTmp)
+	tmpDb := db.Model(&Acquirer{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
@@ -55,7 +54,7 @@ func QueryAcquirerRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, li
 		return 0, nil, err
 	}
 
-	var ret []Acquirer
+	var ret []*Acquirer
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

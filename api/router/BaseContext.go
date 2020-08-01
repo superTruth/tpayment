@@ -108,7 +108,10 @@ func PermissionFilter() echo.MiddlewareFunc {
 			}
 
 			// 需要管理员权限的
-			if strings.Contains(ctx.Request().RequestURI, "/payment/agency") { // 所有的机构操作只能管理员
+			if ctx.Request().RequestURI == conf.UrlAgencyAdd || // 所有的机构操作只能管理员
+				ctx.Request().RequestURI == conf.UrlAgencyUpdate ||
+				ctx.Request().RequestURI == conf.UrlAgencyDelete ||
+				ctx.Request().RequestURI == conf.UrlAgencyQuery {
 				logger.Warn("no agency permission")
 				modules.BaseError(ctx, conf.NoPermission)
 				return errors.New("not admin")

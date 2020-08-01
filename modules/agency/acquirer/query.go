@@ -1,13 +1,15 @@
 package acquirer
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func QueryHandle(ctx echo.Context) error {
@@ -20,6 +22,22 @@ func QueryHandle(ctx echo.Context) error {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
 		return err
+	}
+
+	// 管理员必须要传入agency id
+	var agencyId uint
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	if userBean.Role == string(conf.RoleAdmin) {
+		if req.AgencyId == 0 {
+			logger.Warn("Admin user must contain agency id->")
+			modules.BaseError(ctx, conf.ParameterError)
+			return err
+		}
+		agencyId = req.AgencyId
+	} else {
+		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		agencyId = agencys[0].ID
+		req.AgencyId = agencyId
 	}
 
 	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据

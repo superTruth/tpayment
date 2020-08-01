@@ -1,13 +1,15 @@
 package acquirer
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func AddHandle(ctx echo.Context) error {
@@ -22,8 +24,23 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, req.AgencyId)
+	// 管理员必须要传入agency id
+	var agencyId uint
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	if userBean.Role == string(conf.RoleAdmin) {
+		if req.AgencyId == 0 {
+			logger.Warn("Admin user must contain agency id->")
+			modules.BaseError(ctx, conf.ParameterError)
+			return err
+		}
+		agencyId = req.AgencyId
+	} else {
+		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		agencyId = agencys[0].ID
+		req.AgencyId = agencyId
+	}
+
+	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, agencyId)
 	if err != nil {
 		logger.Error("GetAgencyById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -31,7 +48,7 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	if agencyBean == nil {
-		logger.Info("GetAgencyById sql error->", err.Error())
+		logger.Info("the agency is not found->", agencyId)
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
