@@ -7,11 +7,10 @@ import (
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/models/merchant"
 	"tpayment/modules"
-
-	"github.com/jinzhu/gorm"
 )
 
 func TestAddAgency(t *testing.T) {
@@ -46,8 +45,8 @@ func TestUpdateAgency(t *testing.T) {
 	}
 
 	reqBean := &merchant.Merchant{
-		Model: gorm.Model{
-			ID: 5,
+		BaseModel: models.BaseModel{
+			ID: 7,
 		},
 		Name: "merc",
 		Tel:  "",

@@ -1,6 +1,7 @@
-package merchant
+package merchantdevicepayment
 
 import (
+	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
@@ -14,7 +15,7 @@ import (
 func UpdateHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(merchant.Merchant)
+	req := new(merchant.PaymentSettingInDevice)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -23,29 +24,21 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// 查询是否已经存在的账号
-	merchantBean, err := merchant.GetMerchantById(models.DB(), ctx, req.ID)
+	deviceBean, err := merchant.GetPaymentSettingInDeviceById(models.DB(), ctx, req.ID)
 	if err != nil {
-		logger.Info("GetMerchantById sql error->", err.Error())
+		logger.Error("GetPaymentSettingInDeviceById fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
-	if merchantBean == nil {
-		logger.Warn(conf.RecordNotFund.String())
+
+	if deviceBean == nil {
+		logger.Error(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return errors.New(conf.RecordNotFund.String())
 	}
 
-	// 判断是否是属于自己机构的商户
-	_, err = modules.GetAgencyId(ctx, merchantBean.AgencyId)
-	if err != nil {
-		logger.Warn(err.Error())
-		modules.BaseError(ctx, conf.NoPermission)
-		return err
-	}
-
-	// 生成新账号
-	req.AgencyId = 0
+	// TODO 权限判断
+	req.MerchantDeviceId = 0
 	err = models.UpdateBaseRecord(req)
 
 	if err != nil {

@@ -1,13 +1,15 @@
 package associate
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
+	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func DeleteHandle(ctx echo.Context) error {
@@ -23,7 +25,7 @@ func DeleteHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	associateBean, err := merchant.GetUserMerchantAssociateById(req.ID)
+	associateBean, err := merchant.GetUserMerchantAssociateById(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -32,6 +34,14 @@ func DeleteHandle(ctx echo.Context) error {
 	if associateBean == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
+		return err
+	}
+
+	// 判断权限
+	err = merchantModule.CheckPermission(ctx, associateBean.MerchantId)
+	if err != nil {
+		logger.Warn(err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 

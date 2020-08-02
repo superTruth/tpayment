@@ -11,6 +11,7 @@ import (
 	"tpayment/modules/merchant"
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
+	"tpayment/modules/merchant/merchantdevicepayment"
 	"tpayment/modules/tms/app"
 	"tpayment/modules/tms/appfile"
 	"tpayment/modules/tms/appinbatchupdate"
@@ -62,19 +63,26 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlAgencyAcquirerQuery, acquirer.QueryHandle)   // 查找
 	e.POST(conf.UrlAgencyAcquirerDelete, acquirer.DeleteHandle) // 删除
 
-	e.POST(conf.UrlMerchantAdd, merchant.AddHandle)       // 新增商户
-	e.POST(conf.UrlMerchantUpdate, merchant.UpdateHandle) // 更新商户
-	e.POST(conf.UrlMerchantQuery, merchant.QueryHandle)   // 查找商户
+	e.POST(conf.UrlMerchantAdd, merchant.AddHandle)                     // 新增商户
+	e.POST(conf.UrlMerchantUpdate, merchant.UpdateHandle)               // 更新
+	e.POST(conf.UrlMerchantQuery, merchant.QueryHandle)                 // 查找
+	e.POST(conf.UrlMerchantDelete, merchant.DeleteHandle)               // 删除
+	e.POST(conf.UrlMerchantInAgencyQuery, merchant.InAgencyQueryHandle) // 查询Agency下面有多少商户
 
 	e.POST(conf.UrlMerchantAssociateAdd, associate.AddHandle)       // 新增商户员工
 	e.POST(conf.UrlMerchantAssociateDelete, associate.DeleteHandle) // 删除商户员工
 	e.POST(conf.UrlMerchantAssociateQuery, associate.QueryHandle)   // 查询商户员工
 	e.POST(conf.UrlMerchantAssociateUpdate, associate.UpdateHandle) // 查询商户员工
 
-	e.POST(conf.UrlMerchantDevicePaymentAdd, merchantdevice.AddHandle)       // 新增商户设备
-	e.POST(conf.UrlMerchantDevicePaymentDelete, merchantdevice.DeleteHandle) // 删除关联
-	e.POST(conf.UrlMerchantDevicePaymentUpdate, merchantdevice.UpdateHandle) // 更新
-	e.POST(conf.UrlMerchantDevicePaymentQuery, merchantdevice.QueryHandle)   // 查询
+	e.POST(conf.UrlMerchantDeviceAdd, merchantdevice.AddHandle)       // 新增商户设备
+	e.POST(conf.UrlMerchantDeviceDelete, merchantdevice.DeleteHandle) // 删除关联
+	e.POST(conf.UrlMerchantDeviceUpdate, merchantdevice.UpdateHandle) // 更新
+	e.POST(conf.UrlMerchantDeviceQuery, merchantdevice.QueryHandle)   // 查询
+
+	e.POST(conf.UrlMerchantDevicePaymentAdd, merchantdevicepayment.AddHandle)       // 新增商户设备支付参数
+	e.POST(conf.UrlMerchantDevicePaymentDelete, merchantdevicepayment.DeleteHandle) // 删除
+	e.POST(conf.UrlMerchantDevicePaymentUpdate, merchantdevicepayment.UpdateHandle) // 更新
+	e.POST(conf.UrlMerchantDevicePaymentQuery, merchantdevicepayment.QueryHandle)   // 查询
 
 	e.POST(conf.UrlTmsDeviceDelete, device.DeleteHandle) // 删除关联
 	e.POST(conf.UrlTmsDeviceUpdate, device.UpdateHandle) // 更新

@@ -1,4 +1,4 @@
-package merchantdevice
+package merchantdevicepayment
 
 import (
 	"errors"
@@ -6,17 +6,16 @@ import (
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
-	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
 	"github.com/labstack/echo"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func DeleteHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(merchant.DeviceInMerchant)
+	req := new(modules.BaseIDRequest)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -25,9 +24,9 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
-	deviceBean, err := merchant.GetDeviceInMerchantAssociateById(models.DB(), ctx, req.ID)
+	deviceBean, err := merchant.GetPaymentSettingInDeviceById(models.DB(), ctx, req.ID)
 	if err != nil {
-		logger.Error("GetDeviceInMerchantAssociateById fail->", err.Error())
+		logger.Error("GetPaymentSettingInDeviceById fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
@@ -38,20 +37,11 @@ func UpdateHandle(ctx echo.Context) error {
 		return errors.New(conf.RecordNotFund.String())
 	}
 
-	// 判断权限
-	err = merchantModule.CheckPermission(ctx, deviceBean.MerchantId)
-	if err != nil {
-		logger.Warn(err.Error())
-		modules.BaseError(ctx, conf.NoPermission)
-		return err
-	}
-
-	// 更新数据
-	req.MerchantId = 0
-	err = models.UpdateBaseRecord(req)
+	// TODO 权限判断
+	err = models.DeleteBaseRecord(deviceBean)
 
 	if err != nil {
-		logger.Info("UpdateBaseRecord sql error->", err.Error())
+		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}

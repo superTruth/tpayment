@@ -2,16 +2,48 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7a3898e-6d6e-4f4c-aa28-e284f969fbe3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test/agency_acquirer_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/gorm.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/comon.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/common.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/inagencyquery.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevicepayment/add.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevicepayment/delete.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevicepayment/query.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/merchant/merchantdevicepayment/update.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/gorm_json/lib.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fileupload_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/merchant_device_payment_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/merchant_device_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/router/BaseContext.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/BaseContext.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/router.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/conf/constant.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/constant.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/agency/acquirer.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/agency/acquirer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/agency/acquirer/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/acquirer/add.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/agency/acquirer/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/acquirer/delete.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/agency/acquirer/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/acquirer/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/agency/acquirer/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/acquirer/update.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment/docker/configfile.json" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/docker/configfile.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/merchant/associate.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/merchant/associate.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/merchant/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/merchant/device.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/merchant/merchant.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/merchant/merchant.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/merchant/payment.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/merchant/payment.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/agency/payment/EntryTypes.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/payment/entrytypes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/agency/payment/PaymentMethod.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/payment/paymentmethod.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/agency/payment/PaymentTypes.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/agency/payment/paymenttypes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/basecontext.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/basecontext.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fileupload/requestfileupload.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fileupload/requestfileupload.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/add.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/add.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/bean.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/delete.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/associate/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/associate/update.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/bean.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/delete.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/merchantdevice/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/add.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/merchantdevice/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/delete.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/merchantdevice/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/merchantdevice/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/merchantdevice/update.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/merchant/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/merchant/update.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/agency_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/agency_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/merchant_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/merchant_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/merchant_user_associate_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/merchant_user_associate_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/user_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/user_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +81,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/test" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pkg" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="watcher.settings" />
@@ -63,15 +95,15 @@
       <recent name="$PROJECT_DIR$/api/handle" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg" />
       <recent name="$PROJECT_DIR$/test" />
+      <recent name="$PROJECT_DIR$/modules/merchant" />
       <recent name="$PROJECT_DIR$/modules/tms" />
       <recent name="$PROJECT_DIR$/pkg/apkparser" />
-      <recent name="$PROJECT_DIR$/modules/agency" />
-      <recent name="$PROJECT_DIR$/deployment/docker/ngnix" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestDeleteAgencyAcquirer in tpayment/test">
-    <configuration name="TestAddAgencyAcquirer in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Test.TestQueryMerchantPaymentDevice in tpayment/test">
+    <configuration name="TestAddMerchantPaymentDevice in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -79,10 +111,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestAddAgencyAcquirer$" />
+      <pattern value="^TestAddMerchantPaymentDevice$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestDeleteAgencyAcquirer in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestDeleteMerchantPaymentDevice in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -90,10 +122,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestDeleteAgencyAcquirer$" />
+      <pattern value="^TestDeleteMerchantPaymentDevice$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestQueryAgencyAcquirer in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestQueryMerchantDevice in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -101,10 +133,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestQueryAgencyAcquirer$" />
+      <pattern value="^TestQueryMerchantDevice$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestQueryUser in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestQueryMerchantPaymentDevice in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -112,10 +144,10 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestQueryUser$" />
+      <pattern value="^TestQueryMerchantPaymentDevice$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestUpdateAgencyAcquirer in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestUpdateMerchantPaymentDevice in tpayment/test" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tpayment" />
       <working_directory value="$PROJECT_DIR$/test" />
       <framework value="gotest" />
@@ -123,16 +155,16 @@
       <package value="tpayment/test" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestUpdateAgencyAcquirer$" />
+      <pattern value="^TestUpdateMerchantPaymentDevice$" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Test.TestDeleteAgencyAcquirer in tpayment/test" />
-        <item itemvalue="Go Test.TestQueryAgencyAcquirer in tpayment/test" />
-        <item itemvalue="Go Test.TestUpdateAgencyAcquirer in tpayment/test" />
-        <item itemvalue="Go Test.TestAddAgencyAcquirer in tpayment/test" />
-        <item itemvalue="Go Test.TestQueryUser in tpayment/test" />
+        <item itemvalue="Go Test.TestQueryMerchantPaymentDevice in tpayment/test" />
+        <item itemvalue="Go Test.TestDeleteMerchantPaymentDevice in tpayment/test" />
+        <item itemvalue="Go Test.TestUpdateMerchantPaymentDevice in tpayment/test" />
+        <item itemvalue="Go Test.TestAddMerchantPaymentDevice in tpayment/test" />
+        <item itemvalue="Go Test.TestQueryMerchantDevice in tpayment/test" />
       </list>
     </recent_temporary>
   </component>
@@ -143,7 +175,8 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="保存一下" />
-    <option name="LAST_COMMIT_MESSAGE" value="保存一下" />
+    <MESSAGE value="acquirer 验证完成" />
+    <option name="LAST_COMMIT_MESSAGE" value="acquirer 验证完成" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -154,19 +187,19 @@
       <screen x="0" y="23" width="1729" height="1097" />
     </state>
     <state x="583" y="381" key="#com.intellij.fileTypes.FileTypeChooser/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732411416" />
-    <state x="559" y="86" key="CommitChangelistDialog2" timestamp="1596269677607">
+    <state x="559" y="86" key="CommitChangelistDialog2" timestamp="1596273764606">
       <screen x="0" y="23" width="1731" height="1097" />
     </state>
     <state x="519" y="82" key="CommitChangelistDialog2/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595168437544" />
     <state x="521" y="82" key="CommitChangelistDialog2/-240.-1057.1920.1057/0.23.1615.1027@0.23.1615.1027" timestamp="1592033086105" />
-    <state x="559" y="86" key="CommitChangelistDialog2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596269677607" />
+    <state x="559" y="86" key="CommitChangelistDialog2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273764606" />
     <state x="558" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732386260" />
     <state x="518" y="366" key="EditFileWatcherDialog" timestamp="1596012502503">
       <screen x="0" y="23" width="1729" height="1097" />
     </state>
     <state x="518" y="366" key="EditFileWatcherDialog/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596012502503" />
-    <state width="1687" height="399" key="GridCell.Tab.0.bottom" timestamp="1596273714776">
-      <screen x="0" y="23" width="1731" height="1097" />
+    <state width="1687" height="555" key="GridCell.Tab.0.bottom" timestamp="1596383033077">
+      <screen x="0" y="23" width="1738" height="1097" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127797" />
     <state width="1560" height="344" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595058355812" />
@@ -180,7 +213,8 @@
     <state width="1576" height="238" key="GridCell.Tab.0.bottom/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528212" />
     <state width="1689" height="393" key="GridCell.Tab.0.bottom/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1595833258018" />
     <state width="1694" height="301" key="GridCell.Tab.0.bottom/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596013439054" />
-    <state width="1687" height="399" key="GridCell.Tab.0.bottom/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273714776" />
+    <state width="1687" height="399" key="GridCell.Tab.0.bottom/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273893935" />
+    <state width="1687" height="213" key="GridCell.Tab.0.bottom/-447.-1417.2560.1417/0.23.1740.1097@0.23.1740.1097" timestamp="1596276367401" />
     <state width="1567" height="361" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1609.1027@0.23.1609.1027" timestamp="1594450224634" />
     <state width="1567" height="315" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1612.1027@0.23.1612.1027" timestamp="1594458047715" />
     <state width="1567" height="229" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1615.1027@-462.-1417.2560.1417" timestamp="1594459153356" />
@@ -190,9 +224,12 @@
     <state width="1573" height="104" key="GridCell.Tab.0.bottom/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889616" />
     <state width="1689" height="393" key="GridCell.Tab.0.bottom/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732334434" />
     <state width="1687" height="139" key="GridCell.Tab.0.bottom/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1596209356193" />
+    <state width="1687" height="555" key="GridCell.Tab.0.bottom/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383033077" />
+    <state width="1687" height="555" key="GridCell.Tab.0.bottom/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596383019242" />
+    <state width="1687" height="429" key="GridCell.Tab.0.bottom/-84.-1057.1920.1057/0.23.1741.1097@0.23.1741.1097" timestamp="1596380874859" />
     <state width="1570" height="170" key="GridCell.Tab.0.bottom/0.23.1618.1027@0.23.1618.1027" timestamp="1591714648131" />
-    <state width="1687" height="399" key="GridCell.Tab.0.center" timestamp="1596273714775">
-      <screen x="0" y="23" width="1731" height="1097" />
+    <state width="1687" height="555" key="GridCell.Tab.0.center" timestamp="1596383033077">
+      <screen x="0" y="23" width="1738" height="1097" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127782" />
     <state width="1560" height="344" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595058355811" />
@@ -206,7 +243,8 @@
     <state width="1576" height="238" key="GridCell.Tab.0.center/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528211" />
     <state width="1689" height="393" key="GridCell.Tab.0.center/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1595833258018" />
     <state width="1694" height="301" key="GridCell.Tab.0.center/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596013439054" />
-    <state width="1687" height="399" key="GridCell.Tab.0.center/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273714775" />
+    <state width="1687" height="399" key="GridCell.Tab.0.center/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273893934" />
+    <state width="1687" height="213" key="GridCell.Tab.0.center/-447.-1417.2560.1417/0.23.1740.1097@0.23.1740.1097" timestamp="1596276367400" />
     <state width="1567" height="361" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1609.1027@0.23.1609.1027" timestamp="1594450224633" />
     <state width="1567" height="315" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1612.1027@0.23.1612.1027" timestamp="1594458047714" />
     <state width="1567" height="229" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1615.1027@-462.-1417.2560.1417" timestamp="1594459153354" />
@@ -216,9 +254,12 @@
     <state width="1573" height="104" key="GridCell.Tab.0.center/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889615" />
     <state width="1689" height="393" key="GridCell.Tab.0.center/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732334433" />
     <state width="1687" height="139" key="GridCell.Tab.0.center/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1596209356192" />
+    <state width="1687" height="555" key="GridCell.Tab.0.center/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383033077" />
+    <state width="1687" height="555" key="GridCell.Tab.0.center/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596383019241" />
+    <state width="1687" height="429" key="GridCell.Tab.0.center/-84.-1057.1920.1057/0.23.1741.1097@0.23.1741.1097" timestamp="1596380874858" />
     <state width="1570" height="170" key="GridCell.Tab.0.center/0.23.1618.1027@0.23.1618.1027" timestamp="1591714648131" />
-    <state width="1687" height="399" key="GridCell.Tab.0.left" timestamp="1596273714774">
-      <screen x="0" y="23" width="1731" height="1097" />
+    <state width="1687" height="555" key="GridCell.Tab.0.left" timestamp="1596383033076">
+      <screen x="0" y="23" width="1738" height="1097" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127779" />
     <state width="1560" height="344" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595058355811" />
@@ -232,7 +273,8 @@
     <state width="1576" height="238" key="GridCell.Tab.0.left/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528211" />
     <state width="1689" height="393" key="GridCell.Tab.0.left/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1595833258017" />
     <state width="1694" height="301" key="GridCell.Tab.0.left/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596013439053" />
-    <state width="1687" height="399" key="GridCell.Tab.0.left/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273714774" />
+    <state width="1687" height="399" key="GridCell.Tab.0.left/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273893933" />
+    <state width="1687" height="213" key="GridCell.Tab.0.left/-447.-1417.2560.1417/0.23.1740.1097@0.23.1740.1097" timestamp="1596276367399" />
     <state width="1567" height="361" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1609.1027@0.23.1609.1027" timestamp="1594450224632" />
     <state width="1567" height="315" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1612.1027@0.23.1612.1027" timestamp="1594458047713" />
     <state width="1567" height="229" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1615.1027@-462.-1417.2560.1417" timestamp="1594459153353" />
@@ -242,9 +284,12 @@
     <state width="1573" height="104" key="GridCell.Tab.0.left/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889614" />
     <state width="1689" height="393" key="GridCell.Tab.0.left/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732334433" />
     <state width="1687" height="139" key="GridCell.Tab.0.left/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1596209356191" />
+    <state width="1687" height="555" key="GridCell.Tab.0.left/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383033076" />
+    <state width="1687" height="555" key="GridCell.Tab.0.left/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596383019240" />
+    <state width="1687" height="429" key="GridCell.Tab.0.left/-84.-1057.1920.1057/0.23.1741.1097@0.23.1741.1097" timestamp="1596380874857" />
     <state width="1570" height="170" key="GridCell.Tab.0.left/0.23.1618.1027@0.23.1618.1027" timestamp="1591714648130" />
-    <state width="1687" height="399" key="GridCell.Tab.0.right" timestamp="1596273714776">
-      <screen x="0" y="23" width="1731" height="1097" />
+    <state width="1687" height="555" key="GridCell.Tab.0.right" timestamp="1596383033077">
+      <screen x="0" y="23" width="1738" height="1097" />
     </state>
     <state width="1558" height="400" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590284127794" />
     <state width="1560" height="344" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595058355812" />
@@ -258,7 +303,8 @@
     <state width="1576" height="238" key="GridCell.Tab.0.right/-240.-1057.1920.1057/0.23.1625.1027@0.23.1625.1027" timestamp="1590249528212" />
     <state width="1689" height="393" key="GridCell.Tab.0.right/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1595833258018" />
     <state width="1694" height="301" key="GridCell.Tab.0.right/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596013439054" />
-    <state width="1687" height="399" key="GridCell.Tab.0.right/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273714776" />
+    <state width="1687" height="399" key="GridCell.Tab.0.right/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273893934" />
+    <state width="1687" height="213" key="GridCell.Tab.0.right/-447.-1417.2560.1417/0.23.1740.1097@0.23.1740.1097" timestamp="1596276367400" />
     <state width="1567" height="361" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1609.1027@0.23.1609.1027" timestamp="1594450224633" />
     <state width="1567" height="315" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1612.1027@0.23.1612.1027" timestamp="1594458047714" />
     <state width="1567" height="229" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1615.1027@-462.-1417.2560.1417" timestamp="1594459153355" />
@@ -268,6 +314,9 @@
     <state width="1573" height="104" key="GridCell.Tab.0.right/-462.-1417.2560.1417/0.23.1625.1027@0.23.1625.1027" timestamp="1591157889615" />
     <state width="1689" height="393" key="GridCell.Tab.0.right/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732334433" />
     <state width="1687" height="139" key="GridCell.Tab.0.right/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1596209356192" />
+    <state width="1687" height="555" key="GridCell.Tab.0.right/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383033077" />
+    <state width="1687" height="555" key="GridCell.Tab.0.right/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596383019242" />
+    <state width="1687" height="429" key="GridCell.Tab.0.right/-84.-1057.1920.1057/0.23.1741.1097@0.23.1741.1097" timestamp="1596380874858" />
     <state width="1570" height="170" key="GridCell.Tab.0.right/0.23.1618.1027@0.23.1618.1027" timestamp="1591714648131" />
     <state width="1567" height="336" key="GridCell.Tab.1.bottom" timestamp="1595124260473">
       <screen x="0" y="23" width="1612" height="1027" />
@@ -294,19 +343,19 @@
     </state>
     <state x="399" y="77" key="SettingsEditor/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596012504663" />
     <state x="399" y="77" key="SettingsEditor/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596026839494" />
-    <state x="438" y="295" key="Vcs.Push.Dialog.v2" timestamp="1596269725157">
+    <state x="438" y="295" key="Vcs.Push.Dialog.v2" timestamp="1596273769314">
       <screen x="0" y="23" width="1731" height="1097" />
     </state>
     <state x="407" y="278" key="Vcs.Push.Dialog.v2/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595168444469" />
     <state x="409" y="278" key="Vcs.Push.Dialog.v2/-240.-1057.1920.1057/0.23.1615.1027@0.23.1615.1027" timestamp="1592033096247" />
-    <state x="438" y="295" key="Vcs.Push.Dialog.v2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596269725157" />
+    <state x="438" y="295" key="Vcs.Push.Dialog.v2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596273769314" />
     <state x="437" y="295" key="Vcs.Push.Dialog.v2/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732393966" />
     <state x="351" y="-905" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592115819253">
       <screen x="-240" y="-1057" width="1920" height="1057" />
     </state>
     <state x="351" y="-905" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/-240.-1057.1920.1057/0.23.1618.1027@0.23.1618.1027" timestamp="1592115819253" />
-    <state x="262" y="-1409" width="765" height="1320" key="dock-window-1" timestamp="1596270350042">
-      <screen x="-447" y="-1417" width="2560" height="1417" />
+    <state x="936" y="-1057" width="765" height="1057" key="dock-window-1" timestamp="1596377063052">
+      <screen x="-84" y="-1057" width="1920" height="1057" />
     </state>
     <state x="-81" y="-1057" width="1240" height="979" key="dock-window-1/-240.-1057.1920.1057/0.23.1600.1027@0.23.1600.1027" timestamp="1590283065556" />
     <state x="-240" y="-1057" width="1240" height="979" key="dock-window-1/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595057111468" />
@@ -327,22 +376,26 @@
     <state x="749" y="-1280" width="1258" height="713" key="dock-window-1/-462.-1417.2560.1417/0.23.1627.1027@0.23.1627.1027" timestamp="1590217007201" />
     <state x="-84" y="-1057" width="1792" height="1057" key="dock-window-1/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595730172206" />
     <state x="-84" y="-1057" width="1792" height="1057" key="dock-window-1/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1595727958547" />
+    <state x="936" y="-1057" width="765" height="1057" key="dock-window-1/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596377063052" />
     <state x="0" y="124" width="1258" height="713" key="dock-window-1/0.23.1625.1027@0.23.1625.1027" timestamp="1590149751001" />
     <state x="0" y="124" width="1258" height="713" key="dock-window-1/0.23.1627.1027@0.23.1627.1027" timestamp="1590234409664" />
     <state x="280" y="23" width="964" height="930" key="dock-window-1/0.23.1731.1097@0.23.1731.1097" timestamp="1596035098177" />
+    <state x="709" y="23" width="765" height="1097" key="dock-window-1/0.23.1740.1097@0.23.1740.1097" timestamp="1596277209095" />
     <state x="-102" y="-1057" width="1618" height="1027" key="dock-window-2" timestamp="1592124984144">
       <screen x="-240" y="-1057" width="1920" height="1057" />
     </state>
     <state x="-102" y="-1057" width="1618" height="1027" key="dock-window-2/-240.-1057.1920.1057/0.23.1618.1027@0.23.1618.1027" timestamp="1592124984144" />
-    <state x="315" y="142" width="985" height="939" key="find.popup" timestamp="1596208458474">
-      <screen x="0" y="23" width="1731" height="1097" />
+    <state x="317" y="142" width="991" height="939" key="find.popup" timestamp="1596378431611">
+      <screen x="0" y="23" width="1740" height="1097" />
     </state>
     <state x="109" y="-943" width="1091" height="904" key="find.popup/-240.-1057.1920.1057/0.23.1602.1027@0.23.1602.1027" timestamp="1595058617825" />
     <state x="292" y="134" width="915" height="879" key="find.popup/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595063410568" />
     <state x="293" y="134" width="917" height="879" key="find.popup/-240.-1057.1920.1057/0.23.1612.1027@0.23.1612.1027" timestamp="1595126881039" />
+    <state x="315" y="142" width="985" height="939" key="find.popup/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596274556082" />
     <state x="454" y="300" width="689" height="472" key="find.popup/-462.-1417.2560.1417/0.23.1612.1027@0.23.1612.1027" timestamp="1594451819325" />
     <state x="455" y="300" width="689" height="472" key="find.popup/-462.-1417.2560.1417/0.23.1615.1027@0.23.1615.1027" timestamp="1590545103016" />
     <state x="315" y="142" width="985" height="939" key="find.popup/-84.-1057.1920.1057/0.23.1731.1097@0.23.1731.1097" timestamp="1596208458474" />
+    <state x="317" y="142" width="991" height="939" key="find.popup/-84.-1057.1920.1057/0.23.1740.1097@0.23.1740.1097" timestamp="1596378431611" />
     <state x="498" y="265" width="719" height="723" key="search.everywhere.popup" timestamp="1596209092016">
       <screen x="0" y="23" width="1731" height="1097" />
     </state>

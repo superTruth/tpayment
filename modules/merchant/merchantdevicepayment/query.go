@@ -1,11 +1,10 @@
-package associate
+package merchantdevicepayment
 
 import (
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
-	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -28,15 +27,9 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	// TODO 未判断权限
-	err = merchantModule.CheckPermission(ctx, req.MerchantId)
-	if err != nil {
-		logger.Warn(err.Error())
-		modules.BaseError(ctx, conf.NoPermission)
-		return err
-	}
+	// TODO 权限判断
 
-	total, dataRet, err := merchant.QueryUsersByMerchantId(models.DB(), ctx, req.MerchantId, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := merchant.QueryPaymentSettingInDeviceRecord(models.DB(), ctx, req.DeviceId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -40,8 +40,8 @@ func BaseSuccess(context echo.Context, data interface{}) {
 
 type BaseResponse struct {
 	ErrorCode    conf.ResultCode `json:"code"`
-	ErrorMessage string          `json:"msg"`
-	Data         interface{}     `json:"data"`
+	ErrorMessage string          `json:"msg,omitempty"`
+	Data         interface{}     `json:"data,omitempty"`
 }
 
 type BaseIDRequest struct {

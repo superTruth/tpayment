@@ -1,14 +1,16 @@
 package merchantdevice
 
 import (
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
+	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
+	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func DeleteHandle(ctx echo.Context) error {
@@ -23,8 +25,29 @@ func DeleteHandle(ctx echo.Context) error {
 		return err
 	}
 
+	deviceBean, err := merchant.GetDeviceInMerchantAssociateById(models.DB(), ctx, req.ID)
+	if err != nil {
+		logger.Error("GetDeviceInMerchantAssociateById fail->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+
+	if deviceBean == nil {
+		logger.Error(conf.RecordNotFund.String())
+		modules.BaseError(ctx, conf.RecordNotFund)
+		return errors.New(conf.RecordNotFund.String())
+	}
+
+	// 判断权限
+	err = merchantModule.CheckPermission(ctx, deviceBean.MerchantId)
+	if err != nil {
+		logger.Warn(err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
 	bean := &merchant.DeviceInMerchant{
-		Model: gorm.Model{
+		BaseModel: models.BaseModel{
 			ID: req.ID,
 		},
 	}

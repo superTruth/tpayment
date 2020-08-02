@@ -1,11 +1,10 @@
-package merchantdevice
+package merchantdevicepayment
 
 import (
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
-	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -15,7 +14,7 @@ import (
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(merchant.DeviceInMerchant)
+	req := new(merchant.PaymentSettingInDevice)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -24,13 +23,7 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// 判断权限
-	err = merchantModule.CheckPermission(ctx, req.MerchantId)
-	if err != nil {
-		logger.Warn(err.Error())
-		modules.BaseError(ctx, conf.NoPermission)
-		return err
-	}
+	// TODO 权限判断
 
 	err = models.CreateBaseRecord(req)
 

@@ -1,12 +1,13 @@
 package payment
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
+
+	"github.com/labstack/echo"
 )
 
 func QueryPaymentMethodsHandle(ctx echo.Context) error {

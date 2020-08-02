@@ -3,11 +3,11 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
 )
@@ -22,7 +22,7 @@ func TestAddMerchant(t *testing.T) {
 	}
 
 	reqBean := &merchant.Merchant{
-		AgencyId: 4,
+		AgencyId: 7,
 		Name:     "merchant 1",
 		Tel:      "123456789",
 		Addr:     "wuxicun",
@@ -45,8 +45,8 @@ func TestUpdateMerchant(t *testing.T) {
 	}
 
 	reqBean := &merchant.Merchant{
-		Model: gorm.Model{
-			ID: 3,
+		BaseModel: models.BaseModel{
+			ID: 9,
 		},
 		Name: "merc",
 		Tel:  "",
@@ -60,6 +60,28 @@ func TestUpdateMerchant(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
+func TestDeleteMerchant(t *testing.T) {
+	TestLogin(t)
+
+	fmt.Println("Delete Merchant", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &merchant.Merchant{
+		BaseModel: models.BaseModel{
+			ID: 9,
+		},
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantDelete, time.Second*10)
+
+	fmt.Println("rep->", string(repByte))
+}
+
 func TestQueryMerchant(t *testing.T) {
 	TestLogin(t)
 	fmt.Println("query merchant", line)
@@ -68,17 +90,39 @@ func TestQueryMerchant(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		AgencyId: 4,
-		Offset:   0,
-		Limit:    100,
-		//Filters: map[string]string{
-		//	"pwd": "123456",
-		//},
+		Offset: 0,
+		Limit:  100,
+		Filters: map[string]string{
+			"name": "merchant",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
+}
+
+func TestQueryMerchantInAgency(t *testing.T) {
+	TestLogin(t)
+	fmt.Println("query merchant in agency", line)
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &modules.BaseQueryRequest{
+		AgencyId: 4,
+		Offset:   0,
+		Limit:    100,
+		Filters: map[string]string{
+			"name": "merchant",
+		},
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
+
+	formatJson(repByte)
 }

@@ -3,18 +3,19 @@ package fileupload
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/google/uuid"
-	"github.com/labstack/echo"
 	"strings"
 	"time"
 	"tpayment/conf"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/google/uuid"
+	"github.com/labstack/echo"
 )
 
 // 申请一个上传文件的URL
@@ -47,6 +48,7 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 
 	service := s3.New(sess)
 
+	//endpoints.ApNortheast2RegionID
 	resp, _ := service.PutObjectRequest(&s3.PutObjectInput{
 		ACL:    aws.String("public-read"),
 		Bucket: aws.String(conf.GetConfigData().S3Bucket),

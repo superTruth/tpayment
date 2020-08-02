@@ -1,18 +1,17 @@
-package associate
+package merchant
 
 import (
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
-	merchantModule "tpayment/modules/merchant"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
 	"github.com/labstack/echo"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func InAgencyQueryHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
@@ -24,19 +23,18 @@ func QueryHandle(ctx echo.Context) error {
 		return err
 	}
 
-	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
-		req.Limit = conf.MaxQueryCount
-	}
-
-	// TODO 未判断权限
-	err = merchantModule.CheckPermission(ctx, req.MerchantId)
+	agencyId, err := modules.GetAgencyId(ctx, req.AgencyId)
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 
-	total, dataRet, err := merchant.QueryUsersByMerchantId(models.DB(), ctx, req.MerchantId, req.Offset, req.Limit, req.Filters)
+	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
+		req.Limit = conf.MaxQueryCount
+	}
+
+	total, dataRet, err := merchant.QueryMerchantInAgency(models.DB(), ctx, agencyId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

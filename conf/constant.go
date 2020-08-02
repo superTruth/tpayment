@@ -46,14 +46,21 @@ const (
 	UrlAgencyAcquirerQuery  = "/payment/agency_acquirer/query"
 	UrlAgencyAcquirerDelete = "/payment/agency_acquirer/delete"
 
-	UrlMerchantAdd    = "/payment/merchant/add"
-	UrlMerchantUpdate = "/payment/merchant/update"
-	UrlMerchantQuery  = "/payment/merchant/query"
+	UrlMerchantAdd           = "/payment/merchant/add"
+	UrlMerchantUpdate        = "/payment/merchant/update"
+	UrlMerchantQuery         = "/payment/merchant/query"
+	UrlMerchantDelete        = "/payment/merchant/delete"
+	UrlMerchantInAgencyQuery = "/payment/merchant_in_agency/query"
 
 	UrlMerchantAssociateAdd    = "/payment/merchant_associate/add"
 	UrlMerchantAssociateDelete = "/payment/merchant_associate/delete"
 	UrlMerchantAssociateQuery  = "/payment/merchant_associate/query"
 	UrlMerchantAssociateUpdate = "/payment/merchant_associate/update"
+
+	UrlMerchantDeviceAdd    = "/payment/merchant_device/add"
+	UrlMerchantDeviceDelete = "/payment/merchant_device/delete"
+	UrlMerchantDeviceQuery  = "/payment/merchant_device/query"
+	UrlMerchantDeviceUpdate = "/payment/merchant_device/update"
 
 	UrlMerchantDevicePaymentAdd    = "/payment/merchant_device_payment/add"
 	UrlMerchantDevicePaymentDelete = "/payment/merchant_device_payment/delete"
