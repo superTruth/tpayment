@@ -49,7 +49,7 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 	//创建下载存放apk
 	f, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("[*] Create temp file failed:", err)
+		fmt.Println("[*] Create temp fileutils failed:", err)
 		return nil, err
 	}
 	_, err = io.Copy(f, res.Body)

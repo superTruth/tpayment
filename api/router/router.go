@@ -5,6 +5,7 @@ import (
 	"tpayment/conf"
 	"tpayment/modules/agency"
 	"tpayment/modules/agency/acquirer"
+	"tpayment/modules/agency/agencydevice"
 	associate2 "tpayment/modules/agency/associate"
 	"tpayment/modules/agency/payment"
 	"tpayment/modules/fileupload"
@@ -58,6 +59,10 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlAgencyAssociateDelete, associate2.DeleteHandle)        // 删除机构账户关联
 	e.POST(conf.UrlAgencyAssociateQuery, associate2.QueryAssociateHandle) // 删除机构账户关联
 
+	e.POST(conf.UrlAgencyDeviceAdd, agencydevice.AddHandle)              // 添加机构设备
+	e.POST(conf.UrlAgencyDeviceDelete, agencydevice.DeleteHandle)        // 删除
+	e.POST(conf.UrlAgencyDeviceQuery, agencydevice.QueryAssociateHandle) // 查询
+
 	e.POST(conf.UrlAgencyAcquirerAdd, acquirer.AddHandle)       // 添加acquirer
 	e.POST(conf.UrlAgencyAcquirerUpdate, acquirer.UpdateHandle) // 更新
 	e.POST(conf.UrlAgencyAcquirerQuery, acquirer.QueryHandle)   // 查找
@@ -98,7 +103,7 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlTmsAppUpdate, app.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppQuery, app.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsAppFileAdd, appfile.AddHandle)       // 添加app file
+	e.POST(conf.UrlTmsAppFileAdd, appfile.AddHandle)       // 添加app fileutils
 	e.POST(conf.UrlTmsAppFileDelete, appfile.DeleteHandle) // 删除
 	e.POST(conf.UrlTmsAppFileUpdate, appfile.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppFileQuery, appfile.QueryHandle)   // 查询

@@ -873,7 +873,7 @@ Request Example:
 Response Example:
 ```json
 {
-  "total": 1234,   // 一共有app file
+  "total": 1234,   // 一共有app fileutils
    "data":[
     {
         "id": 123,

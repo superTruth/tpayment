@@ -1,9 +1,10 @@
 package tms
 
 import (
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type BatchUpdate struct {
@@ -51,7 +52,7 @@ func GetBatchUpdateDevices(batchUpdate *BatchUpdate, offset int, limit int) ([]D
 	return nil, nil
 	//sb := strings.Builder{}
 	//
-	//sb.WriteString("SELECT * FROM mdm2_device_infos a ")
+	//sb.WriteString("SELECT * FROM tms_device a ")
 	//
 	//tags, comErr := utils.JsonStringArray2StringArray(batchUpdate.Tags)
 	//if comErr == nil && len(tags) != 0 { // 有选择tag的情况

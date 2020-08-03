@@ -31,25 +31,25 @@ var configData *ConfigData
 func InitConfigData() {
 	f, err := os.Open(os.Getenv(EnvFilePath))
 	if err != nil {
-		panic("can't find config file:" + err.Error())
+		panic("can't find config fileutils:" + err.Error())
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
-		panic("config file stat error:" + err.Error())
+		panic("config fileutils stat error:" + err.Error())
 	}
 
 	dataBytes := make([]byte, fi.Size())
 	_, err = f.Read(dataBytes)
 
 	if err != nil {
-		panic("read config file error:" + err.Error())
+		panic("read config fileutils error:" + err.Error())
 	}
 
 	configData = new(ConfigData)
 	err = json.Unmarshal(dataBytes, configData)
 	if err != nil {
-		panic("config file format error:" + err.Error())
+		panic("config fileutils format error:" + err.Error())
 	}
 }
 

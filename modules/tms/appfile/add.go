@@ -1,7 +1,6 @@
 package appfile
 
 import (
-	"github.com/labstack/echo"
 	"path"
 	"regexp"
 	"strings"
@@ -13,6 +12,8 @@ import (
 	"tpayment/pkg/goroutine"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func AddHandle(ctx echo.Context) error {
@@ -95,7 +96,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	// 下载文件
 	if appFile.FileUrl == "" {
 		appFile.Status = conf.AppFileStatusFail
-		appFile.DecodeFailMsg = "file url is empty"
+		appFile.DecodeFailMsg = "fileutils url is empty"
 		models.DB().Updates(appFile)
 		logger.Warn("Updates appFile error->", appFile.DecodeFailMsg)
 		return
@@ -105,7 +106,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	ret, err := regexp.MatchString(`\.apk$`, strings.ToLower(appFile.FileUrl))
 	if err != nil || !ret {
 		appFile.Status = conf.AppFileStatusFail
-		appFile.DecodeFailMsg = "file url is not apk file"
+		appFile.DecodeFailMsg = "fileutils url is not apk fileutils"
 		models.DB().Updates(appFile)
 		logger.Warn("Updates appFile error->", appFile.DecodeFailMsg)
 		return

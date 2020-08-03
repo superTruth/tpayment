@@ -52,20 +52,20 @@ func ParseResponse(resp []byte, data interface{}) error {
 
 func TestLogin(t *testing.T) {
 	fmt.Println("login", line)
-	//reqBean := &user.LoginRequest{
-	//	Email:     "fang.qiang@bindo.com",
-	//	Pwd:       "123456",
-	//	AppId:     "123456",
-	//	AppSecret: "123456",
-	//}
-
-	// agency
 	reqBean := &user.LoginRequest{
-		Email:     "fang.qiang7@bindo.com",
+		Email:     "fang.qiang@bindo.com",
 		Pwd:       "123456",
 		AppId:     "123456",
 		AppSecret: "123456",
 	}
+
+	// agency
+	//reqBean := &user.LoginRequest{
+	//	Email:     "fang.qiang7@bindo.com",
+	//	Pwd:       "123456",
+	//	AppId:     "123456",
+	//	AppSecret: "123456",
+	//}
 
 	reqByte, _ := json.Marshal(reqBean)
 	repByte, _ := post(reqByte, nil, BaseUrl+conf.UrlAccountLogin, time.Second*10)

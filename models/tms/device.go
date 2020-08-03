@@ -2,6 +2,7 @@ package tms
 
 import (
 	"errors"
+	"strconv"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -13,7 +14,7 @@ import (
 
 type DeviceInfo struct {
 	gorm.Model
-	AgencyId string `gorm:"column:agency_id" json:"agency_id"`
+	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
 
 	DeviceSn    string `gorm:"column:device_sn" json:"device_sn"`
 	DeviceCsn   string `gorm:"column:device_csn" json:"device_csn"`
@@ -35,7 +36,7 @@ type DeviceInfo struct {
 }
 
 func (DeviceInfo) TableName() string {
-	return "mdm2_device_infos"
+	return "tms_device"
 }
 
 func GenerateDeviceInfo() *DeviceInfo {
@@ -79,6 +80,39 @@ func GetDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInfo, err
 	}
 
 	return ret, nil
+}
+
+func ResetDeviceAgency(db *models.MyDB, ctx echo.Context, id uint) error {
+	err := db.Model(&DeviceInfo{}).Where("id=?", id).Update("agency_id", 0).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
+	equalData := make(map[string]string)
+	equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
+	sqlCondition := models.CombQueryCondition(equalData, filters)
+
+	// conditions
+	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
+
+	// 统计总数
+	var total uint = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var ret []*DeviceInfo
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return total, ret, err
+	}
+
+	return total, ret, nil
 }
 
 func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []DeviceInfo, error) {

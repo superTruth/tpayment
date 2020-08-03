@@ -44,7 +44,7 @@ type DeviceInMerchantQueryBean struct {
 func QueryMerchantDeviceRecord(db *models.MyDB, ctx echo.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*DeviceInMerchantQueryBean, error) {
 	// conditions
 	tmpDb := db.Table(tms.DeviceInfo{}.TableName()).Model(&tms.DeviceInfo{})
-	tmpDb = tmpDb.Joins("JOIN device_in_merchant ass ON ass.device_id = mdm2_device_infos.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
+	tmpDb = tmpDb.Joins("JOIN device_in_merchant ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
 	var total uint = 0
@@ -55,7 +55,7 @@ func QueryMerchantDeviceRecord(db *models.MyDB, ctx echo.Context, merchantId, of
 
 	var ret []*DeviceInMerchantQueryBean
 	if err = tmpDb.Offset(offset).Limit(limit).
-		Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, mdm2_device_infos.id as device_id, mdm2_device_infos.sn as device_sn").
+		Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, tms_device.id as device_id, tms_device.sn as device_sn").
 		Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
