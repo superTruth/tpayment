@@ -1,27 +1,25 @@
 package tms
 
 import (
-	"errors"
-	"tpayment/conf"
+	"strconv"
 	"tpayment/models"
-	"tpayment/models/account"
-	"tpayment/models/agency"
+	"tpayment/modules"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
 type App struct {
-	gorm.Model
+	models.BaseModel
 
-	AgencyId    uint   `gorm:"column:agency_id"`
-	Name        string `gorm:"column:name"`
-	PackageId   string `gorm:"column:package_id"`
-	Description string `gorm:"column:description"`
+	AgencyId    uint   `gorm:"column:agency_id" json:"agency_id"`
+	Name        string `gorm:"column:name" json:"name"`
+	PackageId   string `gorm:"column:package_id" json:"package_id"`
+	Description string `gorm:"column:description" json:"description"`
 }
 
 func (App) TableName() string {
-	return "mdm2_apps"
+	return "tms_app"
 }
 
 // 根据device ID获取设备信息
@@ -41,24 +39,17 @@ func GetAppByID(db *models.MyDB, ctx echo.Context, id uint) (*App, error) {
 	return ret, nil
 }
 
-func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []App, error) {
-	filterTmp := make(map[string]interface{})
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*App, error) {
+	agency := modules.IsAgencyAdmin(ctx)
 
-	for k, v := range filters {
-		filterTmp[k] = v
+	equalData := make(map[string]string)
+	if agency != nil { // 是机构管理员的话，就需要添加机构排查
+		equalData["agency_id"] = strconv.FormatUint(uint64(agency.ID), 10)
 	}
-
-	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-		if len(agencys) == 0 {
-			return 0, nil, errors.New("user not agency admin")
-		}
-		filterTmp["agency_id"] = agencys[0].ID
-	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table("mdm2_apps").Where(filterTmp)
+	tmpDb := db.Model(&App{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
@@ -67,7 +58,7 @@ func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filte
 		return 0, nil, err
 	}
 
-	var ret []App
+	var ret []*App
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

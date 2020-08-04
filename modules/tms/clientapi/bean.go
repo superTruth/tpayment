@@ -53,7 +53,7 @@ type CreateFileRequest struct {
 type ResponseBean struct {
 	DeviceCsn        string    `json:"device_csn,omitempty"`
 	Alias            string    `json:"alias,omitempty"`
-	RebootMode       int       `json:"reboot_mode"`
+	RebootMode       string    `json:"reboot_mode"`
 	RebootTime       string    `json:"reboot_time"`
 	RebootDayInWeek  int       `json:"reboot_day_in_week,omitempty"`
 	RebootDayInMonth int       `json:"reboot_day_in_month,omitempty"`

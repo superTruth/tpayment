@@ -5,23 +5,22 @@ import (
 	"strconv"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/account"
-	"tpayment/models/agency"
+	"tpayment/modules"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
 type DeviceInfo struct {
-	gorm.Model
+	models.BaseModel
 	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
 
 	DeviceSn    string `gorm:"column:device_sn" json:"device_sn"`
 	DeviceCsn   string `gorm:"column:device_csn" json:"device_csn"`
-	DeviceModel uint   `gorm:"column:device_model" json:"device_model"`
+	DeviceModel string `gorm:"column:device_model" json:"device_model"`
 	Alias       string `gorm:"column:alias" json:"alias"`
 
-	RebootMode       int    `gorm:"column:reboot_mode" json:"reboot_mode"`
+	RebootMode       string `gorm:"column:reboot_mode" json:"reboot_mode"`
 	RebootTime       string `gorm:"column:reboot_time" json:"reboot_time"`
 	RebootDayInWeek  int    `gorm:"column:reboot_day_in_week" json:"reboot_day_in_week"`
 	RebootDayInMonth int    `gorm:"column:reboot_day_in_month" json:"reboot_day_in_month"`
@@ -32,7 +31,7 @@ type DeviceInfo struct {
 	LocationLon string `gorm:"column:location_lon" json:"location_lon"`
 	PushToken   string `gorm:"column:push_token" json:"push_token"`
 
-	Tags []DeviceTagFull `gorm:"column:-" json:"tags"`
+	Tags *[]*DeviceTagFull `gorm:"column:-" json:"tags,omitempty"`
 }
 
 func (DeviceInfo) TableName() string {
@@ -42,18 +41,18 @@ func (DeviceInfo) TableName() string {
 func GenerateDeviceInfo() *DeviceInfo {
 	device := new(DeviceInfo)
 
-	device.RebootMode = 1
+	device.RebootMode = conf.RebootModeEveryDay
 	device.RebootTime = "03:00"
 
 	return device
 }
 
 // 根据Device SN 获取设备信息
-func GetDeviceBySn(deviceSn string) (*DeviceInfo, error) {
+func GetDeviceBySn(db *models.MyDB, ctx echo.Context, deviceSn string) (*DeviceInfo, error) {
 
 	deviceInfo := new(DeviceInfo)
 
-	err := models.DB().Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
+	err := db.Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -115,24 +114,34 @@ func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, of
 	return total, ret, nil
 }
 
-func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []DeviceInfo, error) {
-	filterTmp := make(map[string]interface{})
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
 
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
+	agency := modules.IsAgencyAdmin(ctx)
 
-	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-		if len(agencys) == 0 {
-			return 0, nil, errors.New("user not agency admin")
-		}
-		filterTmp["agency_id"] = agencys[0].ID
+	equalData := make(map[string]string)
+	if agency != nil { // 是机构管理员的话，就需要添加机构排查
+		equalData["agency_id"] = strconv.FormatUint(uint64(agency.ID), 10)
 	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
+	//
+	//
+	//filterTmp := make(map[string]interface{})
+	//userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	//agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+	//
+	//for k, v := range filters {
+	//	filterTmp[k] = v
+	//}
+	//
+	//if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
+	//	if len(agencys) == 0 {
+	//		return 0, nil, errors.New("user not agency admin")
+	//	}
+	//	filterTmp["agency_id"] = agencys[0].ID
+	//}
 
 	// conditions
-	tmpDb := db.Model(&DeviceInfo{}).Where(filterTmp)
+	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
@@ -141,7 +150,7 @@ func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 		return 0, nil, err
 	}
 
-	var ret []DeviceInfo
+	var ret []*DeviceInfo
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
@@ -149,21 +158,20 @@ func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 	return total, ret, nil
 }
 
-func QueryTags(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([]DeviceTagFull, error) {
-	var ret []DeviceTagFull
+func QueryTagsInDevice(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([]*DeviceTagFull, error) {
+	var ret []*DeviceTagFull
 	filterTmp := make(map[string]interface{})
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-		if len(agencys) == 0 {
-			return ret, errors.New("user not agency admin")
+	if modules.IsAdmin(ctx) == nil {
+		agency := modules.IsAgencyAdmin(ctx)
+		if agency == nil {
+			return nil, errors.New(conf.NoPermission.String())
 		}
-		filterTmp["agency_id"] = agencys[0].ID
+		filterTmp["agency_id"] = agency.ID
 	}
 
-	err := db.Model(&DeviceTag{}).Joins("JOIN mdm2_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=mdm2_tags.id and mid.deleted_at is null", device.ID).
+	err := db.Table(DeviceTag{}.TableName()).Model(&DeviceTag{}).Joins("JOIN mdm2_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=tms_tags.id and mid.deleted_at is null", device.ID).
 		Where(filterTmp).
-		Select("mdm2_tags.id as id, mdm2_tags.agency_id as agency_id, mdm2_tags.name as name, mdm2_tags.created_at as created_at, mdm2_tags.updated_at as updated_at, mid.id as mid_id").
+		Select("tms_tags.id as id, tms_tags.agency_id as agency_id, tms_tags.name as name, tms_tags.created_at as created_at, tms_tags.updated_at as updated_at, mid.id as mid_id").
 		Find(&ret).Error
 
 	if err != nil {

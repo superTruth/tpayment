@@ -1,6 +1,7 @@
 package tms
 
 import (
+	"strconv"
 	"tpayment/models"
 
 	"github.com/jinzhu/gorm"
@@ -8,7 +9,7 @@ import (
 )
 
 type AppInDevice struct {
-	gorm.Model
+	models.BaseModel
 
 	ExternalId     uint   `gorm:"column:external_id" json:"external_id"`           // 外键
 	ExternalIdType string `gorm:"column:external_id_type" json:"external_id_type"` // 外键
@@ -27,71 +28,46 @@ type AppInDevice struct {
 }
 
 func (AppInDevice) TableName() string {
-	return "mdm2_app_in_device"
+	return "tms_app_in_device"
 }
 
-// 根据Device SN 获取app信息
-func GetAppsInDevice(externalId uint, externalIdType string, offset int, limit int) ([]AppInDevice, error) {
-	var ret []AppInDevice
+func GetAppsInDevice(db *models.MyDB, ctx echo.Context, externalId uint, externalIdType string, offset uint, limit uint) (uint, []*AppInDevice, error) {
+	var ret []*AppInDevice
 
-	rows, err := models.DB().Raw("SELECT a.id, a.name, a.package_id, a.version_name, a.version_code, a.status, a.app_id, a.app_file_id, "+
-		"b.name, b.package_id, "+
-		"c.version_name, c.version_code, c.update_description, c.file_name, c.file_url "+
-		"FROM mdm2_app_in_device a "+
-		"LEFT JOIN mdm2_apps b ON a.app_id = b.id and b.deleted_at is null "+
-		"LEFT JOIN mdm2_app_files c ON a.app_file_id = c.id and c.deleted_at is null "+
-		"where a.external_id=? and a.external_id_type=? and a.deleted_at is null limit ? offset ?", externalId, externalIdType, limit, offset).Rows()
+	equalData := make(map[string]string)
+	equalData["external_id"] = strconv.FormatUint(uint64(externalId), 10)
+	equalData["external_id_type"] = externalIdType
+	sqlCondition := models.CombQueryCondition(equalData, make(map[string]string))
+
+	tmpDb := db.Model(&AppInDevice{}).Where(sqlCondition)
+
+	// 统计总数
+	var total uint = 0
+	err := tmpDb.Count(&total).Error
 	if err != nil {
-		return ret, err
-	}
-	// nolint
-	defer rows.Close()
-
-	for rows.Next() {
-
-		appInDevice := AppInDevice{
-			App:     new(App),
-			AppFile: new(AppFile),
-		}
-
-		err := rows.Scan(&appInDevice.ID, &appInDevice.Name, &appInDevice.PackageId, &appInDevice.VersionName, &appInDevice.VersionCode, &appInDevice.Status, &appInDevice.AppID, &appInDevice.AppFileId,
-			&appInDevice.App.Name, &appInDevice.App.PackageId,
-			&appInDevice.AppFile.VersionName,
-			&appInDevice.AppFile.VersionCode, &appInDevice.AppFile.UpdateDescription, &appInDevice.AppFile.FileName, &appInDevice.AppFile.FileUrl)
-
-		if err != nil {
-			return ret, err
-		}
-
-		// 只有这2种状态是有配置数据
-		//if appInDevice.Status == nil{
-		//	appInDevice.Status = utils.Int2PInt(conf.STATUS_PENDING_INSTALL)
-		//}
-		//if *appInDevice.Status != conf.STATUS_PENDING_INSTALL && *appInDevice.Status != conf.STATUS_INSTALLED && *appInDevice.Status != conf.STATUS_WARNING_INSTALLED {
-		//	appInDevice.App = nil
-		//	appInDevice.AppFile = nil
-		//}
-
-		if appInDevice.AppID == 0 {
-			appInDevice.App = nil
-		}
-		if appInDevice.AppFileId == 0 {
-			appInDevice.AppFile = nil
-		}
-
-		//// 这2种情况，如果没有实际的配置文件的话，就直接跳过
-		//if (*appInDevice.Status == conf.STATUS_PENDING_INSTALL || *appInDevice.Status == conf.STATUS_INSTALLED || *appInDevice.Status == conf.STATUS_WARNING_INSTALLED) &&
-		//	(appInDevice.App == nil || appInDevice.AppFile == nil) {
-		//	fmt.Println("如果没有实际的配置文件的话")
-		//	continue
-		//}
-		//data, _ := json.MarshalIndent(appInDevice, "", "   ")
-		//fmt.Println("data->", string(data))
-
-		ret = append(ret, appInDevice)
+		return 0, nil, err
 	}
 
-	return ret, nil
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return total, ret, err
+	}
+
+	for i := 0; i < len(ret); i++ {
+		if ret[i].AppID != 0 {
+			ret[i].App, err = GetAppByID(db, ctx, ret[i].AppID)
+			if err != nil {
+				return 0, ret, err
+			}
+		}
+		if ret[i].AppFileId != 0 {
+			ret[i].AppFile, err = GetAppFileByID(db, ctx, ret[i].AppFileId)
+			if err != nil {
+				return 0, ret, err
+			}
+		}
+	}
+
+	return total, ret, nil
 }
 
 // 根据device ID获取设备信息
@@ -111,70 +87,42 @@ func GetAppInDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*AppInDevic
 	return ret, nil
 }
 
-func QueryAppInDeviceRecord(db *models.MyDB, ctx echo.Context, deviceId, offset, limit uint,
-	externalType string, filters map[string]string) (uint, []AppInDevice, error) {
-	filterTmp := make(map[string]interface{})
-
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
-
-	filterTmp["external_id"] = deviceId
-	filterTmp["external_id_type"] = externalType //AppInDeviceExternalIdTypeDevice
-
-	// conditions
-	tmpDb := db.Model(&AppInDevice{}).Where(filterTmp)
-
-	// 统计总数
-	var total uint = 0
-	err := tmpDb.Count(&total).Error
-	if err != nil {
-		return 0, nil, err
-	}
-
-	var ret []AppInDevice
-	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
-	}
-
-	for i := 0; i < len(ret); i++ {
-		// 没有配置，就不需要搜索
-		if (ret[i].AppFileId == 0) || (ret[i].AppID == 0) {
-			continue
-		}
-
-		// 获取app数据
-		if ret[i].AppID != 0 {
-			ret[i].App, err = GetAppByID(db, ctx, ret[i].AppID)
-			if err != nil {
-				return 0, nil, err
-			}
-		}
-		// 获取app file数据
-		if ret[i].AppFileId != 0 {
-			ret[i].AppFile, err = GetAppFileByID(db, ctx, ret[i].AppFileId)
-			if err != nil {
-				return 0, nil, err
-			}
-		}
-	}
-
-	return total, ret, nil
-}
-
 // 1. 只有package id这种非法安装的app
 // 2. 包含app id这种配置安装的app
 func FindAppInDevice(db *models.MyDB, ctx echo.Context, appInDevice *AppInDevice) (*AppInDevice, error) {
 	ret := new(AppInDevice)
-	err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
-		appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("mdm2_apps app ON app.id=? AND deleted_at is null", appInDevice.AppID).
-		First(ret).Error
+	//err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
+	//	appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("tms_app app ON app.id=? AND deleted_at is null", appInDevice.AppID).
+	//	First(ret).Error
+	//if err != nil {
+	//	if gorm.ErrRecordNotFound == err { // 没有记录
+	//		return nil, nil
+	//	}
+	//	return nil, err
+	//}
 
+	err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((tms_app_in_device.package_id=app.package_id) OR (tms_app_in_device.app_id=app.id)) ",
+		appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).
+		Joins("JOIN tms_app app ON app.id=? AND app.deleted_at is null", appInDevice.AppID).
+		First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
 		}
 		return nil, err
+	}
+
+	if ret.AppID != 0 {
+		ret.App, err = GetAppByID(db, ctx, ret.AppID)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if ret.AppFileId != 0 {
+		ret.AppFile, err = GetAppFileByID(db, ctx, ret.AppFileId)
+		if err != nil {
+			return ret, err
+		}
 	}
 
 	return ret, nil

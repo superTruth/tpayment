@@ -1,13 +1,15 @@
 package device
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	tms2 "tpayment/modules/tms"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func DeleteHandle(ctx echo.Context) error {
@@ -32,6 +34,13 @@ func DeleteHandle(ctx echo.Context) error {
 	if bean == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
+		return err
+	}
+
+	// 判断权限
+	if tms2.CheckPermission(ctx, bean) != nil {
+		logger.Warn(conf.NoPermission.String())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 

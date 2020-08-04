@@ -19,7 +19,7 @@ type BatchUpdate struct {
 	Tags         string `gorm:"column:tags"`
 	DeviceModels string `gorm:"column:device_models"`
 
-	Apps []AppInDevice `gorm:"-"`
+	Apps []*AppInDevice `gorm:"-"`
 }
 
 func (BatchUpdate) TableName() string {
@@ -42,7 +42,7 @@ func GetBatchUpdateRecord(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpd
 		return nil, err
 	}
 
-	batchUpdate.Apps, _ = GetAppsInDevice(id, AppInDeviceExternalIdTypeBatchUpdate, 0, 1000) // 最多查出200条记录
+	_, batchUpdate.Apps, _ = GetAppsInDevice(models.DB(), ctx, id, AppInDeviceExternalIdTypeBatchUpdate, 0, 1000) // 最多查出200条记录
 
 	return batchUpdate, nil
 }

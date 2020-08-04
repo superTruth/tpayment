@@ -2,25 +2,44 @@ package appindevice
 
 import (
 	"errors"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	tms2 "tpayment/modules/tms"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
-// TODO 未完成
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(tms.AppInDevice)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
-	if err != nil {
+	if err != nil || req.ExternalId == 0 {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+
+	// 获取设备标识，查看是否有权限
+	bean, err := tms.GetDeviceByID(models.DB(), ctx, req.ExternalId)
+	if err != nil {
+		logger.Error("GetDeviceByID fail->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+	if bean == nil {
+		logger.Error("device not found->", req.ExternalId)
+		modules.BaseError(ctx, conf.RecordNotFund)
+		return err
+	}
+	if err := tms2.CheckPermission(ctx, bean); err != nil {
+		logger.Error("CheckPermission fail->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 
@@ -56,7 +75,7 @@ func SmartAddAppInDevice(ctx echo.Context, app *tms.AppInDevice) conf.ResultCode
 			AppID:          app.AppID,
 			AppFileId:      app.AppFileId,
 		}
-		if err = models.DB().Create(bean).Error; err != nil {
+		if err = models.CreateBaseRecord(bean); err != nil {
 			logger.Error("Create fail->", err.Error())
 			return conf.DBError
 		}
@@ -72,9 +91,9 @@ func SmartAddAppInDevice(ctx echo.Context, app *tms.AppInDevice) conf.ResultCode
 	// app需要update的情况
 	bean.Status = app.Status
 	bean.AppFileId = app.AppFileId
-	bean.AppID = app.AppFileId
+	bean.AppID = app.AppID
 
-	if err := models.DB().Update(bean); err != nil {
+	if err := models.UpdateBaseRecord(bean); err != nil {
 		logger.Error("Update fail->", err.Error)
 		return conf.DBError
 	}

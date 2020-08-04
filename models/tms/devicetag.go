@@ -2,14 +2,25 @@ package tms
 
 import (
 	"errors"
+	"strconv"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/account"
-	"tpayment/models/agency"
+	"tpayment/modules"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
+
+type DeviceTag struct {
+	models.BaseModel
+
+	AgencyId uint   `json:"agency_id" gorm:"column:agency_id"`
+	Name     string `json:"name" gorm:"column:name"` // 外键
+}
+
+func (DeviceTag) TableName() string {
+	return "tms_tags"
+}
 
 // 根据device ID获取设备信息
 func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, error) {
@@ -28,33 +39,29 @@ func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, e
 	return ret, nil
 }
 
-func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []DeviceTag, error) {
-	filterTmp := make(map[string]interface{})
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceTag, error) {
 
-	for k, v := range filters {
-		filterTmp[k] = v
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		return 0, nil, errors.New(conf.NoPermission.String())
 	}
-
-	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-		if len(agencys) == 0 {
-			return 0, nil, errors.New("user not agency admin")
-		}
-		filterTmp["agency_id"] = agencys[0].ID
+	equalData := make(map[string]string)
+	if agencyId != 0 {
+		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table("mdm2_apps").Where(filterTmp)
+	tmpDb := db.Model(&DeviceTag{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
-	err := tmpDb.Count(&total).Error
+	err = tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
-	var ret []DeviceTag
+	var ret []*DeviceTag
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

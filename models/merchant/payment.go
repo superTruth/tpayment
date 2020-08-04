@@ -58,6 +58,9 @@ func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx echo.Context, mercha
 
 	// 查询记录
 	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
+	if err != nil {
+		return 0, nil, err
+	}
 
 	return total, ret, nil
 }

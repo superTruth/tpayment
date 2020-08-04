@@ -2,14 +2,15 @@ package device
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	tms2 "tpayment/modules/tms"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func UpdateHandle(ctx echo.Context) error {
@@ -37,6 +38,13 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 判断权限
+	if tms2.CheckPermission(ctx, bean) != nil {
+		logger.Warn(conf.NoPermission.String())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
 	// 生成新账号
 	err = models.UpdateBaseRecord(req)
 
@@ -61,21 +69,27 @@ func UpdateHandle(ctx echo.Context) error {
 // 合并tags
 func mergeTags(ctx echo.Context, device *tms.DeviceInfo) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
-	dbTags, err := tms.QueryTags(models.DB(), ctx, device)
+
+	// 前端没传入
+	if device.Tags == nil {
+		return conf.SUCCESS
+	}
+
+	dbTags, err := tms.QueryTagsInDevice(models.DB(), ctx, device)
 
 	if err != nil {
-		logger.Warn("QueryTags fail->", err.Error())
+		logger.Warn("QueryTagsInDevice fail->", err.Error())
 		return conf.DBError
 	}
 
 	// 先找到需要删除的tag(在数据库中有，但是update没有的)
-	logger.Info("find need delete record-> db len:", len(dbTags), ", tags len:", len(device.Tags))
+	logger.Info("find need delete record-> db len:", len(dbTags), ", tags len:", len(*device.Tags))
 	for i := 0; i < len(dbTags); i++ {
 		findFlag := false
 
-		for j := 0; j < len(device.Tags); j++ {
-			logger.Info("dbTags id->", dbTags[i].ID, ", tag id:", device.Tags[j].ID)
-			if dbTags[i].ID == device.Tags[j].ID {
+		for j := 0; j < len(*device.Tags); j++ {
+			logger.Info("dbTags id->", dbTags[i].ID, ", tag id:", (*device.Tags)[j].ID)
+			if dbTags[i].ID == (*device.Tags)[j].ID {
 				findFlag = true
 				break
 			}
@@ -85,7 +99,7 @@ func mergeTags(ctx echo.Context, device *tms.DeviceInfo) conf.ResultCode {
 		if !findFlag {
 			logger.Info("need delete record->", dbTags[i].MidId)
 			err := models.DB().Delete(&tms.DeviceAndTagMid{
-				Model: gorm.Model{ID: dbTags[i].MidId},
+				BaseModel: models.BaseModel{ID: dbTags[i].MidId},
 			}).Error
 
 			if err != nil {
@@ -95,11 +109,11 @@ func mergeTags(ctx echo.Context, device *tms.DeviceInfo) conf.ResultCode {
 		}
 	}
 
-	logger.Info("find need create record-> db len:", len(dbTags), ", tags len:", len(device.Tags))
-	for i := 0; i < len(device.Tags); i++ {
+	logger.Info("find need create record-> db len:", len(dbTags), ", tags len:", len(*device.Tags))
+	for i := 0; i < len(*device.Tags); i++ {
 		findFlag := false
 		for j := 0; j < len(dbTags); j++ {
-			if dbTags[i].ID == device.Tags[j].ID {
+			if dbTags[j].ID == (*device.Tags)[i].ID {
 				findFlag = true
 				break
 			}
@@ -107,9 +121,9 @@ func mergeTags(ctx echo.Context, device *tms.DeviceInfo) conf.ResultCode {
 
 		// 添加关联数据
 		if !findFlag {
-			logger.Info("need create record->", device.Tags[i].ID)
+			logger.Info("need create record->", (*device.Tags)[i].ID)
 			err := models.DB().Create(&tms.DeviceAndTagMid{
-				TagID:    device.Tags[i].ID,
+				TagID:    (*device.Tags)[i].ID,
 				DeviceId: device.ID,
 			}).Error
 

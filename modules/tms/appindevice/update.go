@@ -1,13 +1,15 @@
 package appindevice
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	tms2 "tpayment/modules/tms"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func UpdateHandle(ctx echo.Context) error {
@@ -35,7 +37,27 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 获取设备标识，查看是否有权限
+	deviceBean, err := tms.GetDeviceByID(models.DB(), ctx, bean.ExternalId)
+	if err != nil {
+		logger.Error("GetDeviceByID fail->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+	if deviceBean == nil {
+		logger.Error("device not found->", bean.ExternalId)
+		modules.BaseError(ctx, conf.RecordNotFund)
+		return err
+	}
+	if err := tms2.CheckPermission(ctx, deviceBean); err != nil {
+		logger.Error("CheckPermission fail->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
 	// 生成新账号
+	req.ExternalId = 0
+	req.ExternalIdType = ""
 	err = models.UpdateBaseRecord(req)
 
 	if err != nil {

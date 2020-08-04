@@ -7,10 +7,9 @@ import (
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
-
-	"github.com/jinzhu/gorm"
 )
 
 func TestCreateTmsAppInDevice(t *testing.T) {
@@ -23,7 +22,7 @@ func TestCreateTmsAppInDevice(t *testing.T) {
 	}
 
 	reqBean := &tms.AppInDevice{
-		ExternalId:  1505156075807081495,
+		ExternalId:  1,
 		Name:        "Test",
 		PackageId:   "com.truth.test",
 		VersionName: "v1.0.1",
@@ -54,10 +53,10 @@ func TestUpdateTmsAppInDevice(t *testing.T) {
 	}
 
 	reqBean := &tms.AppInDevice{
-		Model: gorm.Model{
-			ID: 1505221047908102133,
+		BaseModel: models.BaseModel{
+			ID: 1505221047908102138,
 		},
-		Name: "Test23423",
+		Status: conf.TmsStatusPendingUninstalled,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
@@ -101,7 +100,7 @@ func TestDeleteTmsAppInDevice(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 1505221047908102133}
+	reqBean := &modules.BaseIDRequest{ID: 1505221047908102137}
 
 	reqByte, _ := json.Marshal(reqBean)
 

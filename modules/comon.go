@@ -10,7 +10,7 @@ import (
 )
 
 func GetAgencyId(ctx echo.Context, reqAgencyId uint) (uint, error) {
-	var agencyId uint = 0
+	var agencyId uint
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 	if userBean.Role == string(conf.RoleAdmin) {
 		if reqAgencyId == 0 {
@@ -19,6 +19,23 @@ func GetAgencyId(ctx echo.Context, reqAgencyId uint) (uint, error) {
 		agencyId = reqAgencyId
 	} else {
 		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		agencyId = agencys[0].ID
+	}
+
+	return agencyId, nil
+}
+
+func GetAgencyId2(ctx echo.Context) (uint, error) {
+	var agencyId uint
+	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	if userBean.Role == string(conf.RoleAdmin) {
+		agencyId = 0
+	} else {
+		agencys, ok := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		if !ok || len(agencys) == 0 {
+			return 0, errors.New("no permission")
+		}
+
 		agencyId = agencys[0].ID
 	}
 

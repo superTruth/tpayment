@@ -1,13 +1,14 @@
 package devicetag
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func UpdateHandle(ctx echo.Context) error {
@@ -19,6 +20,14 @@ func UpdateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+
+	// 获取机构ID，系统管理员为0
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		logger.Warn("GetAgencyId2->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 
@@ -35,7 +44,15 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 无权限删除
+	if agencyId != 0 && agencyId != bean.AgencyId {
+		logger.Warn("current agency id is:", bean.AgencyId, ", your id:", agencyId)
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
 	// 生成新账号
+	req.AgencyId = 0
 	err = models.UpdateBaseRecord(req)
 
 	if err != nil {

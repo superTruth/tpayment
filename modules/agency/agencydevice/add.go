@@ -15,8 +15,6 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/jinzhu/gorm"
-
 	"github.com/labstack/echo"
 )
 
@@ -59,7 +57,7 @@ func AddHandle(ctx echo.Context) error {
 func AddByID(ctx echo.Context, agencyId, deviceId uint) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	device := tms.DeviceInfo{
-		Model: gorm.Model{
+		BaseModel: models.BaseModel{
 			ID: deviceId,
 		},
 		AgencyId: agencyId,
@@ -94,6 +92,7 @@ func AddByFile(ctx echo.Context, agencyId uint, fileUrl string) conf.ResultCode 
 
 	// 读取里面的数据
 	f, err := os.Open(localFilePath)
+	// nolint
 	defer f.Close()
 	if err != nil {
 		logger.Warn("open file err->", err.Error())
@@ -118,7 +117,7 @@ func AddByFile(ctx echo.Context, agencyId uint, fileUrl string) conf.ResultCode 
 		}
 
 		// 查询一下是否已经存在这个device id
-		device, err := tms.GetDeviceBySn(record[0])
+		device, err := tms.GetDeviceBySn(models.DB(), ctx, record[0])
 		if err != nil {
 			logger.Error("GetDeviceBySn fail->", err.Error())
 			return conf.DBError
@@ -132,7 +131,7 @@ func AddByFile(ctx echo.Context, agencyId uint, fileUrl string) conf.ResultCode 
 			}
 
 			err = models.UpdateBaseRecord(&tms.DeviceInfo{
-				Model: gorm.Model{
+				BaseModel: models.BaseModel{
 					ID: device.ID,
 				},
 				AgencyId: agencyId,

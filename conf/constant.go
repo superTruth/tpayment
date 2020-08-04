@@ -105,6 +105,8 @@ const (
 	UrlTmsAppInBatchUpdateUpdate = "/payment/tms/appinbatchupdate/update"
 	UrlTmsAppInBatchUpdateQuery  = "/payment/tms/appinbatchupdate/query"
 
+	UrlTmsHeartBeat = "/payment/tms/heartbeat"
+
 	UrlFileAdd = "/payment/fileutils/add"
 )
 
@@ -114,8 +116,10 @@ const (
 )
 
 const (
-	RebootModeNever    = "Never"
-	RebootModeEveryDay = "Every Day"
+	RebootModeNever      = "Never"
+	RebootModeEveryDay   = "Every Day"
+	RebootModeEveryWeek  = "Every Week"
+	RebootModeEveryMonth = "Every Month"
 )
 
 const (

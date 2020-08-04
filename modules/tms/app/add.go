@@ -1,13 +1,14 @@
 package app
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 // TODO 未完成
@@ -23,6 +24,16 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 获取机构ID，系统管理员为0
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		logger.Warn("GetAgencyId2->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
+	req.AgencyId = agencyId
+	req.ID = 0
 	err = models.CreateBaseRecord(req)
 
 	if err != nil {

@@ -1,13 +1,15 @@
 package appindevice
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	tms2 "tpayment/modules/tms"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func QueryHandle(ctx echo.Context) error {
@@ -26,7 +28,21 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.QueryAppInDeviceRecord(models.DB(), ctx, req.DeviceId, req.Offset, req.Limit, tms.AppInDeviceExternalIdTypeDevice, req.Filters)
+	// 权限判断
+	deviceBean, err := tms.GetDeviceByID(models.DB(), ctx, req.DeviceId)
+	if err != nil {
+		logger.Info("GetDeviceByID sql error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
+	if err := tms2.CheckPermission(ctx, deviceBean); err != nil {
+		logger.Error("CheckPermission fail->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
+	total, dataRet, err := tms.GetAppsInDevice(models.DB(), ctx, req.DeviceId,
+		tms.AppInDeviceExternalIdTypeDevice, req.Offset, req.Limit)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -47,7 +63,6 @@ func QueryHandle(ctx echo.Context) error {
 				dataRet[i].VersionCode = dataRet[i].AppFile.VersionCode
 			}
 		}
-
 	}
 
 	ret := &modules.BaseQueryResponse{

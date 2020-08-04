@@ -7,10 +7,9 @@ import (
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
-
-	"github.com/jinzhu/gorm"
 )
 
 func TestCreateTmsApp(t *testing.T) {
@@ -49,8 +48,8 @@ func TestUpdateTmsApp(t *testing.T) {
 	}
 
 	reqBean := &tms.AppInDevice{
-		Model: gorm.Model{
-			ID: 1505221047908102133,
+		BaseModel: models.BaseModel{
+			ID: 1,
 		},
 		Name: "Test23423",
 	}

@@ -13,24 +13,14 @@ const (
 )
 
 // devicetag
-type DeviceTag struct {
-	gorm.Model
-
-	AgencyId string  `gorm:"column:agency_id"`
-	Name     *string `gorm:"column:name"` // 外键
-}
-
-func (DeviceTag) TableName() string {
-	return "mdm2_tags"
-}
 
 type DeviceTagFull struct {
 	DeviceTag
-	MidId uint `gorm:"column:mid_id"`
+	MidId uint `json:"agency_id" gorm:"column:mid_id"`
 }
 
 type DeviceAndTagMid struct {
-	gorm.Model
+	models.BaseModel
 
 	TagID    uint `gorm:"column:tag_id"`
 	DeviceId uint `gorm:"column:device_id"`

@@ -80,6 +80,7 @@ func TestLogin(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
+// nolint
 func Login(account, pwd string) string {
 	reqBean := &user.LoginRequest{
 		Email:     account,

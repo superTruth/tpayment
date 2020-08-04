@@ -1,16 +1,16 @@
 package devicetag
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
-// TODO 未完成
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
@@ -23,20 +23,16 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	bean, err := tms.GetDeviceTagByID(models.DB(), ctx, req.ID)
+	// 获取机构ID，系统管理员为0
+	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
-		logger.Error("GetAppByID sql error->", err.Error())
-		modules.BaseError(ctx, conf.DBError)
+		logger.Warn("GetAgencyId2->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 
-	if bean == nil {
-		logger.Info("GetAppByID sql error->", err.Error())
-		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
-	}
-
+	req.AgencyId = agencyId
+	req.ID = 0
 	err = models.CreateBaseRecord(req)
 
 	if err != nil {

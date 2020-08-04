@@ -123,6 +123,8 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlTmsAppInBatchUpdateUpdate, appinbatchupdate.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppInBatchUpdateQuery, appinbatchupdate.QueryHandle)   // 查询
 
+	//e.POST(conf.UrlTmsHeartBeat, clientapi.HearBeat) // 客户端心跳逻辑
+
 	e.POST(conf.UrlFileAdd, fileupload.RequestUploadFileUrl) // 创建文件
 
 	return e, nil

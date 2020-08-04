@@ -7,10 +7,9 @@ import (
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
-
-	"github.com/jinzhu/gorm"
 )
 
 func TestUpdateTmsDevice(t *testing.T) {
@@ -22,29 +21,21 @@ func TestUpdateTmsDevice(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	var deviceTags []tms.DeviceTagFull
+	var deviceTags []*tms.DeviceTagFull
 	_ = json.Unmarshal([]byte(`[
 					{
-						"ID": 25,
-						"Name": "tag1"
-					},
-					{
-						"AgencyId": "0",
-						"CreatedAt": "0001-01-01T00:00:00Z",
-						"DeletedAt": null,
-						"ID": 24,
-						"MidId": 744,
-						"Name": "tag2",
-						"UpdatedAt": "0001-01-01T00:00:00Z"
+						"id": 25
 					}
 				]`), &deviceTags)
 
+	fmt.Println("deviceTags len->", len(deviceTags))
+
 	reqBean := &tms.DeviceInfo{
-		Model: gorm.Model{
-			ID: 1505156075807081492,
+		BaseModel: models.BaseModel{
+			ID: 1,
 		},
-		DeviceCsn: "12312",
-		Tags:      deviceTags,
+		DeviceCsn: "456789",
+		Tags:      &deviceTags,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
@@ -87,7 +78,7 @@ func TestDeleteTmsDevice(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 1505156075807081492}
+	reqBean := &modules.BaseIDRequest{ID: 1}
 
 	reqByte, _ := json.Marshal(reqBean)
 

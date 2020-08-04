@@ -1,13 +1,14 @@
 package device
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func QueryHandle(ctx echo.Context) error {
@@ -35,13 +36,13 @@ func QueryHandle(ctx echo.Context) error {
 
 	// 查询出设备里面对应的所有的tag
 	for i := 0; i < len(dataRet); i++ {
-		tags, err := tms.QueryTags(models.DB(), ctx, &dataRet[i])
+		tags, err := tms.QueryTagsInDevice(models.DB(), ctx, dataRet[i])
 		if err != nil {
-			logger.Info("QueryTags sql error->", err.Error())
+			logger.Info("QueryTagsInDevice sql error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
 			return err
 		}
-		dataRet[i].Tags = tags
+		dataRet[i].Tags = &tags
 	}
 
 	ret := &modules.BaseQueryResponse{

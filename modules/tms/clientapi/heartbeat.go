@@ -53,7 +53,7 @@ func HearBeat(ctx echo.Context) error {
 	}
 
 	// 查询出当前设备的信息
-	deviceInfo, err := tms.GetDeviceBySn(bean.DeviceSn)
+	deviceInfo, err := tms.GetDeviceBySn(models.DB(), ctx, bean.DeviceSn)
 	if err != nil {
 		logger.Info("GetDeviceBySn sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -82,7 +82,7 @@ func HearBeat(ctx echo.Context) error {
 	var retApps []AppInfo
 	for i := 0; ; i++ {
 		logger.Info("查询一次记录->", i)
-		dbApps, err := tms.GetAppsInDevice(deviceInfo.ID, tms.AppInDeviceExternalIdTypeDevice, i*PageLen, PageLen) // 最多查出200条记录
+		dbApps, err := tms.GetAppsInDevice(models.DB(), ctx, deviceInfo.ID, tms.AppInDeviceExternalIdTypeDevice, i*PageLen, PageLen) // 最多查出200条记录
 		if err != nil {
 			logger.Error("GetAppsInDevice error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
@@ -131,7 +131,7 @@ func HearBeat(ctx echo.Context) error {
 	if deviceInfo.DeviceCsn != "" {
 		ret.DeviceCsn = deviceInfo.DeviceCsn
 	}
-	if deviceInfo.RebootMode != 0 {
+	if deviceInfo.RebootMode != "" {
 		ret.RebootMode = deviceInfo.RebootMode
 	}
 	if deviceInfo.Alias != "" {
@@ -355,7 +355,8 @@ func copyRequestInfo2DeviceInfo(requestDevice *RequestBean, deviceInfo *tms.Devi
 	}
 
 	if requestDevice.DeviceModel != "" && deviceModels != nil {
-		deviceInfo.DeviceModel = deviceModels[requestDevice.DeviceModel]
+		// TODO
+		deviceInfo.DeviceModel = requestDevice.DeviceModel
 	}
 
 	if requestDevice.LocationLat != "" {
