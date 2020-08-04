@@ -32,7 +32,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 	// 非系统管理员，只查看跟他有关的机构
 	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
 	if userBean.Role != string(conf.RoleAdmin) {
-		tmpDB = tmpDB.Joins("JOIN agency_user_associate ass ON ass.user_id = user.id AND ass.deleted_at IS NULL", userBean.ID)
+		tmpDB = tmpDB.Joins("JOIN agency_user_associate ass ON ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
 
 	// 统计总数

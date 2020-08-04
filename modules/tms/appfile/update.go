@@ -1,13 +1,14 @@
 package appfile
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func UpdateHandle(ctx echo.Context) error {
@@ -18,6 +19,11 @@ func UpdateHandle(ctx echo.Context) error {
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+	if req.ID == 0 {
+		logger.Warn(conf.ParameterError.String())
 		modules.BaseError(ctx, conf.ParameterError)
 		return err
 	}
@@ -36,7 +42,12 @@ func UpdateHandle(ctx echo.Context) error {
 	}
 
 	// 生成新账号
-	err = models.UpdateBaseRecord(req)
+	err = models.UpdateBaseRecord(&tms.AppFile{
+		BaseModel: models.BaseModel{
+			ID: req.ID,
+		},
+		UpdateDescription: req.UpdateDescription,
+	})
 
 	if err != nil {
 		logger.Info("UpdateBaseRecord sql error->", err.Error())

@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-// TODO 未完成
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 

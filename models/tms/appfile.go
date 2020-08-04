@@ -1,27 +1,29 @@
 package tms
 
 import (
+	"strconv"
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type AppFile struct {
-	gorm.Model
+	models.BaseModel
 
-	VersionName       string `gorm:"column:version_name"`
-	VersionCode       int    `gorm:"column:version_code"`
-	UpdateDescription string `gorm:"column:update_description"`
-	FileName          string `gorm:"column:file_name"`
-	FileUrl           string `gorm:"column:file_url"`
-	Status            string `gorm:"column:decode_status"`
-	DecodeFailMsg     string `gorm:"column:decode_fail_msg"`
+	VersionName       string `gorm:"column:version_name" json:"version_name"`
+	VersionCode       int    `gorm:"column:version_code" json:"version_code"`
+	UpdateDescription string `gorm:"column:update_description" json:"update_description"`
+	FileName          string `gorm:"column:file_name" json:"file_name"`
+	FileUrl           string `gorm:"column:file_url" json:"file_url"`
+	Status            string `gorm:"column:decode_status" json:"status"`
+	DecodeFailMsg     string `gorm:"column:decode_fail_msg" json:"decode_fail_msg"`
 
-	AppId *uint `gorm:"column:app_id"`
+	AppId uint `gorm:"column:app_id" json:"app_id"`
 }
 
 func (AppFile) TableName() string {
-	return "mdm2_app_files"
+	return "tms_app_file"
 }
 
 // 根据device ID获取设备信息
@@ -41,17 +43,13 @@ func GetAppFileByID(db *models.MyDB, ctx echo.Context, id uint) (*AppFile, error
 	return ret, nil
 }
 
-func QueryAppFileRecord(db *models.MyDB, ctx echo.Context, appId, offset, limit uint, filters map[string]string) (uint, []AppFile, error) {
-	filterTmp := make(map[string]interface{})
-
-	for k, v := range filters {
-		filterTmp[k] = v
-	}
-
-	filterTmp["app_id"] = appId
+func QueryAppFileRecord(db *models.MyDB, ctx echo.Context, appId, offset, limit uint, filters map[string]string) (uint, []*AppFile, error) {
+	equalData := make(map[string]string)
+	equalData["app_id"] = strconv.FormatUint(uint64(appId), 10)
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table("mdm2_app_files").Where(filterTmp)
+	tmpDb := db.Model(&AppFile{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
@@ -60,7 +58,7 @@ func QueryAppFileRecord(db *models.MyDB, ctx echo.Context, appId, offset, limit 
 		return 0, nil, err
 	}
 
-	var ret []AppFile
+	var ret []*AppFile
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

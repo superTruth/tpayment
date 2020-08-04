@@ -12,7 +12,7 @@ import (
 	"tpayment/modules"
 )
 
-func TestCreateTmsApp(t *testing.T) {
+func TestCreateTmsAppFile(t *testing.T) {
 	TestLogin(t)
 
 	fmt.Println("add user", line)
@@ -21,15 +21,16 @@ func TestCreateTmsApp(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &tms.App{
-		Name:        "Fang Apk",
-		PackageId:   "com.bindo.test",
-		Description: "测试",
+	// https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Pax-MDM-V1.14_alpha_release_sign.apk
+	reqBean := &tms.AppFile{
+		UpdateDescription: "MDM First Time",
+		FileUrl:           "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+		AppId:             1,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsAppAdd, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsAppFileAdd, time.Second*10)
 
 	respBean := &modules.BaseResponse{}
 
@@ -38,7 +39,7 @@ func TestCreateTmsApp(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
-func TestUpdateTmsApp(t *testing.T) {
+func TestUpdateTmsAppFile(t *testing.T) {
 	TestLogin(t)
 
 	fmt.Println("TestUpdateDevice", line)
@@ -63,7 +64,7 @@ func TestUpdateTmsApp(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
-func TestQueryTmsApp(t *testing.T) {
+func TestQueryTmsAppFile(t *testing.T) {
 	TestLogin(t)
 	fmt.Println("query agency", line)
 	header := http.Header{
@@ -71,18 +72,19 @@ func TestQueryTmsApp(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
+		AppId:  1,
 		Offset: 0,
 		Limit:  100,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsAppQuery, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsAppFileQuery, time.Second*10)
 
 	formatJson(repByte)
 }
 
-func TestDeleteTmsApp(t *testing.T) {
+func TestDeleteTmsAppFile(t *testing.T) {
 	TestLogin(t)
 
 	fmt.Println("delete user", line)

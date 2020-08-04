@@ -27,9 +27,21 @@ func AddHandle(ctx echo.Context) error {
 		modules.BaseError(ctx, conf.ParameterError)
 		return err
 	}
+	if req.AppId == 0 {
+		logger.Warn(conf.ParameterError.String())
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	bean, err := tms.GetAppFileByID(models.DB(), ctx, req.ID)
+	// 获取机构ID，系统管理员为0
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		logger.Warn("GetAgencyId2->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
+	bean, err := tms.GetAppByID(models.DB(), ctx, req.AppId)
 	if err != nil {
 		logger.Error("GetAppByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -37,11 +49,19 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	if bean == nil {
-		logger.Info("GetAppByID sql error->", err.Error())
+		logger.Info(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
+	// 无权限删除
+	if agencyId != 0 && agencyId != bean.AgencyId {
+		logger.Warn("current agency id is:", bean.AgencyId, ", your id:", agencyId)
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
+	}
+
+	req.ID = 0
 	req.Status = conf.AppFileStatusPending
 	err = models.CreateBaseRecord(req)
 
@@ -64,6 +84,8 @@ func AddHandle(ctx echo.Context) error {
 func StartDecode(ctx echo.Context, id uint) {
 	logger := tlog.GetLogger(ctx)
 
+	logger.Info("start decode app file->", id)
+
 	appFile, err := tms.GetAppFileByID(models.DB(), ctx, id)
 	if err != nil {
 		logger.Error("GetAppFileByID sql error->", err.Error())
@@ -76,18 +98,18 @@ func StartDecode(ctx echo.Context, id uint) {
 	}
 
 	// 获取文件所属的app，用来判断解析后的apk文件package id和app设定package id是相同的防止错误
-	app, err := tms.GetAppByID(models.DB(), ctx, *appFile.AppId)
+	app, err := tms.GetAppByID(models.DB(), ctx, appFile.AppId)
 	if err != nil {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "Can't get parent app"
-		models.DB().Updates(appFile)
+		_ = models.UpdateBaseRecord(appFile)
 		logger.Warn("GetAppByID error->", appFile.DecodeFailMsg)
 		return
 	}
 
 	// 开始
 	appFile.Status = conf.AppFileStatusDecoding
-	err = models.DB().Updates(appFile).Error
+	err = models.UpdateBaseRecord(appFile)
 	if err != nil {
 		logger.Error("Updates appFile sql err->", err.Error())
 		return
@@ -97,7 +119,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	if appFile.FileUrl == "" {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "fileutils url is empty"
-		models.DB().Updates(appFile)
+		_ = models.UpdateBaseRecord(appFile)
 		logger.Warn("Updates appFile error->", appFile.DecodeFailMsg)
 		return
 	}
@@ -107,7 +129,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	if err != nil || !ret {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "fileutils url is not apk fileutils"
-		models.DB().Updates(appFile)
+		_ = models.UpdateBaseRecord(appFile)
 		logger.Warn("Updates appFile error->", appFile.DecodeFailMsg)
 		return
 	}
@@ -118,7 +140,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	if err != nil {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "apk parse fail->" + err.Error()
-		models.DB().Updates(appFile)
+		_ = models.UpdateBaseRecord(appFile)
 		logger.Warn(appFile.DecodeFailMsg)
 		return
 	}
@@ -127,7 +149,7 @@ func StartDecode(ctx echo.Context, id uint) {
 	if app.PackageId != apkInfo.Package {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "Package is not same as parent app: parent->" + app.PackageId + ", current ->" + apkInfo.Package
-		models.DB().Updates(appFile)
+		_ = models.UpdateBaseRecord(appFile)
 		logger.Warn(appFile.DecodeFailMsg)
 		return
 	}
@@ -138,5 +160,5 @@ func StartDecode(ctx echo.Context, id uint) {
 	appFile.VersionName = apkInfo.VersionName
 	appFile.FileName = path.Base(appFile.FileUrl)
 
-	models.DB().Updates(appFile)
+	_ = models.UpdateBaseRecord(appFile)
 }
