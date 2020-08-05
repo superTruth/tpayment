@@ -19,8 +19,10 @@ type BatchUpdate struct {
 
 	UpdateFailMsg string `gorm:"column:update_fail_msg" json:"update_fail_msg"`
 
-	Tags         string `gorm:"column:tags" json:"tags"`
-	DeviceModels string `gorm:"column:device_models" json:"device_models"`
+	Tags         *models.StringArray `gorm:"column:tags" json:"-"`
+	DeviceModels *models.StringArray `gorm:"column:device_models" json:"device_models"`
+
+	ConfigTags []*DeviceTag `gorm:"column:-" json:"tags"`
 
 	Apps []*AppInDevice `gorm:"-"`
 }
@@ -71,64 +73,27 @@ func QueryBatchUpdateRecord(db *models.MyDB, ctx echo.Context, offset, limit uin
 	return total, ret, nil
 }
 
-func GetBatchUpdateDevices(db *models.MyDB, ctx echo.Context, batchUpdate *BatchUpdate, offset int, limit int) ([]*DeviceInfo, error) {
+func GetBatchUpdateDevices(db *models.MyDB, ctx echo.Context, batchUpdate *BatchUpdate, offset uint, limit uint) ([]*DeviceInfo, error) {
+	tmpDb := db.Model(&DeviceInfo{})
 
-	return nil, nil
-	//sb := strings.Builder{}
-	//
-	//sb.WriteString("SELECT * FROM tms_device a ")
-	//
-	//tags, comErr := utils.JsonStringArray2StringArray(batchUpdate.Tags)
-	//if comErr == nil && len(tags) != 0 { // 有选择tag的情况
-	//	sb.WriteString("JOIN tms_device_and_tag_mid b ON a.id = b.device_id AND b.deleted_at IS NULL AND b.tag_id IN (")
-	//	sb.WriteString(strings.Join(tags, ","))
-	//	sb.WriteString(") ")
-	//}
-	//
-	//deviceModels, comErr := utils.JsonStringArray2StringArray(batchUpdate.DeviceModels)
-	//if comErr == nil && len(deviceModels) != 0 { // 有选择tag的情况
-	//	sb.WriteString("JOIN tms_model c ON a.device_model = c.id AND c.deleted_at IS NULL AND c.id IN (")
-	//	sb.WriteString(strings.Join(deviceModels, ","))
-	//	sb.WriteString(") ")
-	//}
-	//
-	//sb.WriteString(fmt.Sprintf("WHERE a.store_id = %d and a.deleted_at IS NULL ", *batchUpdate.StoreID))
-	//
-	//sb.WriteString("GROUP BY a.id ")
-	//
-	//sb.WriteString("limit ")
-	//sb.WriteString(strconv.Itoa(limit))
-	//
-	//sb.WriteString(" ")
-	//
-	//sb.WriteString(" offset ")
-	//sb.WriteString(strconv.Itoa(offset))
-	//
-	////
-	//rows, err := models.DB().Raw(sb.String()).Rows()
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer rows.Close()
-	//
-	//var ret []DeviceInfo
-	//for rows.Next() {
-	//	tmpDevice := new(DeviceInfo)
-	//
-	//	models.DB().ScanRows(rows, tmpDevice)
-	//
-	//	ret = append(ret, *tmpDevice)
-	//}
-	//
-	//return ret, nil
-}
-
-func UpdateBatchUpdate(record *BatchUpdate) error {
-	err := models.DB().Model(record).Updates(record).Error
-
+	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if agencyId != 0 { // 是机构管理员的话，就需要添加机构排查
+		tmpDb = tmpDb.Where("device_model in (?) AND agency_id=?", *batchUpdate.DeviceModels, agencyId)
+	} else {
+		tmpDb = tmpDb.Where("device_model in (?)", *batchUpdate.DeviceModels)
 	}
 
-	return nil
+	if batchUpdate.Tags != nil {
+		tmpDb = tmpDb.Joins("JOIN tms_device_and_tag_mid b ON a.id = b.device_id AND b.deleted_at IS NULL AND b.tag_id IN (?)", *batchUpdate.Tags)
+	}
+
+	var ret []*DeviceInfo
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return ret, err
+	}
+
+	return ret, nil
 }

@@ -39,6 +39,19 @@ func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, e
 	return ret, nil
 }
 
+func GetDeviceTagByIDs(db *models.MyDB, ctx echo.Context, ids models.StringArray) ([]*DeviceTag, error) {
+
+	var ret []*DeviceTag
+
+	err := db.Model(&DeviceTag{}).Where("id IN (?)", ids).Find(&ret).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceTag, error) {
 
 	agencyId, err := modules.GetAgencyId2(ctx)

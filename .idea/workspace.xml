@@ -2,30 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7a3898e-6d6e-4f4c-aa28-e284f969fbe3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/conf/url.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/tms/batchupdate/starthandle.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/tms_uploadfile_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/constant.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/constant.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/tms/appindevice.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/appindevice.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/tms/batchupdate.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/batchupdate.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/tms/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/device.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/tms/deviceinfo.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/deviceinfo.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/tms/fileupload.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/fileupload.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/basecontext.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/basecontext.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/appinbatchupdate/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/appinbatchupdate/add.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/appinbatchupdate/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/appinbatchupdate/delete.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/appinbatchupdate/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/appinbatchupdate/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/appindevice/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/appindevice/add.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/appindevice/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/appindevice/delete.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/batchupdate/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/batchupdate/add.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/batchupdate/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/batchupdate/delete.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/tms/devicetag.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/tms/devicetag.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/tms/batchupdate/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/batchupdate/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/batchupdate/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/batchupdate/update.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/uploadfile/add.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/uploadfile/add.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/uploadfile/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/uploadfile/delete.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/tms/uploadfile/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/tms/uploadfile/update.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +151,8 @@
     <MESSAGE value="验证完agency device模块" />
     <MESSAGE value="完成 tms:tag,appindevice验证" />
     <MESSAGE value="完成 tms:app,appfile" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成 tms:app,appfile" />
+    <MESSAGE value="完成 upload file" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成 upload file" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -182,12 +163,12 @@
       <screen x="0" y="23" width="1729" height="1097" />
     </state>
     <state x="583" y="381" key="#com.intellij.fileTypes.FileTypeChooser/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732411416" />
-    <state x="557" y="86" key="CommitChangelistDialog2" timestamp="1596547066025">
+    <state x="557" y="86" key="CommitChangelistDialog2" timestamp="1596630436522">
       <screen x="0" y="23" width="1726" height="1097" />
     </state>
     <state x="519" y="82" key="CommitChangelistDialog2/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595168437544" />
     <state x="521" y="82" key="CommitChangelistDialog2/-240.-1057.1920.1057/0.23.1615.1027@0.23.1615.1027" timestamp="1592033086105" />
-    <state x="557" y="86" key="CommitChangelistDialog2/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1596547066025" />
+    <state x="557" y="86" key="CommitChangelistDialog2/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1596630436522" />
     <state x="559" y="86" key="CommitChangelistDialog2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596450861288" />
     <state x="558" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732386260" />
     <state x="561" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383068943" />
@@ -356,12 +337,12 @@
     </state>
     <state x="399" y="77" key="SettingsEditor/-447.-1417.2560.1417/0.23.1729.1097@0.23.1729.1097" timestamp="1596012504663" />
     <state x="399" y="77" key="SettingsEditor/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596026839494" />
-    <state x="437" y="295" key="Vcs.Push.Dialog.v2" timestamp="1596547070630">
+    <state x="437" y="295" key="Vcs.Push.Dialog.v2" timestamp="1596630439985">
       <screen x="0" y="23" width="1726" height="1097" />
     </state>
     <state x="407" y="278" key="Vcs.Push.Dialog.v2/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595168444469" />
     <state x="409" y="278" key="Vcs.Push.Dialog.v2/-240.-1057.1920.1057/0.23.1615.1027@0.23.1615.1027" timestamp="1592033096247" />
-    <state x="437" y="295" key="Vcs.Push.Dialog.v2/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1596547070630" />
+    <state x="437" y="295" key="Vcs.Push.Dialog.v2/-447.-1417.2560.1417/0.23.1726.1097@0.23.1726.1097" timestamp="1596630439985" />
     <state x="438" y="295" key="Vcs.Push.Dialog.v2/-447.-1417.2560.1417/0.23.1731.1097@0.23.1731.1097" timestamp="1596445101978" />
     <state x="437" y="295" key="Vcs.Push.Dialog.v2/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732393966" />
     <state x="440" y="295" key="Vcs.Push.Dialog.v2/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596383073612" />

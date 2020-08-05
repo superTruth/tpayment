@@ -34,6 +34,15 @@ func QueryHandle(ctx echo.Context) error {
 		return err
 	}
 
+	for i := 0; i < len(dataRet); i++ {
+		dataRet[i].ConfigTags, err = tms.GetDeviceTagByIDs(models.DB(), ctx, *dataRet[i].Tags)
+		if err != nil {
+			logger.Error("GetDeviceTagByIDs fail->", err.Error())
+			modules.BaseError(ctx, conf.DBError)
+			return err
+		}
+	}
+
 	ret := &modules.BaseQueryResponse{
 		Total: total,
 		Data:  dataRet,
