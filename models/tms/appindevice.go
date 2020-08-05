@@ -89,7 +89,7 @@ func GetAppInDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*AppInDevic
 
 // 1. 只有package id这种非法安装的app
 // 2. 包含app id这种配置安装的app
-func FindAppInDevice(db *models.MyDB, ctx echo.Context, appInDevice *AppInDevice) (*AppInDevice, error) {
+func FindAppInDevice(db *models.MyDB, ctx echo.Context, deviceId uint, appInDevice *AppInDevice) (*AppInDevice, error) {
 	ret := new(AppInDevice)
 	//err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
 	//	appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("tms_app app ON app.id=? AND deleted_at is null", appInDevice.AppID).
@@ -102,7 +102,7 @@ func FindAppInDevice(db *models.MyDB, ctx echo.Context, appInDevice *AppInDevice
 	//}
 
 	err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((tms_app_in_device.package_id=app.package_id) OR (tms_app_in_device.app_id=app.id)) ",
-		appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).
+		deviceId, AppInDeviceExternalIdTypeDevice).
 		Joins("JOIN tms_app app ON app.id=? AND app.deleted_at is null", appInDevice.AppID).
 		First(ret).Error
 	if err != nil {

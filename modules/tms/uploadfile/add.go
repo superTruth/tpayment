@@ -1,22 +1,20 @@
 package uploadfile
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
-// AWSAccessKeyId=AKIAJPG36DFOEJ3XLTCA
-// AWSSecretKey=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
-// TODO 未完成
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(tms.FileUpload)
+	req := new(tms.UploadFile)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -25,20 +23,22 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// TODO 未做判断：当前用户可能没有此机构权限
-	bean, err := tms.GetUploadFileByID(models.DB(), ctx, req.ID)
+	// 现在找到对应的机器，看看机器所属的机构
+	deviceBean, err := tms.GetDeviceBySn(models.DB(), ctx, req.DeviceSn)
 	if err != nil {
-		logger.Error("GetAppByID sql error->", err.Error())
+		logger.Warn("GetDeviceBySn fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return err
 	}
 
-	if bean == nil {
-		logger.Info("GetAppByID sql error->", err.Error())
+	if deviceBean == nil {
+		logger.Warn("can't find the device->", req.DeviceSn)
 		modules.BaseError(ctx, conf.RecordNotFund)
 		return err
 	}
 
+	req.AgencyId = deviceBean.AgencyId
+	req.ID = 0
 	err = models.CreateBaseRecord(req)
 
 	if err != nil {

@@ -20,6 +20,7 @@ import (
 	"tpayment/modules/tms/batchupdate"
 	"tpayment/modules/tms/device"
 	"tpayment/modules/tms/devicetag"
+	"tpayment/modules/tms/uploadfile"
 	"tpayment/modules/user"
 
 	"github.com/labstack/echo"
@@ -113,15 +114,21 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlTmsTagUpdate, devicetag.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsTagQuery, devicetag.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)       // 添加batch update
-	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle) // 删除
-	e.POST(conf.UrlTmsBatchUpdateUpdate, batchupdate.UpdateHandle) // 更新
-	e.POST(conf.UrlTmsBatchUpdateQuery, batchupdate.QueryHandle)   // 查询
+	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)           // 添加batch update
+	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle)     // 删除
+	e.POST(conf.UrlTmsBatchUpdateUpdate, batchupdate.UpdateHandle)     // 更新
+	e.POST(conf.UrlTmsBatchUpdateQuery, batchupdate.QueryHandle)       // 查询
+	e.POST(conf.UrlTmsBatchUpdateStartHandle, batchupdate.StartHandle) // 处理
 
 	e.POST(conf.UrlTmsAppInBatchUpdateAdd, appinbatchupdate.AddHandle)       // 添加app in batch update
 	e.POST(conf.UrlTmsAppInBatchUpdateDelete, appinbatchupdate.DeleteHandle) // 删除
 	e.POST(conf.UrlTmsAppInBatchUpdateUpdate, appinbatchupdate.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppInBatchUpdateQuery, appinbatchupdate.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsUploadFileAdd, uploadfile.AddHandle)       // 添加app in batch update
+	e.POST(conf.UrlTmsUploadFileDelete, uploadfile.DeleteHandle) // 删除
+	//e.POST(conf.UrlTmsUploadFileUpdate, uploadfile.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsUploadFileQuery, uploadfile.QueryHandle) // 查询
 
 	//e.POST(conf.UrlTmsHeartBeat, clientapi.HearBeat) // 客户端心跳逻辑
 

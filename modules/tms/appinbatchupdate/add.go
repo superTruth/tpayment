@@ -1,15 +1,16 @@
 package appinbatchupdate
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
+	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
-// TODO 未完成
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
@@ -22,11 +23,14 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	//errorCode := SmartAddAppInDevice(ctx, req)
-	//if errorCode != conf.SUCCESS {
-	//	modules.BaseError(ctx, errorCode)
-	//	return errors.New(errorCode.String())
-	//}
+	req.ID = 0
+	req.ExternalIdType = tms.AppInDeviceExternalIdTypeDevice
+	err = models.CreateBaseRecord(req)
+	if err != nil {
+		logger.Error("CreateBaseRecord sql error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return err
+	}
 
 	modules.BaseSuccess(ctx, nil)
 

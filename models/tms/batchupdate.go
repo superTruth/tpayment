@@ -1,39 +1,38 @@
 package tms
 
 import (
+	"strconv"
 	"tpayment/models"
+	"tpayment/modules"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
 type BatchUpdate struct {
-	gorm.Model
-	StoreID int `gorm:"column:store_id"`
+	models.BaseModel
 
-	Description string `gorm:"column:description"`
-	Status      int    `gorm:"column:status"`
+	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
 
-	UpdateFailMsg string `gorm:"column:update_fail_msg"`
+	Description string `gorm:"column:description" json:"description"`
+	Status      string `gorm:"column:status" json:"status"`
 
-	Tags         string `gorm:"column:tags"`
-	DeviceModels string `gorm:"column:device_models"`
+	UpdateFailMsg string `gorm:"column:update_fail_msg" json:"update_fail_msg"`
+
+	Tags         string `gorm:"column:tags" json:"tags"`
+	DeviceModels string `gorm:"column:device_models" json:"device_models"`
 
 	Apps []*AppInDevice `gorm:"-"`
 }
 
 func (BatchUpdate) TableName() string {
-	return "mdm2_batch_update"
+	return "tms_batch_update"
 }
 
-func GetBatchUpdateRecord(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpdate, error) {
-	batchUpdate := new(BatchUpdate)
+func GetBatchUpdateRecordById(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpdate, error) {
+	ret := new(BatchUpdate)
 
-	err := models.DB().Where(&BatchUpdate{
-		Model: gorm.Model{
-			ID: id,
-		},
-	}).First(&batchUpdate).Error
+	err := db.Model(&BatchUpdate{}).Where("id=?", id).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -42,12 +41,37 @@ func GetBatchUpdateRecord(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpd
 		return nil, err
 	}
 
-	_, batchUpdate.Apps, _ = GetAppsInDevice(models.DB(), ctx, id, AppInDeviceExternalIdTypeBatchUpdate, 0, 1000) // 最多查出200条记录
-
-	return batchUpdate, nil
+	return ret, nil
 }
 
-func GetBatchUpdateDevices(batchUpdate *BatchUpdate, offset int, limit int) ([]DeviceInfo, error) {
+func QueryBatchUpdateRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*BatchUpdate, error) {
+	agency := modules.IsAgencyAdmin(ctx)
+
+	equalData := make(map[string]string)
+	if agency != nil { // 是机构管理员的话，就需要添加机构排查
+		equalData["agency_id"] = strconv.FormatUint(uint64(agency.ID), 10)
+	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
+
+	// conditions
+	tmpDb := db.Model(&BatchUpdate{}).Where(sqlCondition)
+
+	// 统计总数
+	var total uint = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var ret []*BatchUpdate
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return total, ret, err
+	}
+
+	return total, ret, nil
+}
+
+func GetBatchUpdateDevices(db *models.MyDB, ctx echo.Context, batchUpdate *BatchUpdate, offset int, limit int) ([]*DeviceInfo, error) {
 
 	return nil, nil
 	//sb := strings.Builder{}
@@ -56,14 +80,14 @@ func GetBatchUpdateDevices(batchUpdate *BatchUpdate, offset int, limit int) ([]D
 	//
 	//tags, comErr := utils.JsonStringArray2StringArray(batchUpdate.Tags)
 	//if comErr == nil && len(tags) != 0 { // 有选择tag的情况
-	//	sb.WriteString("JOIN mdm2_device_and_tag_mid b ON a.id = b.device_id AND b.deleted_at IS NULL AND b.tag_id IN (")
+	//	sb.WriteString("JOIN tms_device_and_tag_mid b ON a.id = b.device_id AND b.deleted_at IS NULL AND b.tag_id IN (")
 	//	sb.WriteString(strings.Join(tags, ","))
 	//	sb.WriteString(") ")
 	//}
 	//
 	//deviceModels, comErr := utils.JsonStringArray2StringArray(batchUpdate.DeviceModels)
 	//if comErr == nil && len(deviceModels) != 0 { // 有选择tag的情况
-	//	sb.WriteString("JOIN mdm2_models c ON a.device_model = c.id AND c.deleted_at IS NULL AND c.id IN (")
+	//	sb.WriteString("JOIN tms_model c ON a.device_model = c.id AND c.deleted_at IS NULL AND c.id IN (")
 	//	sb.WriteString(strings.Join(deviceModels, ","))
 	//	sb.WriteString(") ")
 	//}

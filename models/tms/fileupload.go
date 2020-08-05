@@ -1,41 +1,33 @@
 package tms
 
 import (
+	"strconv"
+	"tpayment/models"
+	"tpayment/modules"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
-type FileUpload struct {
-	gorm.Model
-	StoreID *int `gorm:"column:store_id"`
+type UploadFile struct {
+	models.BaseModel
+	AgencyId uint `gorm:"column:agency_id"json:"agency_id" `
 
-	DeviceSn *string `gorm:"column:device_sn"`
-	FileName *string `gorm:"column:file_name"`
-	FileUrl  *string `gorm:"column:file_url"`
+	DeviceSn string `gorm:"column:device_sn" json:"device_sn"`
+	FileName string `gorm:"column:file_name" json:"file_name"`
+	FileUrl  string `gorm:"column:file_url" json:"file_url"`
 }
 
-func (FileUpload) TableName() string {
-	return "mdm2_file_upload"
-}
-
-// 创建一条记录
-func CreateFileUpload(bean *FileUpload) error {
-	err := models.DB().Create(bean).Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (UploadFile) TableName() string {
+	return "tms_upload_file"
 }
 
 // 根据device ID获取设备信息
-func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*FileUpload, error) {
+func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*UploadFile, error) {
 
-	ret := new(FileUpload)
+	ret := new(UploadFile)
 
-	err := db.Model(&FileUpload{}).Where("id=?", id).First(ret).Error
+	err := db.Model(&UploadFile{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -47,15 +39,17 @@ func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*FileUpload,
 	return ret, nil
 }
 
-func QueryUploadFileRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []FileUpload, error) {
-	filterTmp := make(map[string]interface{})
+func QueryUploadFileRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*UploadFile, error) {
+	agency := modules.IsAgencyAdmin(ctx)
 
-	for k, v := range filters {
-		filterTmp[k] = v
+	equalData := make(map[string]string)
+	if agency != nil { // 是机构管理员的话，就需要添加机构排查
+		equalData["agency_id"] = strconv.FormatUint(uint64(agency.ID), 10)
 	}
+	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table("mdm2_file_upload").Where(filterTmp)
+	tmpDb := db.Model(&UploadFile{}).Where(sqlCondition)
 
 	// 统计总数
 	var total uint = 0
@@ -64,7 +58,7 @@ func QueryUploadFileRecord(db *models.MyDB, ctx echo.Context, offset, limit uint
 		return 0, nil, err
 	}
 
-	var ret []FileUpload
+	var ret []*UploadFile
 	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

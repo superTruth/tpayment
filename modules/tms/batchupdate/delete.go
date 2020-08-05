@@ -1,13 +1,14 @@
 package batchupdate
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/labstack/echo"
 )
 
 func DeleteHandle(ctx echo.Context) error {
@@ -23,7 +24,7 @@ func DeleteHandle(ctx echo.Context) error {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetBatchUpdateRecord(models.DB(), ctx, req.ID)
+	bean, err := tms.GetBatchUpdateRecordById(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Info("GetAppInDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

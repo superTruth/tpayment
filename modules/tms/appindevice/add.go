@@ -43,7 +43,7 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	errorCode := SmartAddAppInDevice(ctx, req)
+	errorCode := SmartAddAppInDevice(ctx, bean, req)
 	if errorCode != conf.SUCCESS {
 		modules.BaseError(ctx, errorCode)
 		return errors.New(errorCode.String())
@@ -55,11 +55,11 @@ func AddHandle(ctx echo.Context) error {
 }
 
 // 智能添加app到设备
-func SmartAddAppInDevice(ctx echo.Context, app *tms.AppInDevice) conf.ResultCode {
+func SmartAddAppInDevice(ctx echo.Context, device *tms.DeviceInfo, app *tms.AppInDevice) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	// 查找是否已经存在这个app，如果存在，就更新当前规则，如果不存在，再创建新的记录
-	bean, err := tms.FindAppInDevice(models.DB(), ctx, app)
+	bean, err := tms.FindAppInDevice(models.DB(), ctx, device.ID, app)
 	if err != nil {
 		logger.Error("FindAppInDevice fail->", err.Error())
 		return conf.DBError

@@ -27,7 +27,7 @@ func QueryHandle(ctx echo.Context) error {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.GetAppsInDevice(models.DB(), ctx, req.DeviceId, tms.AppInDeviceExternalIdTypeBatchUpdate, req.Offset, req.Limit)
+	total, dataRet, err := tms.GetAppsInDevice(models.DB(), ctx, req.BatchId, tms.AppInDeviceExternalIdTypeBatchUpdate, req.Offset, req.Limit)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

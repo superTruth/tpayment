@@ -169,7 +169,7 @@ func QueryTagsInDevice(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([
 		filterTmp["agency_id"] = agency.ID
 	}
 
-	err := db.Table(DeviceTag{}.TableName()).Model(&DeviceTag{}).Joins("JOIN mdm2_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=tms_tags.id and mid.deleted_at is null", device.ID).
+	err := db.Table(DeviceTag{}.TableName()).Model(&DeviceTag{}).Joins("JOIN tms_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=tms_tags.id and mid.deleted_at is null", device.ID).
 		Where(filterTmp).
 		Select("tms_tags.id as id, tms_tags.agency_id as agency_id, tms_tags.name as name, tms_tags.created_at as created_at, tms_tags.updated_at as updated_at, mid.id as mid_id").
 		Find(&ret).Error

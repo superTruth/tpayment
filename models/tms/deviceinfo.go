@@ -27,7 +27,7 @@ type DeviceAndTagMid struct {
 }
 
 func (DeviceAndTagMid) TableName() string {
-	return "mdm2_device_and_tag_mid"
+	return "tms_device_and_tag_mid"
 }
 
 func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) {
@@ -87,13 +87,13 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 
 // merchantdevice model
 type DeviceModel struct {
-	gorm.Model
+	models.BaseModel
 
-	Name *string `gorm:"column:name"` // 外键
+	Name string `gorm:"column:name"` // 外键
 }
 
 func (DeviceModel) TableName() string {
-	return "mdm2_models"
+	return "tms_model"
 }
 
 func GetModels() ([]DeviceModel, error) {

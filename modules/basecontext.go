@@ -53,6 +53,7 @@ type BaseQueryRequest struct {
 	AgencyId   uint              `json:"agency_id"`
 	DeviceId   uint              `json:"device_id"`
 	AppId      uint              `json:"app_id"`
+	BatchId    uint              `json:"batch_id"`
 	Offset     uint              `json:"offset"`
 	Limit      uint              `json:"limit"`
 	Filters    map[string]string `json:"filters"`
