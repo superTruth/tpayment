@@ -23,9 +23,10 @@ func TestAddAgency(t *testing.T) {
 	}
 
 	reqBean := &agency.Agency{
-		Name: "agency 1",
-		Tel:  "123456789",
-		Addr: "wuxicun",
+		Name:  "agency 1",
+		Tel:   "123456789",
+		Addr:  "wuxicun",
+		Email: "adjfasdf.com",
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
@@ -68,10 +69,10 @@ func TestQueryAgency(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		Offset:  0,
-		Limit:   100,
+		Offset: 0,
+		Limit:  100,
 		Filters: map[string]string{
-			//"name": "mer",
+			"name": "mer",
 		},
 	}
 

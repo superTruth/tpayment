@@ -81,7 +81,7 @@ func TestDeleteMerchantDevice(t *testing.T) {
 
 func TestQueryMerchantDevice(t *testing.T) {
 	TestLogin(t)
-	fmt.Println("query merchant", line)
+	fmt.Println("query merchant-", line)
 	header := http.Header{
 		conf.HeaderTagToken: []string{token},
 	}

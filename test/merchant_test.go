@@ -122,7 +122,7 @@ func TestQueryMerchantInAgency(t *testing.T) {
 
 	reqByte, _ := json.Marshal(reqBean)
 
-	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantQuery, time.Second*10)
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantInAgencyQuery, time.Second*10)
 
 	formatJson(repByte)
 }

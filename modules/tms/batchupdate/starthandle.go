@@ -56,7 +56,7 @@ func StartUpdate(ctx echo.Context, id uint) {
 	// 获取匹配的设备
 	const OnePageSize = 1000
 	for i := 0; ; i++ {
-		devices, err := tms.GetBatchUpdateDevices(models.DB(), ctx, updateRecord, i*OnePageSize, (i+1)*OnePageSize)
+		devices, err := tms.GetBatchUpdateDevices(models.DB(), ctx, updateRecord, uint(i*OnePageSize), uint((i+1)*OnePageSize))
 		if err != nil {
 			logger.Error("GetBatchUpdateDevices error->", err.Error())
 			return

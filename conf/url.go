@@ -96,5 +96,5 @@ const (
 
 	UrlTmsHeartBeat = "/payment/tms/heartbeat"
 
-	UrlFileAdd = "/payment/fileutils/add"
+	UrlFileAdd = "/payment/file/add"
 )

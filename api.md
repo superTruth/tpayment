@@ -22,19 +22,20 @@ Response:
 Request Example:
 ```json
 {
-    "email":"123455@qq.com",
-    "pwd":"123456",
-    "app_id":"123456"
+	"app_id": "123456",
+	"app_secret": "123456",
+	"email": "fang.qiang7@bindo.com",
+	"pwd": "123456"
 }
 ```
 
 Response Example:
 ```json
 {
-    "token":"123456789",
-    "role": "admin",  // "admin" "machine" "user"
-    "name":"xxx",
-    "email":"xxx"
+    "email": "fang.qiang7@bindo.com",
+    "name": "Fang",
+    "role": "user",   // "admin" "machine" "user"
+    "token": "fa3cc6db-2a68-4dfa-a292-b8cf2f3bdb35"
 }
 ```
 
@@ -49,9 +50,9 @@ Response Example:
 Response Example:
 ```json
 {
-    "role": "admin",  // "admin" "machine" "user"
-    "name":"xxx",
-    "email":"xxx"
+    "email": "fang.qiang7@bindo.com",
+    "name": "Fang",
+    "role": "user"
 }
 ```
 
@@ -61,10 +62,10 @@ Response Example:
 Request Example:
 ```json
 {
-    "email":"123455@qq.com",
-    "pwd":"123456",
-    "role": "admin",  // "admin" "machine" "user"
-    "name":"xxx"
+	"email": "fang.qiang9@bindo.com",
+	"name": "Fang",
+	"pwd": "123456",
+	"role": "user"
 }
 ```
 
@@ -99,28 +100,29 @@ Request Example:
 Request Example:
 ```json
 {
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "email": "123455@qq.com",
-      "id": 123
-    } 
+	"filters": {
+		"email": "fang.qiang"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少账号
     "data": [
-      {
-        "id":123,
-        "account_num":"123455@qq.com",
-        "pwd_hash":"abcd",
-        "role": "admin",  // "admin" "machine" "user"    只有管理员才可以更改这个字段
-        "name":"xxx",
-        "email":"xxx"
-      }     
-    ]
+        {
+            "active": true,
+            "agency_id": 4,
+            "created_at": "2020-07-31T23:19:37.304278+08:00",
+            "email": "fang.qiang8@bindo.com",
+            "id": 10,
+            "name": "Fang",
+            "role": "user",
+            "updated_at": "2020-07-31T23:19:37.304278+08:00"
+        }
+    ],
+    "total": 1
 }
 ```
 
@@ -144,21 +146,10 @@ Request Example:
 Request Example:
 ```json
 {
-    "id": 123,
-    "name": "asdf",
-    "tel": "123",
-    "addr": "asdf",
-    "email": ""
-}
-```
-
-### 删除机构(画面 Agency管理-Agency 信息)
-***POST***
-```https://{base_url}/payment/agency/delete```
-Request Example:
-```json
-{
-    "id": 123
+	"addr": "wuxicun2",
+	"agency_id": 0,
+	"id": 7,
+	"name": "merc"
 }
 ```
 
@@ -168,28 +159,33 @@ Request Example:
 Request Example:
 ```json
 {
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "name": "123455@qq.com",
-      "id": 123
-    } 
+	"filters": {
+		"name": "mer"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少记录
     "data": [
-      {
-        "id":123,
-        "name":"123123",
-        "tel":"123123",
-        "addr": "asdfdf",
-        "email": "",
-        "update_at":"2020-06-13T15:41:16.142489+08:00"
-      }     
-    ]
+        {
+            "addr": "wuxicun2",
+            "email": "",
+            "id": 5,
+            "name": "merc",
+            "tel": "123456789"
+        },
+        {
+            "addr": "wuxicun2",
+            "email": "adjfasdf.com",
+            "id": 7,
+            "name": "merc",
+            "tel": "123456789"
+        }
+    ],
+    "total": 2
 }
 ```
 
@@ -218,25 +214,24 @@ Request Example:
 ```https://{base_url}/payment/agency_associate/query```
 ```json
 {
-    "agency_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-    } 
+	"agency_id": 5,
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,
     "data": [
-      {
-        "id":123,
-        "email":"123123",
-        "name":"123123",
-        "update_at":"2020-06-13T15:41:16.142489+08:00"
-      }     
-    ]
+        {
+            "created_at": "2020-07-31T23:10:32.004435+08:00",
+            "email": "fang.qiang7@bindo.com",
+            "id": 4,
+            "name": "Fang",
+            "updated_at": "2020-07-31T23:10:32.004435+08:00"
+        }
+    ],
+    "total": 1
 }
 ```
 
@@ -246,9 +241,10 @@ Response Example:
 Request Example:
 ```json
 {
-    "name": "",
-    "addition": "",
-    "config_file_url": ""
+	"addition": "addtion",
+	"agency_id": 4,
+	"config_file_url": "https://asdfadf",
+	"name": "BOC"
 }
 ```
 ### 更新acquirer
@@ -258,9 +254,9 @@ Request Example:
 ```json
 {
     "id": 123,
-    "name": "",
-    "addition": "",
-    "config_file_url": ""
+    "addition": "addtion",
+    "config_file_url": "https://asdfadf",
+    "name": "BOC"
 }
 ```
 ### 删除acquirer
@@ -278,25 +274,135 @@ Request Example:
 Request Example:
 ```json
 {
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-    } 
+	"agency_id": 4,
+	"filters": {
+		"name": "BOC"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少记录
     "data": [
-      {
-        "id":123,
-        "name": "",
-        "addition": "",
-        "config_file_url": "",
-        "update_at":"2020-06-13T15:41:16.142489+08:00"
-      }     
-    ]
+        {
+            "addition": "addtion",
+            "agency_id": 4,
+            "config_file_url": "https://asdfadf",
+            "created_at": "2020-08-01T17:12:15.654777+08:00",
+            "id": 1,
+            "name": "BOC",
+            "updated_at": "2020-08-01T17:12:15.654777+08:00"
+        },
+        {
+            "addition": "addtion",
+            "agency_id": 4,
+            "config_file_url": "https://asdfadf",
+            "created_at": "2020-08-06T17:11:44.228448+08:00",
+            "id": 4,
+            "name": "BOC",
+            "updated_at": "2020-08-06T17:11:44.228448+08:00"
+        }
+    ],
+    "total": 2
+}
+```
+
+### 添加device到acquirer(不需要update)
+***POST***
+```https://{base_url}/payment/agency_device/add```
+Request Example:
+```json
+{
+	"agency_id": 4,
+	"device_id": 3,
+	"file_url": ""    // device_id或者file_url存在一种，不可同时存在
+}
+```
+### 删除acquirer
+***POST***
+```https://{base_url}/payment/agency_device/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+### 查询acquirer(画面 新5-商户-acquirer)
+***POST***
+```https://{base_url}/payment/agency_device/query```
+Request Example:
+```json
+{
+	"agency_id": 4,
+	"filters": {
+		"device_sn": "PAX-"
+	},
+	"limit": 100,
+	"offset": 0
+}
+```
+Response Example:
+```json
+{
+    "data": [
+        {
+            "agency_id": 4,
+            "alias": "",
+            "battery": 19,
+            "created_at": "2020-04-02T08:42:53.065968+08:00",
+            "device_csn": "456789",
+            "device_model": "17",
+            "device_sn": "PAX-A920-0821157228",
+            "id": 1,
+            "location_lat": "22.546992",
+            "location_lon": "113.94653",
+            "push_token": "18071adc0391497837f",
+            "reboot_day_in_month": 0,
+            "reboot_day_in_week": 0,
+            "reboot_mode": "1",
+            "reboot_time": "03:00:",
+            "updated_at": "2020-08-04T00:04:17.023+08:00"
+        },
+        {
+            "agency_id": 4,
+            "alias": "",
+            "battery": 96,
+            "created_at": "2020-04-06T02:28:02.58338+08:00",
+            "device_csn": "17010237",
+            "device_model": "17",
+            "device_sn": "PAX-A920-0821251436",
+            "id": 1505156075807081500,
+            "location_lat": "22.282085",
+            "location_lon": "114.162749",
+            "push_token": "160a3797c89bf7fa890",
+            "reboot_day_in_month": 0,
+            "reboot_day_in_week": 0,
+            "reboot_mode": "1",
+            "reboot_time": "03:00:",
+            "updated_at": "2020-08-03T16:43:54.384973+08:00"
+        },
+        {
+            "agency_id": 4,
+            "alias": "",
+            "battery": 94,
+            "created_at": "2020-04-06T02:30:27.038397+08:00",
+            "device_csn": "17010223",
+            "device_model": "17",
+            "device_sn": "PAX-A920-0820340310",
+            "id": 1505156075807081500,
+            "location_lat": "22.31403",
+            "location_lon": "114.166594",
+            "push_token": "100d855909dba529e70",
+            "reboot_day_in_month": 0,
+            "reboot_day_in_week": 0,
+            "reboot_mode": "1",
+            "reboot_time": "03:00:",
+            "updated_at": "2020-08-03T16:43:54.512664+08:00"
+        }
+    ],
+    "total": 3
 }
 ```
 
@@ -307,8 +413,11 @@ Response Example:
 ```json
 {
     "data": [
-      "visa","mastercard","jcb","cup"   
-    ]
+        "Swipe",
+        "Contact",
+        "Contactless"
+    ],
+    "total": 3
 }
 ```
 
@@ -342,10 +451,10 @@ Response Example:
 Request Example:
 ```json
 {
-    "agency_id": 123,
-    "name": "213",
-    "tel": "123",
-    "addr": "",
+	"addr": "wuxicun",
+	"agency_id": 7,
+	"name": "merchant 1",
+	"tel": "123456789",
     "email": ""
 }
 ```
@@ -373,35 +482,83 @@ Request Example:
 }
 ```
 
+### 获取Agency下面的商户列表
+```https://{base_url}/payment/merchant_in_agency/query```
+Request Example:
+```json
+{
+	"agency_id": 4,
+	"filters": {
+		"name": "merchant"
+	},
+	"limit": 100,
+	"offset": 0
+}
+```
+Response Example:
+```json
+{
+    "data": [
+        {
+            "addr": "wuxicun",
+            "agency_id": 4,
+            "created_at": "2020-06-13T17:41:05.302358+08:00",
+            "id": 6,
+            "name": "merchant 1",
+            "tel": "123456789",
+            "updated_at": "2020-06-13T17:41:05.302358+08:00"
+        },
+        {
+            "addr": "wuxicun",
+            "agency_id": 4,
+            "created_at": "2020-08-02T16:03:29.6609+08:00",
+            "id": 8,
+            "name": "merchant 1",
+            "tel": "123456789",
+            "updated_at": "2020-08-02T16:03:29.6609+08:00"
+        }
+    ],
+    "total": 2
+}
+```
+
 ## 商户部分
 ### 获取商户信息(画面 8商户管理-商户列表)
 ```https://{base_url}/payment/merchant/query```
 Request Example:
 ```json
 {
-    "agency_id": 123,   // 如果是获取所有商户信息，和机构无关，则不传
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "name": "kfc",
-      "id": 123
-    } 
+	"filters": {
+		"name": "merchant"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少店铺
     "data": [
-      {
-            "id": 123,
-            "name": "213",
-            "tel": "123",
-            "email": "",
-            "addr": "",
-            "update_at":"2020-06-13T15:41:16.142489+08:00"
-      }    
-    ]
+        {
+            "addr": "wuxicun",
+            "agency_id": 4,
+            "created_at": "2020-06-13T17:41:05.302358+08:00",
+            "id": 6,
+            "name": "merchant 1",
+            "tel": "123456789",
+            "updated_at": "2020-06-13T17:41:05.302358+08:00"
+        },
+        {
+            "addr": "wuxicun",
+            "agency_id": 4,
+            "created_at": "2020-08-02T16:03:29.6609+08:00",
+            "id": 8,
+            "name": "merchant 1",
+            "tel": "123456789",
+            "updated_at": "2020-08-02T16:03:29.6609+08:00"
+        }
+    ],
+    "total": 2
 }
 ```
 
@@ -411,9 +568,9 @@ Response Example:
 Request Example:
 ```json
 {
-    "merchant_id": 123,
-    "account_id": 213,
-    "role": "admin"   // "admin", "stuff"
+	"merchant_id": 8,
+	"role": "admin",
+	"user_id": 10
 }
 ```
 
@@ -423,26 +580,25 @@ Request Example:
 Request Example:
 ```json
 {
-    "merchant_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-    }
+	"limit": 100,
+	"merchant_id": 8,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
-{ 
-    "total": 1234,   // 一共有多少数据
+{
     "data": [
-      {
-        "id":123,
-        "role": "admin",  // "admin", "stuff"    只有管理员才可以更改这个字段
-        "name":"xxx",
-        "email":"xxx",
-        "updated_at":"2020-06-14T14:34:13.058434+08:00"
-      }     
-    ]
+        {
+            "created_at": "2020-08-06T17:59:52.861507+08:00",
+            "email": "fang.qiang8@bindo.com",
+            "id": 9,
+            "name": "Fang",
+            "role": "admin",
+            "updated_at": "2020-08-06T17:59:52.861507+08:00"
+        }
+    ],
+    "total": 1
 }
 ```
 
@@ -453,7 +609,6 @@ Request Example:
 ```json
 {
     "id": 123,
-    "account_id": 213,
     "role": "admin"   // "admin", "stuff"
 }
 ```
@@ -506,25 +661,31 @@ Request Example:
 Request Example:
 ```json
 {
-    "merchant_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-    }
+	"limit": 100,
+	"merchant_id": 8,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少店铺
     "data": [
-      {
-        "id":123,
-        "terminal_id": "asdfsdf",
-        "cdid": "1234",
-        "updated_at":"2020-06-14T14:34:13.058434+08:00"
-      }     
-    ]
+        {
+            "created_at": "2020-08-02T22:23:18.142583+08:00",
+            "device_id": 2,
+            "device_sn": "L8196RCA8W2136",
+            "id": 2,
+            "updated_at": "2020-08-02T22:23:18.142583+08:00"
+        },
+        {
+            "created_at": "2020-08-06T18:03:21.40396+08:00",
+            "device_id": 2,
+            "device_sn": "L8196RCA8W2136",
+            "id": 3,
+            "updated_at": "2020-08-06T18:03:21.40396+08:00"
+        }
+    ],
+    "total": 2
 }
 ```
 
@@ -534,14 +695,26 @@ Response Example:
 Request Example:
 ```json
 {
-  "merchant_device_id": 123,
-  "payment_methods": ["visa","mastercard","jcb"],
-  "entry_types": ["swipe","contact","contactless"],
-  "payment_types": ["sale", "void", "refund"],
-  "acquirer_id": 123,
-  "mid": "",
-  "tid": "",
-  "addition": ""
+	"acquirer_id": 1,
+	"addition": "http://test.com",
+	"entry_types": [
+		"Swipe",
+		"Contact",
+		"Contactless"
+	],
+	"merchant_device_id": 2,
+	"mid": "123456789012345",
+	"payment_methods": [
+		"Visa",
+		"MasterCard",
+		"Unionpay"
+	],
+	"payment_types": [
+		"Sale",
+		"Void",
+		"Refund"
+	],
+	"tid": "12345678"
 }
 ```
 
@@ -561,14 +734,16 @@ Request Example:
 Request Example:
 ```json
 {
-  "id": 123,
-  "payment_methods": ["visa","mastercard","jcb"],
-  "entry_types": ["swipe","contact","contactless"],
-  "payment_types": ["sale", "void", "refund"],
-  "acquirer_id": 123,
-  "mid": "",
-  "tid": "",
-  "addition": ""
+	"entry_types": [
+		"Swipe",
+		"Contact"
+	],
+	"id": 1,
+	"payment_methods": [],
+	"payment_types": [
+		"Sale",
+		"Refund"
+	]
 }
 ```
 
@@ -578,76 +753,86 @@ Request Example:
 Request Example:
 ```json
 {
-    "merchant_id": 123, 
-    "device_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-    }
+	"device_id": 2,
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有多少店铺
+    "total": 1,   
     "data": [
       {
-        "id": 123,
-        "payment_methods": ["visa","mastercard","jcb"],
-        "entry_types": ["swipe","contact","contactless"],
-        "payment_types": ["sale", "void", "refund"],
-        "acquirer_id": 123,
-        "mid": "",
-        "tid": "",
-        "addition": "",
-        "updated_at":"2020-06-14T14:34:13.058434+08:00"
+        "acquirer_id": 1,
+        "addition": "http://test.com",
+        "created_at": "2020-08-02T23:29:32.367686+08:00",
+        "entry_types": [
+            "Swipe",
+            "Contact"
+        ],
+        "id": 1,
+        "merchant_device_id": 2,
+        "mid": "123456789012345",
+        "payment_methods": [],
+        "payment_types": [
+            "Sale",
+            "Refund"
+        ],
+        "tid": "12345678",
+        "updated_at": "2020-08-06T18:10:43.875195+08:00"
       }
     ]
 }
 ```
 
-## 设备管理部分
+## 设备管理部分（不需要新增设备）
 ### 查询设备信息(画面 17设备列表)
 ***POST***
 ```https://{base_url}/payment/tms/device/query```
 Request Example:
 ```json
 {
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "device_id": "1233435"
-    } 
+	"filters": {
+		"device_sn": "PAX-A920-0821157228"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-    "total": 1234,   // 一共有设备
-    "devices":[
-      {
-        "id": "123",
-        "device_sn": "1234134",
-        "battery": "123",
-        "device_csn": "123",
-        "device_model": "N5",
-        "alias": "123",
-        "reboot_mode": "every_day",
-        "reboot_time": "05:30",
-        "reboot_day_in_month": 1,
-        "reboot_day_in_week": 1,
-        "location_lat": "",
-        "location_lon": "",
-        "push_token": "",
-        "tags": [
-          {
-            "id": 123,
-            "name": "123"
-          }
-        ],
-        "updated_at":"2020-06-14T14:34:13.058434+08:00"
-      }
-    ]
+    "data": [
+        {
+            "agency_id": 4,
+            "alias": "",
+            "battery": 19,
+            "created_at": "2020-04-02T08:42:53.065968+08:00",
+            "device_csn": "456789",
+            "device_model": "17",
+            "device_sn": "PAX-A920-0821157228",
+            "id": 1,
+            "location_lat": "22.546992",
+            "location_lon": "113.94653",
+            "push_token": "18071adc0391497837f",
+            "reboot_day_in_month": 0,
+            "reboot_day_in_week": 0,
+            "reboot_mode": "1",
+            "reboot_time": "03:00:",
+            "tags": [
+                {
+                    "agency_id": 748,
+                    "created_at": "0001-01-01T00:00:00Z",
+                    "id": 25,
+                    "name": "tag3",
+                    "updated_at": "0001-01-01T00:00:00Z"
+                }
+            ],
+            "updated_at": "2020-08-04T00:04:17.023+08:00"
+        }
+    ],
+    "total": 1
 }
 ```
 ### 更新设备信息
@@ -656,19 +841,18 @@ Response Example:
 Request Example:
 ```json
 {
-    "id": "123",
-    "csn": "123",
-    "alias": "123",
-    "reboot_model": "every_day",
-    "reboot_time": "05:30",
-    "reboot_day_in_month": 1,
-    "reboot_day_in_week": 1,
-    "tags": [
-      {
-        "id": 123,
-        "name": "123"
-      }
-    ]
+	"alias": "",
+	"device_csn": "456789",
+	"id": 1,
+	"reboot_day_in_month": 0,
+	"reboot_day_in_week": 0,
+	"reboot_mode": "",
+	"reboot_time": "",
+	"tags": [
+		{
+			"id": 25
+		}
+	]
 }
 ```
 
@@ -684,25 +868,25 @@ Request Example:
 Response Example:
 ```json
 {
-    "apps":[
-      {
-        "id": "123",
-        "name": "",
-        "package_id": "",
-        "version_name": "",
-        "version_code": "",
-        "status": "Pending Install",   // "Pending Install", "Installed", "Pending Uninstall", "Warning Installed"
-        "app": {
-          "id": 123,
-          "package_name": ""
-        },
-        "app_file": {
-          "id": 123,
-          "name": ""
-        },
-        "updated_at":"2020-06-14T14:34:13.058434+08:00"
-      }
-    ]
+    "data": [
+        {
+            "app": null,
+            "app_file": null,
+            "app_file_id": 0,
+            "app_id": 0,
+            "created_at": "2020-08-04T16:50:04.894883+08:00",
+            "external_id": 1,
+            "external_id_type": "merchantdevice",
+            "id": 1505221047908102100,
+            "name": "",
+            "package_id": "",
+            "status": "pending uninstall",
+            "updated_at": "2020-08-04T16:53:18.815934+08:00",
+            "version_code": 0,
+            "version_name": ""
+        }
+    ],
+    "total": 1
 }
 ```
 
@@ -712,18 +896,10 @@ Response Example:
 Request Example:
 ```json
 {
-    "id": 123,
-    "name": "",
-    "package_id": "",
-    "version_name": "",
-    "version_code": "",
-    "status": "Pending Install",   // "Pending Install", "Installed", "Pending Uninstall", "Warning Installed"
-    "app": {
-      "id": 123
-    },
-    "app_file": {
-      "id": 123
-    }
+    "app_file_id": 0,
+    "app_id": 0,
+    "external_id": 1,   // device ID
+    "status": "warning installed"  // pending install/ installed/ pending uninstall/ warning installed
 }
 ```
 
@@ -733,17 +909,10 @@ Request Example:
 Request Example:
 ```json
 {
-    "name": "",
-    "package_id": "",
-    "version_name": "",
-    "version_code": "",
-    "status": "",
-    "app": {
-      "id": 123
-    },
-    "app_file": {
-      "id": 123
-    }
+	"app_file_id": 0,
+	"app_id": 0,
+	"external_id": 1,   // device ID
+	"status": "warning installed"  // pending install/ installed/ pending uninstall/ warning installed
 }
 ```
 
@@ -763,9 +932,9 @@ Request Example:
 Request Example:
 ```json
 {
-    "name": "",
-    "package_id": "",
-    "desc": ""
+	"description": "测试",
+	"name": "Fang Apk",
+	"package_id": "com.bindo.test"
 }
 ```
 
@@ -785,10 +954,10 @@ Request Example:
 Request Example:
 ```json
 {
-    "id": 123,
-    "name": "",
-    "package_id": "",
-    "desc": ""
+    "description": "MDM",
+    "id": 1,
+    "name": "MDM",
+    "package_id": "com.bindo.mdm"
 }
 ```
 
@@ -798,26 +967,35 @@ Request Example:
 Request Example:
 ```json
 {
-    "offset": 1234,
-    "limit": 123,
+	"limit": 100,
+	"offset": 0,
     "filters": {
-      "id": 123,
-      "package_id": ""
-    } 
+		"name": "MDM"
+	}
 }
 ```
 Response Example:
 ```json
 {
-  "total": 1234,   // 一共有app
-   "data":[
-    {
-        "id": 123,
-        "name": "",
-        "package_id": "",
-        "desc": ""
-    }
-  ]
+    "data": [
+        {
+            "created_at": "2020-08-04T18:18:15.472834+08:00",
+            "description": "MDM",
+            "id": 1,
+            "name": "MDM",
+            "package_id": "com.bindo.mdm",
+            "updated_at": "2020-08-06T18:23:51.266732+08:00"
+        },
+        {
+            "created_at": "2020-08-06T18:23:11.807733+08:00",
+            "description": "测试",
+            "id": 1505150659148678100,
+            "name": "Fang Apk",
+            "package_id": "com.bindo.test",
+            "updated_at": "2020-08-06T18:23:11.807733+08:00"
+        }
+    ],
+    "total": 2
 }
 ```
 
@@ -827,15 +1005,15 @@ Response Example:
 Request Example:
 ```json
 {
-    "app_id": "",  // 所属的app id
-    "url": "",     // 文件路径
-    "desc": ""
+	"app_id": 1,
+	"file_url": "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+	"update_description": "MDM First Time"
 }
 ```
 
-### 删除app
+### 删除app file
 ***POST***
-```https://{base_url}/payment/tms/appfile/del```
+```https://{base_url}/payment/tms/appfile/delete```
 Request Example:
 ```json
 {
@@ -843,48 +1021,60 @@ Request Example:
 }
 ```
 
-### 更新app
+### 更新app file
 ***POST***
 ```https://{base_url}/payment/tms/appfile/update```
 Request Example:
 ```json
 {
-    "id": 123,
-    "url": "",     // 文件路径
-    "desc": ""
+    "id": 1,
+    "update_description": "MDM First Time"
 }
 ```
 
-### 查询app
+### 查询app file
 ***POST***
 ```https://{base_url}/payment/tms/appfile/query```
 Request Example:
 ```json
 {
-    "app_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "id": "",
-      "file_name": ""
-    } 
+	"app_id": 1,
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-  "total": 1234,   // 一共有app fileutils
-   "data":[
-    {
-        "id": 123,
-        "file_name": "",
-        "version_code": 123,
-        "version_name": "v1.0.0",
-        "desc": "",
-        "decode_status": "",  // "Success", "Fail"
-        "decode_error_msg": ""
-    }
-  ]
+    "data": [
+        {
+            "app_id": 1,
+            "created_at": "2020-08-04T21:02:19+08:00",
+            "decode_fail_msg": "",
+            "file_name": "Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+            "file_url": "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+            "id": 1505154471485801700,
+            "status": "done",
+            "update_description": "MDM First Time",
+            "updated_at": "2020-08-04T21:03:43+08:00",
+            "version_code": 16,
+            "version_name": "MDM-V1.15"
+        },
+        {
+            "app_id": 1,
+            "created_at": "2020-08-06T18:27:00+08:00",
+            "decode_fail_msg": "",
+            "file_name": "Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+            "file_url": "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
+            "id": 1505154471485801700,
+            "status": "done",
+            "update_description": "MDM First Time",
+            "updated_at": "2020-08-06T18:27:03+08:00",
+            "version_code": 16,
+            "version_name": "MDM-V1.15"
+        }
+    ],
+    "total": 2
 }
 ```
 
@@ -894,13 +1084,13 @@ Response Example:
 Request Example:
 ```json
 {
-    "name": ""
+    "name": "Tag2"
 }
 ```
 
 ### 删除tag
 ***POST***
-```https://{base_url}/payment/tms/tag/del```
+```https://{base_url}/payment/tms/tag/delete```
 Request Example:
 ```json
 {
@@ -925,37 +1115,49 @@ Request Example:
 Request Example:
 ```json
 {
-    "app_id": 123,
-    "offset": 1234,
-    "limit": 123,
-    "filters": {
-      "id": "",
-      "name": ""
-    } 
+	"filters": {
+		"name": "tag"
+	},
+	"limit": 100,
+	"offset": 0
 }
 ```
 Response Example:
 ```json
 {
-  "total": 1234,   // 一共有tag
-   "devices":[
-    {
-        "id": 123,
-        "name": ""
-    }
-  ]
+    "data": [
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 23,
+            "name": "tag1",
+            "updated_at": "0001-01-01T00:00:00Z"
+        },
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 24,
+            "name": "tag2",
+            "updated_at": "0001-01-01T00:00:00Z"
+        },
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 25,
+            "name": "tag3",
+            "updated_at": "0001-01-01T00:00:00Z"
+        }
+    ],
+    "total": 3
 }
 ```
 
-### 新增批量更新任务
+### 新增批量更新任务(未完成)
 ***POST***
 ```https://{base_url}/payment/tms/batchupdata/add```
 Request Example:
 ```json
 {
-    "tags": ["",""],
-    "models": ["",""],
-    "desc": "",
+    "tags": [1,2],
+    "device_models": [1,2],
+    "description": "",
     "apps": [
       {
         "status": "",
@@ -966,9 +1168,9 @@ Request Example:
 }
 ```
 
-### 删除batchupdata
+### 删除batchupdata(未完成)
 ***POST***
-```https://{base_url}/payment/tms/batchupdata/del```
+```https://{base_url}/payment/tms/batchupdata/delete```
 Request Example:
 ```json
 {
@@ -976,7 +1178,7 @@ Request Example:
 }
 ```
 
-### 查询batchupdata
+### 查询batchupdata(未完成)
 ***POST***
 ```https://{base_url}/payment/tms/batchupdata/query```
 Request Example:
@@ -995,20 +1197,91 @@ Response Example:
   "total": 1234,   // 一共多少记录
    "records":[
     {
-        "tags": ["",""],
-        "models": ["",""],
-        "desc": "",
+        "tags": [{
+            "id": 24,
+            "name": "tag2"
+        }],
+        "models": [{
+            "id": 24,
+            "name": "tag2"
+        }],
+        "description": "",
         "status": "",
-        "error_msg": "",
-        "apps": [
-          {
-            "status": "",
-            "app_id": 12,
-            "app_file_id": 123
-          }
-        ]
+        "update_fail_msg": ""
     }
   ]
+}
+```
+
+
+### 新增uploadfile（无update操作）
+***POST***
+```https://{base_url}/payment/tms/uploadfile/add```
+Request Example:
+```json
+{
+	"device_sn": "PAX-A920-0821157228",
+	"file_name": "12314",
+	"file_url": "https://baidu.com/12314"
+}
+```
+
+### 删除uploadfile
+***POST***
+```https://{base_url}/payment/tms/uploadfile/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+
+### 查询uploadfile
+***POST***
+```https://{base_url}/payment/tms/uploadfile/query```
+Request Example:
+```json
+{
+	"limit": 100,
+	"offset": 0,
+    "filters": {
+		"name": "MDM"
+	}
+}
+```
+Response Example:
+```json
+{
+    "data": [
+        {
+            "agency_id": 4,
+            "created_at": "2020-08-05T18:39:01.655595+08:00",
+            "device_sn": "PAX-A920-0821157228",
+            "file_name": "12314",
+            "file_url": "https://baidu.com/12314",
+            "id": 1,
+            "updated_at": "2020-08-05T18:39:01.655595+08:00"
+        },
+        {
+            "agency_id": 4,
+            "created_at": "2020-08-06T18:35:19.057972+08:00",
+            "device_sn": "PAX-A920-0821157228",
+            "file_name": "12314",
+            "file_url": "https://baidu.com/12314",
+            "id": 734760,
+            "updated_at": "2020-08-06T18:35:19.057972+08:00"
+        },
+        {
+            "agency_id": 4,
+            "created_at": "2020-08-06T18:47:34.834438+08:00",
+            "device_sn": "PAX-A920-0821157228",
+            "file_name": "12314",
+            "file_url": "https://baidu.com/12314",
+            "id": 734761,
+            "updated_at": "2020-08-06T18:47:34.834438+08:00"
+        }
+    ],
+    "total": 3
 }
 ```
 
@@ -1019,17 +1292,18 @@ Response Example:
 Request Example:
 ```json
 {
-    "md5": "",
-    "file_name": "",
-    "file_size": 123,
-    "tag": "apk files"
+	"file_name": "test1",
+	"file_size": 1000000,
+	"md5": "1231241234",
+	"tag": "appfile"    // app文件上传时，使用appfile；    批量添加设备到agency时：使用 devicefile;   tms里面的文件上送时，使用uploadfile
 }
 ```
 Response Example:
 ```json
 {
-    "upload_url": "https://asdfadfdf",
-    "download_url": "https://asdfasdf",
+    "download_url": "https://horizonpay.ap-northeast-2/tms/ad2b123ddd054d9e82111ab9ae05aecf/test1",
+    // base64 encoded
+    "upload_url": "aHR0cHM6Ly9ob3Jpem9ucGF5LnMzLmFwLW5vcnRoZWFzdC0yLmFtYXpvbmF3cy5jb20vdG1zL2FkMmIxMjNkZGQwNTRkOWU4MjExMWFiOWFlMDVhZWNmL3Rlc3QxP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQUlSVEpDU1hGRFRPNElGQlElMkYyMDIwMDgwNiUyRmFwLW5vcnRoZWFzdC0yJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDIwMDgwNlQxMDQyMzFaJlgtQW16LUV4cGlyZXM9OTAwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCUzQngtYW16LWFjbCZYLUFtei1TaWduYXR1cmU9ZDA0M2M1NDk4MzMwNGM3NDZjNTM5NjQ2MGE5NjcwMzU4MGZiOGFkYmM2OTM2ZDliZTM0YTQzYzRkMWQyYWJhMg=="
     "expired_at": "2020-06-13T15:41:16.142489+08:00"
 }
 ```

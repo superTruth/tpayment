@@ -49,14 +49,14 @@ type BaseIDRequest struct {
 }
 
 type BaseQueryRequest struct {
-	MerchantId uint              `json:"merchant_id"`
-	AgencyId   uint              `json:"agency_id"`
-	DeviceId   uint              `json:"device_id"`
-	AppId      uint              `json:"app_id"`
-	BatchId    uint              `json:"batch_id"`
+	MerchantId uint              `json:"merchant_id,omitempty"`
+	AgencyId   uint              `json:"agency_id,omitempty"`
+	DeviceId   uint              `json:"device_id,omitempty"`
+	AppId      uint              `json:"app_id,omitempty"`
+	BatchId    uint              `json:"batch_id,omitempty"`
 	Offset     uint              `json:"offset"`
 	Limit      uint              `json:"limit"`
-	Filters    map[string]string `json:"filters"`
+	Filters    map[string]string `json:"filters,omitempty"`
 }
 
 type BaseQueryResponse struct {

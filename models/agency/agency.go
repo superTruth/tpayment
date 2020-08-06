@@ -12,9 +12,10 @@ import (
 type Agency struct {
 	models.BaseModel
 
-	Name string `gorm:"column:name" json:"name"`
-	Tel  string `gorm:"column:tel" json:"tel"`
-	Addr string `gorm:"column:addr" json:"addr"`
+	Name  string `gorm:"column:name" json:"name"`
+	Tel   string `gorm:"column:tel" json:"tel"`
+	Addr  string `gorm:"column:addr" json:"addr"`
+	Email string `gorm:"column:email" json:"email"`
 }
 
 func (Agency) TableName() string {

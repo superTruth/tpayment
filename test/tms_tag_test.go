@@ -22,9 +22,6 @@ func TestAddTmsTag(t *testing.T) {
 	}
 
 	reqBean := &tms.DeviceTag{
-		BaseModel: models.BaseModel{
-			ID: 1,
-		},
 		Name: "Tag4",
 	}
 

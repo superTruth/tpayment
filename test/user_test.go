@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 	"tpayment/conf"
+	"tpayment/models"
+	"tpayment/models/account"
 	"tpayment/modules"
 	"tpayment/modules/user"
 )
@@ -18,6 +20,7 @@ const BaseUrl = "http://localhost:80"
 //const BaseUrl = "http://paymentstg.horizonpay.cn:80"
 
 func post(reqBody []byte, header http.Header, destUrl string, timeOut time.Duration) (respBody []byte, err error) {
+	formatJson(reqBody)
 	req, err := http.NewRequest("POST", destUrl, bytes.NewBuffer(reqBody))
 	req.Header = header
 	defer req.Body.Close()
@@ -52,20 +55,20 @@ func ParseResponse(resp []byte, data interface{}) error {
 
 func TestLogin(t *testing.T) {
 	fmt.Println("login", line)
-	//reqBean := &user.LoginRequest{
-	//	Email:     "fang.qiang@bindo.com",
-	//	Pwd:       "123456",
-	//	AppId:     "123456",
-	//	AppSecret: "123456",
-	//}
-
-	// agency
 	reqBean := &user.LoginRequest{
-		Email:     "fang.qiang7@bindo.com",
+		Email:     "fang.qiang@bindo.com",
 		Pwd:       "123456",
 		AppId:     "123456",
 		AppSecret: "123456",
 	}
+
+	// agency
+	//reqBean := &user.LoginRequest{
+	//	Email:     "fang.qiang7@bindo.com",
+	//	Pwd:       "123456",
+	//	AppId:     "123456",
+	//	AppSecret: "123456",
+	//}
 
 	reqByte, _ := json.Marshal(reqBean)
 	repByte, _ := post(reqByte, nil, BaseUrl+conf.UrlAccountLogin, time.Second*10)
@@ -77,7 +80,7 @@ func TestLogin(t *testing.T) {
 
 	token = respBean.Token
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 }
 
 // nolint
@@ -147,16 +150,47 @@ func TestAddUser(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &user.AddUserRequest{
-		Email: "fang.qiang8@bindo.com",
-		Pwd:   "123456",
-		Role:  string(conf.RoleUser),
-		Name:  "Fang",
+	reqBean := &account.UserBean{
+		AgencyId: 0,
+		Email:    "fang.qiang10@bindo.com",
+		Pwd:      "123456",
+		Name:     "12342132",
+		Role:     string(conf.RoleUser),
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAccountAdd, time.Second*10)
+
+	respBean := &modules.BaseResponse{}
+
+	_ = json.Unmarshal(repByte, respBean)
+
+	fmt.Println("rep->", string(repByte))
+}
+
+func TestUpdateUser(t *testing.T) {
+	TestLogin(t)
+	//token := Login("fang.qiang7@bindo.com", "123456")
+
+	fmt.Println("add user", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &account.UserBean{
+		BaseModel: models.BaseModel{
+			ID: 12,
+		},
+		Email: "fang.qiang13@bindo.com",
+		Pwd:   "1234",
+		Name:  "adsfa",
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlAccountUpdate, time.Second*10)
 
 	respBean := &modules.BaseResponse{}
 
@@ -174,7 +208,7 @@ func TestDeleteUser(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 2}
+	reqBean := &modules.BaseIDRequest{ID: 11}
 
 	reqByte, _ := json.Marshal(reqBean)
 

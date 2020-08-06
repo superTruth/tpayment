@@ -4,7 +4,6 @@ import (
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
-	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
@@ -15,7 +14,7 @@ import (
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(AddUserRequest)
+	req := new(account.UserBean)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
 	if err != nil {
@@ -25,11 +24,11 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	// 机构管理员
-	agencyId := uint(0)
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-		agencyId = agencys[0].ID
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		logger.Info("GetAgencyId2 err -> ", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return err
 	}
 
 	// 查询是否已经存在的账号
@@ -46,16 +45,14 @@ func AddHandle(ctx echo.Context) error {
 	}
 
 	// 生成新账号
-	bean := &account.UserBean{
-		AgencyId: agencyId,
-		Email:    req.Email,
-		Pwd:      req.Pwd,
-		Name:     req.Name,
-		Role:     req.Role,
-		Active:   true,
+	req.ID = 0
+	req.AgencyId = agencyId
+	req.Active = true
+	if req.AgencyId != 0 { // 普通机构人员创建的用户只允许普通用户，不允许创建管理员账户
+		req.Role = string(conf.RoleUser)
 	}
 
-	err = models.CreateBaseRecord(bean)
+	err = models.CreateBaseRecord(req)
 
 	if err != nil {
 		logger.Info("CreateBaseRecord sql error->", err.Error())

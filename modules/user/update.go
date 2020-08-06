@@ -38,7 +38,33 @@ func UpdateHandle(ctx echo.Context) error {
 		return err
 	}
 
+	// 更改权限
+	if modules.IsAdmin(ctx) == nil { // 如果不是系统管理员，则不允许更改角色
+		req.Role = ""
+	} else { // 查看是否是机构管理员，如果不是，只能更新自己的数据
+		agency := modules.IsAgencyAdmin(ctx)
+		if agency == nil {
+			currentUserBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+			if currentUserBean.ID != user.ID {
+				logger.Warn("can't update other user account: your account id->", currentUserBean.ID,
+					"  dest account id->", user.ID)
+				modules.BaseError(ctx, conf.NoPermission)
+				return err
+			}
+		} else {
+			// 修改用户不属于此机构用户
+			if user.AgencyId != agency.ID {
+				logger.Warn("can't update other user account: your agency id->", agency.ID,
+					"  dest account id->", user.ID)
+				modules.BaseError(ctx, conf.NoPermission)
+				return err
+			}
+		}
+	}
+
 	// 生成新账号
+	req.AgencyId = 0
+	req.Active = user.Active
 	err = models.UpdateBaseRecord(req)
 
 	if err != nil {

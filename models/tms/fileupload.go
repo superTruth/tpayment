@@ -11,7 +11,7 @@ import (
 
 type UploadFile struct {
 	models.BaseModel
-	AgencyId uint `gorm:"column:agency_id"json:"agency_id" `
+	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
 
 	DeviceSn string `gorm:"column:device_sn" json:"device_sn"`
 	FileName string `gorm:"column:file_name" json:"file_name"`
