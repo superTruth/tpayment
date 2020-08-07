@@ -17,7 +17,9 @@ import (
 
 const BaseUrl = "http://localhost:80"
 
-//const BaseUrl = "http://paymentstg.horizonpay.cn:80"
+//const BaseUrl = "https://www.paymentstg.horizonpay.cn"
+
+//const BaseUrl = "http://www.paymentstg.horizonpay.cn/payment"
 
 func post(reqBody []byte, header http.Header, destUrl string, timeOut time.Duration) (respBody []byte, err error) {
 	formatJson(reqBody)

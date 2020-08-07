@@ -6,7 +6,7 @@
   "email_user_pwd": "F1a2n3g4",
   "email_user_name": "no_reply",
 
-  "db_account": "root:123456@tcp(paymentstg.horizonpay.cn)/tpayment?charset=utf8&parseTime=True&loc=Local",
+  "db_account": "root:123456@tcp(www.paymentstg.horizonpay.cn)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
   "s3_region": "ap-northeast-2",
   "s3_key": "AKIAIRTJCSXFDTO4IFBQ",
