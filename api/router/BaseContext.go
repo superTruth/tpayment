@@ -24,6 +24,14 @@ func PreHandle() echo.MiddlewareFunc {
 			requestId := uuid.New().String()
 			ctx.Set(constant.REQUEST_ID, requestId)
 
+			ctx.Request().Header.Set("Access-Control-Allow-Origin", "*")
+			ctx.Request().Header.Set("Access-Control-Allow-Headers", "Content-Type")
+			ctx.Request().Header.Set("content-type", "application/json")
+
+			ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+			ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			ctx.Response().Header().Set("content-type", "application/json")
+
 			// 生成log
 			logger := new(tlog.Logger)
 			logger.Init(requestId)
