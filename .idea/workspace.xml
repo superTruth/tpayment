@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a7a3898e-6d6e-4f4c-aa28-e284f969fbe3" name="Default Changelist" comment="添加跨域问题">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/router/BaseContext.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router/BaseContext.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deployment/docker/tpayment" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/docker/tpayment" afterDir="false" />
@@ -164,7 +163,7 @@
       <screen x="0" y="23" width="1729" height="1097" />
     </state>
     <state x="583" y="381" key="#com.intellij.fileTypes.FileTypeChooser/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732411416" />
-    <state x="561" y="86" key="CommitChangelistDialog2" timestamp="1596892393215">
+    <state x="561" y="86" key="CommitChangelistDialog2" timestamp="1596892418881">
       <screen x="0" y="23" width="1738" height="1097" />
     </state>
     <state x="519" y="82" key="CommitChangelistDialog2/-240.-1057.1920.1057/0.23.1609.1027@0.23.1609.1027" timestamp="1595168437544" />
@@ -175,7 +174,7 @@
     <state x="557" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1726.1097@0.23.1726.1097" timestamp="1596639005064" />
     <state x="558" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1729.1097@0.23.1729.1097" timestamp="1595732386260" />
     <state x="561" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1736.1097@0.23.1736.1097" timestamp="1596891697627" />
-    <state x="561" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596892393215" />
+    <state x="561" y="86" key="CommitChangelistDialog2/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596892418881" />
     <state x="518" y="366" key="EditFileWatcherDialog" timestamp="1596012502503">
       <screen x="0" y="23" width="1729" height="1097" />
     </state>
@@ -367,6 +366,10 @@
       <screen x="-240" y="-1057" width="1920" height="1057" />
     </state>
     <state x="351" y="-905" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/-240.-1057.1920.1057/0.23.1618.1027@0.23.1618.1027" timestamp="1592115819253" />
+    <state x="651" y="496" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596893153464">
+      <screen x="0" y="23" width="1738" height="1097" />
+    </state>
+    <state x="651" y="496" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-84.-1057.1920.1057/0.23.1738.1097@0.23.1738.1097" timestamp="1596893153464" />
     <state x="263" y="-1417" width="1204" height="972" key="dock-window-1" timestamp="1596706412474">
       <screen x="-447" y="-1417" width="2560" height="1417" />
     </state>
