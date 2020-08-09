@@ -24,7 +24,7 @@ func PreHandle() echo.MiddlewareFunc {
 			requestId := uuid.New().String()
 			ctx.Set(constant.REQUEST_ID, requestId)
 
-			ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+			//ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
 			ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			ctx.Response().Header().Set("content-type", "application/json")
 
@@ -63,7 +63,7 @@ func AuthHandle() echo.MiddlewareFunc {
 			// 验证token的有效性
 			userBean, _, err := user.Auth(ctx, tokens[0])
 			if err != nil { // 数据库出错
-				logger.Error("Auth db error2->", err.Error())
+				logger.Error("Auth db error->", err.Error())
 				modules.BaseError(ctx, conf.DBError)
 				return err
 			}
