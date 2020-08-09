@@ -24,7 +24,7 @@ func PreHandle() echo.MiddlewareFunc {
 			requestId := uuid.New().String()
 			ctx.Set(constant.REQUEST_ID, requestId)
 
-			//ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+			ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
 			ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			ctx.Response().Header().Set("content-type", "application/json")
 
