@@ -21,8 +21,7 @@ func TestAddDeviceAcquirerByFile(t *testing.T) {
 	}
 
 	reqBean := &agencydevice.DeviceBindRequest{
-		AgencyId: 4,
-		DeviceId: 0,
+		AgencyId: 1,
 		FileUrl:  "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/test.csv",
 	}
 
@@ -84,7 +83,7 @@ func TestDeleteDeviceAcquirer(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 3}
+	reqBean := &modules.BaseIDRequest{ID: 6}
 
 	reqByte, _ := json.Marshal(reqBean)
 

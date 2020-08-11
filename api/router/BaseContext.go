@@ -63,7 +63,7 @@ func AuthHandle() echo.MiddlewareFunc {
 			// 验证token的有效性
 			userBean, _, err := user.Auth(ctx, tokens[0])
 			if err != nil { // 数据库出错
-				logger.Error("Auth db error->", err.Error())
+				logger.Error("Auth db error2->", err.Error())
 				modules.BaseError(ctx, conf.DBError)
 				return err
 			}

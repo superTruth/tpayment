@@ -143,12 +143,12 @@ func AddByFile(ctx echo.Context, agencyId uint, fileUrl string) conf.ResultCode 
 			}
 			continue
 		}
-		logger.Info("device not exist->", device.DeviceSn)
+		logger.Info("device not exist->", record[0])
 		// 如果不存在的情况，需要新建数据
-		err = models.CreateBaseRecord(&tms.DeviceInfo{
-			AgencyId: agencyId,
-			DeviceSn: record[0],
-		})
+		newDevice := tms.GenerateDeviceInfo()
+		newDevice.AgencyId = agencyId
+		newDevice.DeviceSn = record[0]
+		err = models.CreateBaseRecord(newDevice)
 
 		if err != nil {
 			logger.Error("Create fail->", err.Error())

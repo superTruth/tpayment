@@ -24,7 +24,7 @@ func QueryHandle(ctx echo.Context) error {
 	}
 
 	// 管理员必须要传入agency id
-	agencyId, err := modules.GetAgencyId(ctx, req.AgencyId)
+	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
 		logger.Warn("GetAgencyId no permission->", err.Error())
 		modules.BaseError(ctx, conf.NoPermission)

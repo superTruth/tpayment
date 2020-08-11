@@ -3,7 +3,6 @@ package acquirer
 import (
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -24,32 +23,10 @@ func AddHandle(ctx echo.Context) error {
 		return err
 	}
 
-	// 管理员必须要传入agency id
-	var agencyId uint
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	if userBean.Role == string(conf.RoleAdmin) {
-		if req.AgencyId == 0 {
-			logger.Warn("Admin user must contain agency id->")
-			modules.BaseError(ctx, conf.ParameterError)
-			return err
-		}
-		agencyId = req.AgencyId
-	} else {
-		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-		agencyId = agencys[0].ID
-		req.AgencyId = agencyId
-	}
-
-	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, agencyId)
+	req.AgencyId, err = modules.GetAgencyId2(ctx)
 	if err != nil {
-		logger.Error("GetAgencyById sql error->", err.Error())
-		modules.BaseError(ctx, conf.DBError)
-		return err
-	}
-
-	if agencyBean == nil {
-		logger.Info("the agency is not found->", agencyId)
-		modules.BaseError(ctx, conf.RecordNotFund)
+		logger.Warn("GetAgencyId no permission->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
 		return err
 	}
 
