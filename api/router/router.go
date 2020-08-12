@@ -18,6 +18,7 @@ import (
 	"tpayment/modules/tms/appinbatchupdate"
 	"tpayment/modules/tms/appindevice"
 	"tpayment/modules/tms/batchupdate"
+	"tpayment/modules/tms/clientapi"
 	"tpayment/modules/tms/device"
 	"tpayment/modules/tms/devicetag"
 	"tpayment/modules/tms/uploadfile"
@@ -127,10 +128,10 @@ func Init() (*echo.Echo, error) {
 
 	e.POST(conf.UrlTmsUploadFileAdd, uploadfile.AddHandle)       // 添加app in batch update
 	e.POST(conf.UrlTmsUploadFileDelete, uploadfile.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsUploadFileQuery, uploadfile.QueryHandle)   // 查询
 	//e.POST(conf.UrlTmsUploadFileUpdate, uploadfile.UpdateHandle) // 更新
-	e.POST(conf.UrlTmsUploadFileQuery, uploadfile.QueryHandle) // 查询
 
-	//e.POST(conf.UrlTmsHeartBeat, clientapi.HearBeat) // 客户端心跳逻辑
+	e.POST(conf.UrlTmsHeartBeat, clientapi.HearBeat) // 客户端心跳逻辑
 
 	e.POST(conf.UrlFileAdd, fileupload.RequestUploadFileUrl) // 创建文件
 

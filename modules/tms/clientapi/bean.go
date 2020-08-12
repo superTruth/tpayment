@@ -2,16 +2,16 @@ package clientapi
 
 // 请求结构体
 type RequestBean struct {
-	DeviceSn    string    `json:"device_sn,omitempty"`
-	DeviceCsn   string    `json:"device_csn,omitempty"`
-	DeviceModel string    `json:"device_model,omitempty"`
-	Alias       string    `json:"alias,omitempty"`
-	LocationLat string    `json:"location_lat,omitempty"`
-	LocationLon string    `json:"location_lon,omitempty"`
-	PushToken   string    `json:"push_token,omitempty"`
-	Power       int       `json:"power,omitempty"`
-	StoreID     int       `json:"store_id,omitempty"`
-	AppInfos    []AppInfo `json:"app_infos,omitempty"`
+	DeviceSn    string     `json:"device_sn,omitempty"`
+	DeviceCsn   string     `json:"device_csn,omitempty"`
+	DeviceModel string     `json:"device_model,omitempty"`
+	Alias       string     `json:"alias,omitempty"`
+	LocationLat string     `json:"location_lat,omitempty"`
+	LocationLon string     `json:"location_lon,omitempty"`
+	PushToken   string     `json:"push_token,omitempty"`
+	Battery     int        `json:"battery,omitempty"`
+	StoreID     int        `json:"store_id,omitempty"`
+	AppInfos    []*AppInfo `json:"app_infos,omitempty"`
 }
 
 // 批量设置数据请求体
@@ -51,13 +51,13 @@ type CreateFileRequest struct {
 
 // 返回结构体
 type ResponseBean struct {
-	DeviceCsn        string    `json:"device_csn,omitempty"`
-	Alias            string    `json:"alias,omitempty"`
-	RebootMode       string    `json:"reboot_mode"`
-	RebootTime       string    `json:"reboot_time"`
-	RebootDayInWeek  int       `json:"reboot_day_in_week,omitempty"`
-	RebootDayInMonth int       `json:"reboot_day_in_month,omitempty"`
-	AppInfos         []AppInfo `json:"app_infos,omitempty"`
+	DeviceCsn        string     `json:"device_csn,omitempty"`
+	Alias            string     `json:"alias,omitempty"`
+	RebootMode       string     `json:"reboot_mode"`
+	RebootTime       string     `json:"reboot_time"`
+	RebootDayInWeek  int        `json:"reboot_day_in_week,omitempty"`
+	RebootDayInMonth int        `json:"reboot_day_in_month,omitempty"`
+	AppInfos         []*AppInfo `json:"app_infos,omitempty"`
 }
 
 type AppInfo struct {

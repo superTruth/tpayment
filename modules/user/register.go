@@ -34,11 +34,20 @@ func RegisterHandle(ctx echo.Context) error {
 		return err
 	}
 	if user == nil {
+		var user *account.UserBean
+
+		// 如果不是机器的话，就直接是普通用户
+		if req.Role != string(conf.RoleMachine) {
+			req.Role = string(conf.RoleUser)
+		}
+
 		// 生成新账号
 		user = &account.UserBean{
-			Email: req.Email,
-			Pwd:   req.Pwd,
-			Name:  req.Name,
+			Email:  req.Email,
+			Pwd:    req.Pwd,
+			Name:   req.Name,
+			Role:   req.Role,
+			Active: req.Role == string(conf.RoleMachine),
 		}
 		err = models.CreateBaseRecord(user)
 		if err != nil {
@@ -47,8 +56,14 @@ func RegisterHandle(ctx echo.Context) error {
 			return err
 		}
 
+		// 机器人注册，直接成功
+		if req.Role == string(conf.RoleMachine) {
+			modules.BaseSuccess(ctx, nil)
+			return nil
+		}
+
 	} else {
-		if user.Active {
+		if user.Active || user.Role == string(conf.RoleMachine) {
 			logger.Warn(conf.RecordAlreadyExist.String())
 			modules.BaseError(ctx, conf.RecordAlreadyExist)
 			return errors.New(conf.RecordAlreadyExist.String())

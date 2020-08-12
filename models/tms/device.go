@@ -17,7 +17,7 @@ type DeviceInfo struct {
 
 	DeviceSn    string `gorm:"column:device_sn" json:"device_sn"`
 	DeviceCsn   string `gorm:"column:device_csn" json:"device_csn"`
-	DeviceModel string `gorm:"column:device_model" json:"device_model"`
+	DeviceModel uint   `gorm:"column:device_model" json:"device_model"`
 	Alias       string `gorm:"column:alias" json:"alias"`
 
 	RebootMode       string `gorm:"column:reboot_mode" json:"reboot_mode"`
