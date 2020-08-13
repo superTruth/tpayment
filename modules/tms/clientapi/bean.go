@@ -10,7 +10,6 @@ type RequestBean struct {
 	LocationLon string     `json:"location_lon,omitempty"`
 	PushToken   string     `json:"push_token,omitempty"`
 	Battery     int        `json:"battery,omitempty"`
-	StoreID     int        `json:"store_id,omitempty"`
 	AppInfos    []*AppInfo `json:"app_infos,omitempty"`
 }
 

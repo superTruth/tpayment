@@ -3,7 +3,6 @@ package clientapi
 import (
 	"encoding/json"
 	"io/ioutil"
-	"net/http"
 	"sync"
 	"time"
 	"tpayment/conf"
@@ -61,11 +60,11 @@ func HearBeat(ctx echo.Context) error {
 		logger.Info("设备未创建的情况，需要创建")
 		deviceInfo = tms.GenerateDeviceInfo()
 		copyRequestInfo2DeviceInfo(bean, deviceInfo) // 新上送的数据覆盖旧数据
-		err = models.DB().Create(deviceInfo).Error
+		err = models.CreateBaseRecord(deviceInfo)
 	} else {
 		logger.Info("设备已经创建的情况")
 		copyRequestInfo2DeviceInfo(bean, deviceInfo) // 新上送的数据覆盖旧数据
-		err = models.DB().Update(deviceInfo).Error
+		err = models.UpdateBaseRecord(deviceInfo)
 	}
 	if err != nil {
 		logger.Error("设备更新或者创建失败->", err.Error())
@@ -121,7 +120,7 @@ func HearBeat(ctx echo.Context) error {
 		appInDevice.VersionCode = requestApps[i].VersionCode
 		appInDevice.ExternalIdType = tms.AppInDeviceExternalIdTypeDevice
 
-		models.DB().Create(appInDevice)
+		_ = models.CreateBaseRecord(appInDevice)
 	}
 
 	//BaseSuccess(context)
@@ -146,8 +145,8 @@ func HearBeat(ctx echo.Context) error {
 		ret.RebootDayInWeek = deviceInfo.RebootDayInWeek
 	}
 	ret.AppInfos = retApps
-	_ = ctx.JSON(http.StatusOK, ret)
 
+	modules.BaseSuccess(ctx, ret)
 	return nil
 }
 
@@ -221,7 +220,7 @@ func compareApps(ctx echo.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 				dbApp.VersionCode = requestApps[i].VersionCode
 				dbApp.PackageId = requestApps[i].PackageId
 				dbApp.Name = requestApps[i].Name
-				_ = models.DB().Updates(&dbApp)
+				_ = models.UpdateBaseRecord(&dbApp)
 			}
 
 			switch dbApp.Status {
@@ -271,7 +270,7 @@ func compareApps(ctx echo.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 
 				// 上报app version code大于当前配置，更新数据为上报的数据，并且不下发，状态改为Warning Installed
 				dbApp.Status = conf.TmsStatusWarningInstalled
-				models.DB().Updates(dbApp)
+				_ = models.UpdateBaseRecord(dbApp)
 
 			case conf.TmsStatusPendingUninstalled:
 				logger.Info("conf.STATUS_PENDING_UNINSTALL", requestApps[i].VersionCode)
@@ -290,7 +289,7 @@ func compareApps(ctx echo.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 				if requestApps[i].VersionCode < dbApp.AppFile.VersionCode { // 上报app version code小于当前，下发当前配置数据，状态改为Pending Install
 					newApp := generateAppFromConfig(dbApp)
 					dbApp.Status = conf.TmsStatusPendingInstall
-					models.DB().Updates(dbApp)
+					_ = models.UpdateBaseRecord(dbApp)
 
 					newApp.Status = conf.TmsStatusPendingInstall
 					needReturnApp = append(needReturnApp, newApp)
@@ -299,7 +298,7 @@ func compareApps(ctx echo.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 
 				if requestApps[i].VersionCode == dbApp.AppFile.VersionCode { // 等于当前，更新状态为Installed，不下发
 					dbApp.Status = conf.TmsStatusInstalled
-					models.DB().Updates(dbApp)
+					_ = models.UpdateBaseRecord(dbApp)
 					continue
 				}
 
