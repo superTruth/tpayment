@@ -36,6 +36,7 @@ func PreHandle() echo.MiddlewareFunc {
 
 			content, _ := httputil.DumpRequest(ctx.Request(), true)
 			logger.Info("request->", string(content))
+
 			return handlerFunc(ctx)
 		}
 	}

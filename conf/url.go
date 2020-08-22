@@ -54,9 +54,9 @@ const (
 	UrlMerchantDevicePaymentUpdate = "/payment/merchant_device_payment/update"
 	UrlMerchantDevicePaymentQuery  = "/payment/merchant_device_payment/query"
 
-	UrlTmsDeviceDelete = "/payment/tms/agencydevice/delete"
-	UrlTmsDeviceUpdate = "/payment/tms/agencydevice/update"
-	UrlTmsDeviceQuery  = "/payment/tms/agencydevice/query"
+	UrlTmsDeviceDelete = "/payment/tms/device/delete"
+	UrlTmsDeviceUpdate = "/payment/tms/device/update"
+	UrlTmsDeviceQuery  = "/payment/tms/device/query"
 
 	UrlTmsAppInDeviceAdd    = "/payment/tms/deviceapp/add"
 	UrlTmsAppInDeviceDelete = "/payment/tms/deviceapp/delete"
