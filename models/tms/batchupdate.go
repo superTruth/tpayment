@@ -24,7 +24,7 @@ type BatchUpdate struct {
 
 	ConfigTags []*DeviceTag `gorm:"column:-" json:"tags"`
 
-	Apps []*AppInDevice `gorm:"-"`
+	Apps []*AppInDevice `gorm:"-" json:"-"`
 }
 
 func (BatchUpdate) TableName() string {

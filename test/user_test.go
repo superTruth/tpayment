@@ -15,9 +15,9 @@ import (
 	"tpayment/modules/user"
 )
 
-//const BaseUrl = "http://localhost:80"
+const BaseUrl = "http://localhost:80"
 
-const BaseUrl = "https://www.paymentstg.horizonpay.cn"
+//const BaseUrl = "https://www.paymentstg.horizonpay.cn"
 
 //const BaseUrl = "http://www.paymentstg.horizonpay.cn/payment"
 

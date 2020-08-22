@@ -23,16 +23,13 @@ func TestUpdateTmsDevice(t *testing.T) {
 
 	var deviceTags []*tms.DeviceTagFull
 	_ = json.Unmarshal([]byte(`[
-					{
-						"id": 25
-					}
 				]`), &deviceTags)
 
 	fmt.Println("deviceTags len->", len(deviceTags))
 
 	reqBean := &tms.DeviceInfo{
 		BaseModel: models.BaseModel{
-			ID: 1,
+			ID: 3,
 		},
 		DeviceCsn: "456789",
 		Tags:      &deviceTags,

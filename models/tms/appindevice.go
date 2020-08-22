@@ -31,6 +31,11 @@ func (AppInDevice) TableName() string {
 	return "tms_app_in_device"
 }
 
+const (
+	AppInDeviceExternalIdTypeDevice      = "merchantdevice"
+	AppInDeviceExternalIdTypeBatchUpdate = "batch"
+)
+
 func GetAppsInDevice(db *models.MyDB, ctx echo.Context, externalId uint, externalIdType string, offset uint, limit uint) (uint, []*AppInDevice, error) {
 	var ret []*AppInDevice
 

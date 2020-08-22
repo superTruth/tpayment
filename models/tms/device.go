@@ -18,7 +18,7 @@ type DeviceInfo struct {
 	DeviceSn        string `gorm:"column:device_sn" json:"device_sn"`
 	DeviceCsn       string `gorm:"column:device_csn" json:"device_csn"`
 	DeviceModel     uint   `gorm:"column:device_model" json:"-"`
-	DeviceModelName string `gorm:"column:-" json:"device_model"`
+	DeviceModelName string `gorm:"-" json:"device_model"`
 	Alias           string `gorm:"column:alias" json:"alias"`
 
 	RebootMode       string `gorm:"column:reboot_mode" json:"reboot_mode"`
@@ -32,7 +32,7 @@ type DeviceInfo struct {
 	LocationLon string `gorm:"column:location_lon" json:"location_lon"`
 	PushToken   string `gorm:"column:push_token" json:"push_token"`
 
-	Tags *[]*DeviceTagFull `gorm:"column:-" json:"tags,omitempty"`
+	Tags *[]*DeviceTagFull `gorm:"-" json:"tags,omitempty"`
 }
 
 func (DeviceInfo) TableName() string {
@@ -164,4 +164,21 @@ func QueryTagsInDevice(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([
 	}
 
 	return ret, nil
+}
+
+// devicetag
+type DeviceTagFull struct {
+	DeviceTag
+	MidId uint `json:"agency_id" gorm:"column:mid_id"`
+}
+
+type DeviceAndTagMid struct {
+	models.BaseModel
+
+	TagID    uint `gorm:"column:tag_id"`
+	DeviceId uint `gorm:"column:device_id"`
+}
+
+func (DeviceAndTagMid) TableName() string {
+	return "tms_device_and_tag_mid"
 }

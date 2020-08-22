@@ -18,6 +18,7 @@ type Merchant struct {
 	Name     string `json:"name,omitempty" gorm:"column:name"`
 	Tel      string `json:"tel,omitempty"  gorm:"column:tel"`
 	Addr     string `json:"addr,omitempty" gorm:"column:addr"`
+	Email    string `json:"email,omitempty" gorm:"column:email"`
 }
 
 func (Merchant) TableName() string {
