@@ -84,27 +84,3 @@ func GetDeviceByTag(tagsUuid []string, offset int, limit int) ([]string, error) 
 
 	return deviceUuids, nil
 }
-
-// merchantdevice model
-type DeviceModel struct {
-	models.BaseModel
-
-	Name string `gorm:"column:name"` // 外键
-}
-
-func (DeviceModel) TableName() string {
-	return "tms_model"
-}
-
-func GetModels() ([]DeviceModel, error) {
-	var deviceModels []DeviceModel
-
-	if err := models.DB().Model(&DeviceModel{}).Find(&deviceModels).Error; err != nil {
-		if gorm.ErrRecordNotFound == err {
-			return deviceModels, nil
-		}
-		return deviceModels, err
-	}
-
-	return deviceModels, nil
-}

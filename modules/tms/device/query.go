@@ -45,6 +45,20 @@ func QueryHandle(ctx echo.Context) error {
 		dataRet[i].Tags = &tags
 	}
 
+	// 查询出所有设备对应的device model
+	for i := 0; i < len(dataRet); i++ {
+		if dataRet[i].DeviceModel == 0 {
+			continue
+		}
+		deviceModel, err := tms.GetModelByID(models.DB(), ctx, dataRet[i].DeviceModel)
+		if err != nil {
+			logger.Info("GetModelByID sql error->", err.Error())
+			modules.BaseError(ctx, conf.DBError)
+			return err
+		}
+		dataRet[i].DeviceModelName = deviceModel.Name
+	}
+
 	ret := &modules.BaseQueryResponse{
 		Total: total,
 		Data:  dataRet,

@@ -15,10 +15,11 @@ type DeviceInfo struct {
 	models.BaseModel
 	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
 
-	DeviceSn    string `gorm:"column:device_sn" json:"device_sn"`
-	DeviceCsn   string `gorm:"column:device_csn" json:"device_csn"`
-	DeviceModel uint   `gorm:"column:device_model" json:"device_model"`
-	Alias       string `gorm:"column:alias" json:"alias"`
+	DeviceSn        string `gorm:"column:device_sn" json:"device_sn"`
+	DeviceCsn       string `gorm:"column:device_csn" json:"device_csn"`
+	DeviceModel     uint   `gorm:"column:device_model" json:"-"`
+	DeviceModelName string `gorm:"column:-" json:"device_model"`
+	Alias           string `gorm:"column:alias" json:"alias"`
 
 	RebootMode       string `gorm:"column:reboot_mode" json:"reboot_mode"`
 	RebootTime       string `gorm:"column:reboot_time" json:"reboot_time"`
@@ -123,22 +124,6 @@ func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 		equalData["agency_id"] = strconv.FormatUint(uint64(agency.ID), 10)
 	}
 	sqlCondition := models.CombQueryCondition(equalData, filters)
-	//
-	//
-	//filterTmp := make(map[string]interface{})
-	//userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	//agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-	//
-	//for k, v := range filters {
-	//	filterTmp[k] = v
-	//}
-	//
-	//if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
-	//	if len(agencys) == 0 {
-	//		return 0, nil, errors.New("user not agency admin")
-	//	}
-	//	filterTmp["agency_id"] = agencys[0].ID
-	//}
 
 	// conditions
 	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
