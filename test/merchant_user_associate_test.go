@@ -22,8 +22,8 @@ func TestAddMerchantAssociate(t *testing.T) {
 	}
 
 	reqBean := &merchant.UserMerchantAssociate{
-		MerchantId: 8,
-		UserId:     10,
+		MerchantId: 6,
+		UserId:     78,
 		Role:       string(conf.RoleAdmin),
 	}
 

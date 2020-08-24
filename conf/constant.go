@@ -30,10 +30,10 @@ const (
 )
 
 const (
-	TmsStatusPendingInstall     = "pending install"
+	TmsStatusPendingInstall     = "pending_install"
 	TmsStatusInstalled          = "installed"
-	TmsStatusPendingUninstalled = "pending uninstall"
-	TmsStatusWarningInstalled   = "warning installed"
+	TmsStatusPendingUninstalled = "pending_uninstall"
+	TmsStatusWarningInstalled   = "warning_installed"
 )
 
 const (

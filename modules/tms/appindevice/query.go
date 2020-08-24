@@ -56,6 +56,7 @@ func QueryHandle(ctx echo.Context) error {
 			(dataRet[i].Status == conf.TmsStatusPendingUninstalled) {
 			if dataRet[i].App != nil {
 				dataRet[i].PackageId = dataRet[i].App.PackageId
+				dataRet[i].Name = dataRet[i].App.Name
 			}
 
 			if dataRet[i].AppFile != nil {

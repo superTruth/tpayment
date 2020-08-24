@@ -23,9 +23,9 @@ func TestCreateTmsAppFile(t *testing.T) {
 
 	// https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Pax-MDM-V1.14_alpha_release_sign.apk
 	reqBean := &tms.AppFile{
-		UpdateDescription: "MDM First Time",
-		FileUrl:           "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-MDM-V1.15_alpha_release_20200720%20%281%29.apk",
-		AppId:             1,
+		UpdateDescription: "test",
+		FileUrl:           "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/Landi-uniform-driver-app_v2.0.17_release-20-07-30-18-23.apk",
+		AppId:             7,
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

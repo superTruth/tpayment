@@ -87,7 +87,7 @@ func TestQueryMerchantDevice(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		MerchantId: 8,
+		MerchantId: 1,
 		Offset:     0,
 		Limit:      100,
 	}
