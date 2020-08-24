@@ -22,7 +22,7 @@ func TestFileUpload(t *testing.T) {
 	reqBean := &fileupload.UploadFileRequest{
 		FileName: "test1",
 		FileSize: 1000000,
-		Md5:      "1231241234",
+		Md5:      "1B2M2Y8AsgTpgAmY7PhCfg==",
 		Tag:      "tms",
 	}
 

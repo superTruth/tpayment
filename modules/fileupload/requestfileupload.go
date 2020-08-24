@@ -50,13 +50,15 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 
 	//endpoints.ApNortheast2RegionID
 	resp, _ := service.PutObjectRequest(&s3.PutObjectInput{
-		ACL:    aws.String("public-read"),
-		Bucket: aws.String(conf.GetConfigData().S3Bucket),
-		Key:    aws.String(filePath),
+		ACL:        aws.String("public-read"),
+		Bucket:     aws.String(conf.GetConfigData().S3Bucket),
+		Key:        aws.String(filePath),
+		ContentMD5: &req.Md5,
 	})
 
-	exp := 15 * int64(1+req.FileSize/10/1024/1024)
-	url, err := resp.Presign(time.Minute * time.Duration(exp)) // 15分钟 10M的发送时间
+	//exp := 15 * int64(1+req.FileSize/10/1024/1024)
+	//url, err := resp.Presign(time.Minute * time.Duration(exp)) // 15分钟 10M的发送时间
+	url, err := resp.Presign(time.Hour)
 
 	if err != nil {
 		logger.Error("pre sign fail->", err.Error())
@@ -75,3 +77,33 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 
 	return nil
 }
+
+//func test() {
+//	fp, _ := os.Open("/Users/truth/project/tpayment/modules/fileupload/requestfileupload.go")
+//	defer fp.Close()
+//
+//	fmt.Println("key->", conf.GetConfigData().S3Key, ", secret->", conf.GetConfigData().S3Secret)
+//	// S3
+//	sess := session.Must(session.NewSession(&aws.Config{
+//		Region:      aws.String(conf.GetConfigData().S3Region),
+//		Credentials: credentials.NewStaticCredentials(conf.GetConfigData().S3Key, conf.GetConfigData().S3Secret, ""),
+//	}))
+//
+//	service := s3.New(sess)
+//
+//	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(30)*time.Second)
+//	defer cancel()
+//
+//	_, err := service.PutObjectWithContext(ctx, &s3.PutObjectInput{
+//		ACL:    aws.String("public-read"),
+//		Bucket: aws.String(conf.GetConfigData().S3Bucket),
+//		Key:    aws.String("test"),
+//		Body:   fp,
+//	})
+//
+//	if err != nil {
+//		fmt.Println("upload fail->", err.Error())
+//	} else {
+//		fmt.Println("upload success")
+//	}
+//}
