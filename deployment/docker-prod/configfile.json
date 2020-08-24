@@ -8,9 +8,9 @@
 
   "db_account": "root:RVmeukTrZAhxWWvY@tcp(tpayment.ctzbtzry87ad.eu-west-3.rds.amazonaws.com)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
-  "s3_region": "ap-northeast-2",
+  "s3_region": "eu-west-3",
   "s3_key": "AKIAIRTJCSXFDTO4IFBQ",
   "s3_secret": "nGYggUiMOyOQzj1vm0YXAYQ9JKCr4hjYvDi",
-  "s3_bucket": "horizonpay"
+  "s3_bucket": "tpayment"
 }
 
