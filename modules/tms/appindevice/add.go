@@ -16,11 +16,18 @@ import (
 func AddHandle(ctx echo.Context) error {
 	logger := tlog.GetLogger(ctx)
 
+	logger.Info("In App AddHandle")
+
 	req := new(tms.AppInDevice)
 
 	err := utils.Body2Json(ctx.Request().Body, req)
-	if err != nil || req.ExternalId == 0 {
+	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
+		modules.BaseError(ctx, conf.ParameterError)
+		return err
+	}
+	if req.ExternalId == 0 {
+		logger.Warn("req.ExternalId == 0", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
 		return err
 	}

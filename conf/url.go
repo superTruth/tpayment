@@ -68,10 +68,10 @@ const (
 	UrlTmsAppUpdate = "/payment/tms/app/update"
 	UrlTmsAppQuery  = "/payment/tms/app/query"
 
-	UrlTmsAppFileAdd    = "/payment/tms/app_file/add"
-	UrlTmsAppFileDelete = "/payment/tms/app_file/delete"
-	UrlTmsAppFileUpdate = "/payment/tms/app_file/update"
-	UrlTmsAppFileQuery  = "/payment/tms/app_file/query"
+	UrlTmsAppFileAdd    = "/payment/tms/appfile/add"
+	UrlTmsAppFileDelete = "/payment/tms/appfile/delete"
+	UrlTmsAppFileUpdate = "/payment/tms/appfile/update"
+	UrlTmsAppFileQuery  = "/payment/tms/appfile/query"
 
 	UrlTmsTagAdd    = "/payment/tms/tag/add"
 	UrlTmsTagDelete = "/payment/tms/tag/delete"

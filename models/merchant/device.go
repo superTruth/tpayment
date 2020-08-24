@@ -17,7 +17,7 @@ type DeviceInMerchant struct {
 }
 
 func (DeviceInMerchant) TableName() string {
-	return "device_in_merchant"
+	return "merchant_device"
 }
 
 func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInMerchant, error) {
@@ -44,7 +44,7 @@ type DeviceInMerchantQueryBean struct {
 func QueryMerchantDeviceRecord(db *models.MyDB, ctx echo.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*DeviceInMerchantQueryBean, error) {
 	// conditions
 	tmpDb := db.Table(tms.DeviceInfo{}.TableName()).Model(&tms.DeviceInfo{})
-	tmpDb = tmpDb.Joins("JOIN device_in_merchant ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
+	tmpDb = tmpDb.Joins("JOIN merchant_device ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
 	var total uint = 0

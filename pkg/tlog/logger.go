@@ -34,7 +34,7 @@ func (this *Logger) Info(args ...interface{}) {
 }
 
 func (this *Logger) Warn(args ...interface{}) {
-	this.sugar.Warn()
+	this.sugar.Warn(args...)
 }
 
 func (this *Logger) Error(args ...interface{}) {

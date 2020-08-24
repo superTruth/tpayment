@@ -1,9 +1,10 @@
 package agency
 
 import (
+	"tpayment/models"
+
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"tpayment/models"
 )
 
 type PaymentMethod struct {
@@ -13,7 +14,7 @@ type PaymentMethod struct {
 }
 
 func (PaymentMethod) TableName() string {
-	return "payment_method"
+	return "agency_payment_method"
 }
 
 type PaymentType struct {
@@ -23,7 +24,7 @@ type PaymentType struct {
 }
 
 func (PaymentType) TableName() string {
-	return "payment_type"
+	return "agency_payment_type"
 }
 
 type EntryType struct {
@@ -33,7 +34,7 @@ type EntryType struct {
 }
 
 func (EntryType) TableName() string {
-	return "entry_type"
+	return "agency_entry_type"
 }
 
 func GetPaymentMethods(db *models.MyDB, ctx echo.Context) ([]string, error) {

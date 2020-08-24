@@ -22,7 +22,7 @@ type PaymentSettingInDevice struct {
 }
 
 func (PaymentSettingInDevice) TableName() string {
-	return "payment_setting_in_device"
+	return "merchant_payment_setting_in_device"
 }
 
 func GetPaymentSettingInDeviceById(db *models.MyDB, ctx echo.Context, id uint) (*PaymentSettingInDevice, error) {

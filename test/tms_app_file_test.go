@@ -72,7 +72,7 @@ func TestQueryTmsAppFile(t *testing.T) {
 	}
 
 	reqBean := &modules.BaseQueryRequest{
-		AppId:  1,
+		AppId:  5,
 		Offset: 0,
 		Limit:  100,
 	}

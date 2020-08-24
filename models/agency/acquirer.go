@@ -18,7 +18,7 @@ type Acquirer struct {
 }
 
 func (Acquirer) TableName() string {
-	return "acquirer"
+	return "agency_acquirer"
 }
 
 func GetAcquirerById(id uint) (*Acquirer, error) {
