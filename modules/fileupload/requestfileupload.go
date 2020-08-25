@@ -48,12 +48,14 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 
 	service := s3.New(sess)
 
-	//endpoints.ApNortheast2RegionID
+	metadata := make(map[string]*string)
+	metadata["content-md5"] = &req.Md5
 	resp, _ := service.PutObjectRequest(&s3.PutObjectInput{
 		ACL:        aws.String("public-read"),
 		Bucket:     aws.String(conf.GetConfigData().S3Bucket),
 		Key:        aws.String(filePath),
-		ContentMD5: &req.Md5,
+		ContentMD5: aws.String(req.Md5),
+		Metadata:   metadata,
 	})
 
 	//exp := 15 * int64(1+req.FileSize/10/1024/1024)

@@ -1149,11 +1149,6 @@ Response Example:
 }
 ```
 
-
-
-
-
-
 ### 新增model
 ***POST***
 ```https://{base_url}/payment/tms/model/add```
@@ -1224,10 +1219,6 @@ Response Example:
     "total": 3
 }
 ```
-
-
-
-
 
 ### 新增批量更新任务(未完成)
 ***POST***
