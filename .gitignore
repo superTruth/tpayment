@@ -1,2 +1,3 @@
 /.idea
 /deployment/docker/tpayment
+/deployment/docker-prod/tpayment
