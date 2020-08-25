@@ -73,6 +73,11 @@ const (
 	UrlTmsAppFileUpdate = "/payment/tms/appfile/update"
 	UrlTmsAppFileQuery  = "/payment/tms/appfile/query"
 
+	UrlTmsModelAdd    = "/payment/tms/model/add"
+	UrlTmsModelDelete = "/payment/tms/model/delete"
+	UrlTmsModelUpdate = "/payment/tms/model/update"
+	UrlTmsModelQuery  = "/payment/tms/model/query"
+
 	UrlTmsTagAdd    = "/payment/tms/tag/add"
 	UrlTmsTagDelete = "/payment/tms/tag/delete"
 	UrlTmsTagUpdate = "/payment/tms/tag/update"

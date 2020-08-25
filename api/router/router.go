@@ -20,6 +20,7 @@ import (
 	"tpayment/modules/tms/batchupdate"
 	"tpayment/modules/tms/clientapi"
 	"tpayment/modules/tms/device"
+	"tpayment/modules/tms/devicemodel"
 	"tpayment/modules/tms/devicetag"
 	"tpayment/modules/tms/uploadfile"
 	"tpayment/modules/user"
@@ -114,6 +115,11 @@ func Init() (*echo.Echo, error) {
 	e.POST(conf.UrlTmsTagDelete, devicetag.DeleteHandle) // 删除
 	e.POST(conf.UrlTmsTagUpdate, devicetag.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsTagQuery, devicetag.QueryHandle)   // 查询
+
+	e.POST(conf.UrlTmsModelAdd, devicemodel.AddHandle)       // 添加device model
+	e.POST(conf.UrlTmsModelDelete, devicemodel.DeleteHandle) // 删除
+	e.POST(conf.UrlTmsModelUpdate, devicemodel.UpdateHandle) // 更新
+	e.POST(conf.UrlTmsModelQuery, devicemodel.QueryHandle)   // 查询
 
 	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)           // 添加batch update
 	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle)     // 删除

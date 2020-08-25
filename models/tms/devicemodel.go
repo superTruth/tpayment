@@ -46,3 +46,25 @@ func GetModelByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceModel, err
 
 	return ret, nil
 }
+
+func QueryModelRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceModel, error) {
+	equalData := make(map[string]string)
+	sqlCondition := models.CombQueryCondition(equalData, filters)
+
+	// conditions
+	tmpDb := db.Model(&DeviceModel{}).Where(sqlCondition)
+
+	// 统计总数
+	var total uint = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var ret []*DeviceModel
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return total, ret, err
+	}
+
+	return total, ret, nil
+}

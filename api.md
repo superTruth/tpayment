@@ -1149,6 +1149,86 @@ Response Example:
 }
 ```
 
+
+
+
+
+
+### 新增model
+***POST***
+```https://{base_url}/payment/tms/model/add```
+Request Example:
+```json
+{
+    "name": "Model1"
+}
+```
+
+### 删除model
+***POST***
+```https://{base_url}/payment/tms/model/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
+
+### 更新model
+***POST***
+```https://{base_url}/payment/tms/model/update```
+Request Example:
+```json
+{
+    "id": 123,
+    "name": ""
+}
+```
+
+### 查询model
+***POST***
+```https://{base_url}/payment/tms/model/query```
+Request Example:
+```json
+{
+	"filters": {
+		"name": "tag"
+	},
+	"limit": 100,
+	"offset": 0
+}
+```
+Response Example:
+```json
+{
+    "data": [
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 23,
+            "name": "tag1",
+            "updated_at": "0001-01-01T00:00:00Z"
+        },
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 24,
+            "name": "tag2",
+            "updated_at": "0001-01-01T00:00:00Z"
+        },
+        {
+            "created_at": "0001-01-01T00:00:00Z",
+            "id": 25,
+            "name": "tag3",
+            "updated_at": "0001-01-01T00:00:00Z"
+        }
+    ],
+    "total": 3
+}
+```
+
+
+
+
+
 ### 新增批量更新任务(未完成)
 ***POST***
 ```https://{base_url}/payment/tms/batchupdata/add```

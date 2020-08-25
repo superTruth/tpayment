@@ -22,7 +22,7 @@ func TestUpdateTmsDevice(t *testing.T) {
 	}
 
 	var deviceTags []*tms.DeviceTagFull
-	_ = json.Unmarshal([]byte(`[
+	_ = json.Unmarshal([]byte(`[3,4
 				]`), &deviceTags)
 
 	fmt.Println("deviceTags len->", len(deviceTags))
