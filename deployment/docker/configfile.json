@@ -8,7 +8,8 @@
 
   "db_account": "root:123456@tcp(www.paymentstg.horizonpay.cn)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
-  "s3_region": "cn-north-1",
+  "s3_domain": "amazonaws.com.cn",
+  "s3_region": "cn-northwest-1",
   "s3_key": "AKIA3ZNT5ZAH42V6B3EF",
   "s3_secret": "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",
   "s3_bucket": "tpayment"

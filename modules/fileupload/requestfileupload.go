@@ -70,7 +70,7 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 
 	ret := new(UploadFileResponse)
 	ret.UploadUrl = base64.StdEncoding.EncodeToString([]byte(url))
-	ret.DownloadUrl = "https://" + conf.GetConfigData().S3Bucket + "." + conf.GetConfigData().S3Region + "/" + filePath
+	ret.DownloadUrl = "https://" + conf.GetConfigData().S3Bucket + "." + conf.GetConfigData().S3Region + "." + conf.GetConfigData().S3Domain + "/" + filePath
 	//ret.Exp = exp
 
 	modules.BaseSuccess(ctx, ret)

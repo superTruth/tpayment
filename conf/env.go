@@ -20,6 +20,7 @@ type ConfigData struct {
 
 	DBAccount string `json:"db_account"`
 
+	S3Domain string `json:"s3_domain"`
 	S3Region string `json:"s3_region"`
 	S3Key    string `json:"s3_key"`
 	S3Secret string `json:"s3_secret"`
