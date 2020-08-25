@@ -23,10 +23,10 @@ const (
 )
 
 const (
-	RebootModeNever      = "Never"
-	RebootModeEveryDay   = "Every Day"
-	RebootModeEveryWeek  = "Every Week"
-	RebootModeEveryMonth = "Every Month"
+	RebootModeNever      = "never"
+	RebootModeEveryDay   = "every_day"
+	RebootModeEveryWeek  = "every_week"
+	RebootModeEveryMonth = "every_month"
 )
 
 const (

@@ -8,9 +8,9 @@
 
   "db_account": "root:123456@tcp(www.paymentstg.horizonpay.cn)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
-  "s3_region": "ap-northeast-2",
-  "s3_key": "AKIAQG3YEEGI7GMJPZGG",
-  "s3_secret": "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",
-  "s3_bucket": "horizonpay"
+  "s3_region": "cn-north-1",
+  "s3_key": "AKIA3ZNT5ZAH42V6B3EF",
+  "s3_secret": "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",
+  "s3_bucket": "tpayment"
 }
 
