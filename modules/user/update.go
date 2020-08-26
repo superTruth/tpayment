@@ -2,9 +2,11 @@ package user
 
 import (
 	"tpayment/conf"
+	"tpayment/internal/encryption"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
+	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -21,6 +23,11 @@ func UpdateHandle(ctx *gin.Context) {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
 		return
+	}
+
+	// 密码进行hash
+	if req.Pwd != "" {
+		req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
 	}
 
 	// 查询是否已经存在的账号

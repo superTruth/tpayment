@@ -3,9 +3,11 @@ package user
 import (
 	"encoding/base64"
 	"tpayment/conf"
+	"tpayment/internal/encryption"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
+	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -24,6 +26,9 @@ func RegisterHandle(ctx *gin.Context) {
 		modules.BaseError(ctx, conf.ParameterError)
 		return
 	}
+
+	// 密码进行hash
+	req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
 
 	// 查询是否已经存在的账号
 	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)

@@ -33,10 +33,10 @@ func Init() (*gin.Engine, error) {
 	gin.SetMode(gin.ReleaseMode)
 	e := gin.New()
 
-	//e := echo.New()
 	e.Use(
 		middleware.Logger,
 		middleware.NewRecovery,
+		//middleware.Cors,
 		middleware.NewCors(),
 		middleware.AuthHandle,
 		middleware.PermissionFilter,

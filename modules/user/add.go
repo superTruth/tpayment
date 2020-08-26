@@ -2,9 +2,11 @@ package user
 
 import (
 	"tpayment/conf"
+	"tpayment/internal/encryption"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
+	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -22,6 +24,9 @@ func AddHandle(ctx *gin.Context) {
 		modules.BaseError(ctx, conf.ParameterError)
 		return
 	}
+
+	// 密码进行hash
+	req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
 
 	// 机构管理员
 	agencyId, err := modules.GetAgencyId2(ctx)

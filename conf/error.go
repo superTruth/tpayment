@@ -27,6 +27,7 @@ var ResultCodeText = map[ResultCode]string{
 	UnknownError:           "internal error 99",
 	PanicError:             "internal error 98",
 	TokenInvalid:           "token invalid",
+	ValidateError:          "validate error",
 	DBError:                "internal error 05",
 	RecordNotFund:          "record not fund",
 	RecordAlreadyExist:     "record already exist",

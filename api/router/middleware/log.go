@@ -3,7 +3,6 @@ package middleware
 import (
 	"bytes"
 	"net/http/httputil"
-	"tpayment/constant"
 	"tpayment/pkg/tlog"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,6 @@ import (
 func Logger(ctx *gin.Context) {
 	// 生成request ID
 	requestId := uuid.New().String()
-	ctx.Set(constant.REQUEST_ID, requestId)
 
 	// 生成log
 	logger := new(tlog.Logger)
