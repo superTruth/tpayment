@@ -1220,26 +1220,37 @@ Response Example:
 }
 ```
 
-### 新增批量更新任务(未完成)
+### 新增批量更新任务
 ***POST***
-```https://{base_url}/payment/tms/batchupdata/add```
+```https://{base_url}/payment/tms/batchupdate/add```
 Request Example:
 ```json
 {
-    "tags": [1,2],
-    "device_models": [1,2],
-    "description": "",
-    "apps": [
-      {
-        "status": "",
-        "app_id": 12,
-        "app_file_id": 123
-      }   
-    ]
+	"description": "Test1",
+	"device_models": [
+		{
+			"Name": "A920",
+			"id": 1
+		},
+		{
+			"Name": "K11",
+			"id": 2
+		}
+	],
+	"tags": [
+		{
+			"id": 1,
+			"name": "Tag1"
+		},
+		{
+			"id": 2,
+			"name": "Tag2"
+		}
+	]
 }
 ```
 
-### 删除batchupdata(未完成)
+### 删除batchupdata
 ***POST***
 ```https://{base_url}/payment/tms/batchupdata/delete```
 Request Example:
@@ -1249,7 +1260,7 @@ Request Example:
 }
 ```
 
-### 查询batchupdata(未完成)
+### 查询batchupdata
 ***POST***
 ```https://{base_url}/payment/tms/batchupdata/query```
 Request Example:
@@ -1258,32 +1269,170 @@ Request Example:
     "offset": 1234,
     "limit": 123,
     "filters": {
-      "id": ""
+      "name": ""
     } 
 }
 ```
 Response Example:
 ```json
 {
-  "total": 1234,   // 一共多少记录
-   "records":[
-    {
-        "tags": [{
-            "id": 24,
-            "name": "tag2"
-        }],
-        "models": [{
-            "id": 24,
-            "name": "tag2"
-        }],
-        "description": "",
-        "status": "",
-        "update_fail_msg": ""
-    }
-  ]
+    "data": [
+        {
+            "agency_id": 0,
+            "created_at": "2020-08-26T21:53:21.285089+08:00",
+            "description": "Test1",
+            "device_models": [
+                {
+                    "Name": "A920",
+                    "id": 1
+                },
+                {
+                    "Name": "K11",
+                    "id": 2
+                }
+            ],
+            "id": 3,
+            "status": "",
+            "tags": [
+                {
+                    "id": 1,
+                    "name": "Tag1"
+                },
+                {
+                    "id": 2,
+                    "name": "Tag2"
+                }
+            ],
+            "update_fail_msg": "",
+            "updated_at": "2020-08-26T21:53:21.285089+08:00"
+        }
+    ],
+    "total": 1
 }
 ```
 
+### 更新批量更新任务
+***POST***
+```https://{base_url}/payment/tms/batchupdate/update```
+Request Example:
+```json
+{
+	"description": "Test2",
+	"device_models": [
+		{
+			"id": 3
+		}
+	],
+	"id": 3,
+	"tags": [
+		{
+			"id": 1
+		}
+	]
+}
+```
+
+### 启动批量更新任务
+***POST***
+```https://{base_url}/payment/tms/batchupdate/starthandle```
+Request Example:
+```json
+{
+	"id": 3
+}
+```
+
+### 查询批量更新内部app信息(功能界面和terminal内部app信息一致)
+***POST***
+```https://{base_url}/payment/tms/appinbatchupdate/query```
+Request Example:
+```json
+{
+    "batch_id": 3,
+    "limit": 100,
+    "offset": 0
+}
+```
+Response Example:
+```json
+{
+    "data": [
+        {
+            "app": {
+                "agency_id": 0,
+                "created_at": "2020-08-24T20:53:05+08:00",
+                "description": "",
+                "id": 7,
+                "name": "Driver",
+                "package_id": "com.bindo.uniform.driver",
+                "updated_at": "2020-08-24T20:53:11+08:00"
+            },
+            "app_file": {
+                "app_id": 7,
+                "created_at": "2020-08-25T04:10:39+08:00",
+                "decode_fail_msg": "",
+                "file_name": "Landi-uniform-driver-app_v2.0.17_release-20-07-30-18-23.apk",
+                "file_url": "https://horizonpay.s3.ap-northeast-2.amazonaws.com/appfile/dbb9e1a7a2ba462f911d564d9661fc60/Landi-uniform-driver-app_v2.0.17_release-20-07-30-18-23.apk",
+                "id": 8,
+                "status": "done",
+                "update_description": "123",
+                "updated_at": "2020-08-25T04:14:31+08:00",
+                "version_code": 40,
+                "version_name": "2.0.17"
+            },
+            "app_file_id": 8,
+            "app_id": 7,
+            "created_at": "2020-08-26T22:44:24.516081+08:00",
+            "external_id": 3,
+            "external_id_type": "batch",
+            "id": 44,
+            "name": "Driver",
+            "package_id": "com.bindo.uniform.driver",
+            "status": "pending_install",
+            "updated_at": "2020-08-26T22:44:24.516081+08:00",
+            "version_code": 40,
+            "version_name": "2.0.17"
+        }
+    ],
+    "total": 1
+}
+```
+
+### 更新批量更新内部app信息
+***POST***
+```https://{base_url}/payment/tms/appinbatchupdate/update```
+Request Example:
+```json
+{
+    "app_file_id": 0,
+    "app_id": 0,
+    "external_id": 1,   // device ID
+    "status": "warning installed"  // pending install/ installed/ pending uninstall/ warning installed
+}
+```
+
+### 新增批量更新内部app信息
+***POST***
+```https://{base_url}/payment/tms/appinbatchupdate/add```
+Request Example:
+```json
+{
+	"app_file_id": 0,
+	"app_id": 0,
+	"external_id": 1,   // device ID
+	"status": "warning installed"  // pending install/ installed/ pending uninstall/ warning installed
+}
+```
+
+### 删除批量更新内部app
+***POST***
+```https://{base_url}/payment/tms/appinbatchupdate/delete```
+Request Example:
+```json
+{
+    "id": 123
+}
+```
 
 ### 新增uploadfile（无update操作）
 ***POST***

@@ -39,11 +39,11 @@ func GetDeviceTagByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceTag, e
 	return ret, nil
 }
 
-func GetDeviceTagByIDs(db *models.MyDB, ctx *gin.Context, ids models.StringArray) ([]*DeviceTag, error) {
+func GetDeviceTagByIDs(db *models.MyDB, ctx *gin.Context, ids *models.IntArray) ([]*DeviceTag, error) {
 
 	var ret []*DeviceTag
 
-	err := db.Model(&DeviceTag{}).Where("id IN (?)", ids).Find(&ret).Error
+	err := db.Model(&DeviceTag{}).Where("id IN (?)", ids.Change2UintArray()).Find(&ret).Error
 
 	if err != nil {
 		return nil, err

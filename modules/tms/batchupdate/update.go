@@ -36,6 +36,10 @@ func UpdateHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 数组对象转换ID
+	chanageTags(req)
+	chanageModels(req)
+
 	// 生成新账号
 	err = models.UpdateBaseRecord(req)
 

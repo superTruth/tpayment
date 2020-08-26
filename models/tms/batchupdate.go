@@ -19,10 +19,12 @@ type BatchUpdate struct {
 
 	UpdateFailMsg string `gorm:"column:update_fail_msg" json:"update_fail_msg"`
 
-	Tags         *models.StringArray `gorm:"column:tags" json:"-"`
-	DeviceModels *models.StringArray `gorm:"column:device_models" json:"device_models"`
+	Tags         *models.IntArray `gorm:"column:tags" json:"-"`
+	DeviceModels *models.IntArray `gorm:"column:device_models" json:"-"`
 
-	ConfigTags []*DeviceTag `gorm:"column:-" json:"tags"`
+	ConfigTags []*DeviceTag `gorm:"-" json:"tags"`
+
+	ConfigModels []*DeviceModel `gorm:"-" json:"device_models"`
 
 	Apps []*AppInDevice `gorm:"-" json:"-"`
 }

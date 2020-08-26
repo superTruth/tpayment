@@ -31,6 +31,10 @@ func AddHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 数组对象转换ID
+	chanageTags(req)
+	chanageModels(req)
+
 	req.AgencyId = agencyId
 	req.ID = 0
 	err = models.CreateBaseRecord(req)
@@ -42,4 +46,24 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	modules.BaseSuccess(ctx, nil)
+}
+
+func chanageTags(bean *tms.BatchUpdate) {
+	var tagIDs models.IntArray
+
+	for _, tagBean := range bean.ConfigTags {
+		tagIDs = append(tagIDs, tagBean.ID)
+	}
+
+	bean.Tags = &tagIDs
+}
+
+func chanageModels(bean *tms.BatchUpdate) {
+	var modelIDs models.IntArray
+
+	for _, modelBean := range bean.ConfigModels {
+		modelIDs = append(modelIDs, modelBean.ID)
+	}
+
+	bean.DeviceModels = &modelIDs
 }

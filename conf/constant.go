@@ -1,8 +1,8 @@
 package conf
 
 const HeaderTagRequestId = "X-Request-Id"
-const HeaderTagToken = "Token"
-const HeaderTagNew = "X-Access-Token"
+const HeaderTagTokenOld = "Token"
+const HeaderTagToken = "X-Access-Token"
 
 const ContextTagLog = "Log"
 const ContextTagUser = "User"

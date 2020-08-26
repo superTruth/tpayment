@@ -46,6 +46,18 @@ func GetModelByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceModel, err
 	return ret, nil
 }
 
+func GetModelByIDs(db *models.MyDB, ctx *gin.Context, ids *models.IntArray) ([]*DeviceModel, error) {
+	var ret []*DeviceModel
+
+	err := db.Model(&DeviceModel{}).Where("id IN (?)", ids.Change2UintArray()).Find(&ret).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 func QueryModelRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceModel, error) {
 	equalData := make(map[string]string)
 	sqlCondition := models.CombQueryCondition(equalData, filters)

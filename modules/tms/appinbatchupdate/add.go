@@ -24,7 +24,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	req.ID = 0
-	req.ExternalIdType = tms.AppInDeviceExternalIdTypeDevice
+	req.ExternalIdType = tms.AppInDeviceExternalIdTypeBatchUpdate
 	err = models.CreateBaseRecord(req)
 	if err != nil {
 		logger.Error("CreateBaseRecord sql error->", err.Error())
