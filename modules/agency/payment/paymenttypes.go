@@ -7,17 +7,17 @@ import (
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func QueryPaymentTypesHandle(ctx echo.Context) error {
+func QueryPaymentTypesHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	paymentTypes, err := agency.GetPaymentTypes(models.DB(), ctx)
 	if err != nil {
 		logger.Info("GetPaymentTypes sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	ret := &modules.BaseQueryResponse{
@@ -26,6 +26,4 @@ func QueryPaymentTypesHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

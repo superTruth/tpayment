@@ -8,19 +8,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(tms.UploadFile)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 现在找到对应的机器，看看机器所属的机构
@@ -28,13 +28,13 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn("GetDeviceBySn fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	if deviceBean == nil {
 		logger.Warn("can't find the device->", req.DeviceSn)
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 
 	req.AgencyId = deviceBean.AgencyId
@@ -44,10 +44,8 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

@@ -1,7 +1,6 @@
 package acquirer
 
 import (
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -10,19 +9,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func UpdateHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(agency.Acquirer)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否已经存在的账号
@@ -30,22 +29,37 @@ func UpdateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetMerchantById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if acquirerBean == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 
 	// 判断当前agency是否有权限
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		modules.BaseError(ctx, conf.UnknownError)
+		return
+	}
 	if userBean.Role != string(conf.RoleAdmin) {
-		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		var agencys []*agency.Agency
+		agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+		if ok {
+			agencys = agencysTmp.([]*agency.Agency)
+		} else {
+			modules.BaseError(ctx, conf.UnknownError)
+			return
+		}
+
 		if agencys[0].ID != acquirerBean.AgencyId {
 			logger.Warn("this acquirer is not belong to the agency")
 			modules.BaseError(ctx, conf.NoPermission)
-			return errors.New("this acquirer is not belong to the agency")
+			return
 		}
 	}
 
@@ -56,10 +70,8 @@ func UpdateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("UpdateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

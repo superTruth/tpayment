@@ -10,19 +10,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func StartHandle(ctx echo.Context) error {
+func StartHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseIDRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
@@ -31,11 +31,9 @@ func StartHandle(ctx echo.Context) error {
 	goroutine.Go(func() {
 		StartUpdate(ctx, req.ID)
 	}, ctx)
-
-	return nil
 }
 
-func StartUpdate(ctx echo.Context, id uint) {
+func StartUpdate(ctx *gin.Context, id uint) {
 	logger := tlog.GetLogger(ctx)
 
 	// 获取批次记录

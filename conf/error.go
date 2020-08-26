@@ -5,6 +5,7 @@ type ResultCode string
 const (
 	SUCCESS                ResultCode = "00"
 	UnknownError           ResultCode = "99"
+	PanicError             ResultCode = "98"
 	ParameterError         ResultCode = "03"
 	TokenInvalid           ResultCode = "04"
 	DBError                ResultCode = "05"
@@ -23,6 +24,8 @@ const (
 var ResultCodeText = map[ResultCode]string{
 	SUCCESS:                "success",
 	ParameterError:         "parameter error",
+	UnknownError:           "internal error 99",
+	PanicError:             "internal error 98",
 	TokenInvalid:           "token invalid",
 	DBError:                "internal error 05",
 	RecordNotFund:          "record not fund",

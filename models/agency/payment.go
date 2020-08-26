@@ -3,8 +3,8 @@ package agency
 import (
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type PaymentMethod struct {
@@ -37,7 +37,7 @@ func (EntryType) TableName() string {
 	return "agency_entry_type"
 }
 
-func GetPaymentMethods(db *models.MyDB, ctx echo.Context) ([]string, error) {
+func GetPaymentMethods(db *models.MyDB, ctx *gin.Context) ([]string, error) {
 	var ret []PaymentMethod
 	err := db.Model(&PaymentMethod{}).Find(&ret).Error
 
@@ -57,7 +57,7 @@ func GetPaymentMethods(db *models.MyDB, ctx echo.Context) ([]string, error) {
 	return retStr, nil
 }
 
-func GetPaymentTypes(db *models.MyDB, ctx echo.Context) ([]string, error) {
+func GetPaymentTypes(db *models.MyDB, ctx *gin.Context) ([]string, error) {
 	var ret []PaymentType
 	err := db.Model(&PaymentType{}).Find(&ret).Error
 
@@ -77,7 +77,7 @@ func GetPaymentTypes(db *models.MyDB, ctx echo.Context) ([]string, error) {
 	return retStr, nil
 }
 
-func GetEntryTypes(db *models.MyDB, ctx echo.Context) ([]string, error) {
+func GetEntryTypes(db *models.MyDB, ctx *gin.Context) ([]string, error) {
 	var ret []EntryType
 	err := db.Model(&EntryType{}).Find(&ret).Error
 

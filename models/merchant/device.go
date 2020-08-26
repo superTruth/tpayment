@@ -4,9 +4,8 @@ import (
 	"tpayment/models"
 	"tpayment/models/tms"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-
-	"github.com/labstack/echo"
 )
 
 type DeviceInMerchant struct {
@@ -20,7 +19,7 @@ func (DeviceInMerchant) TableName() string {
 	return "merchant_device"
 }
 
-func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInMerchant, error) {
+func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceInMerchant, error) {
 	ret := new(DeviceInMerchant)
 
 	err := db.Model(&DeviceInMerchant{}).Where("id=?", id).First(ret).Error
@@ -41,7 +40,7 @@ type DeviceInMerchantQueryBean struct {
 	DeviceSn string `json:"device_sn"`
 }
 
-func QueryMerchantDeviceRecord(db *models.MyDB, ctx echo.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*DeviceInMerchantQueryBean, error) {
+func QueryMerchantDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*DeviceInMerchantQueryBean, error) {
 	// conditions
 	tmpDb := db.Table(tms.DeviceInfo{}.TableName()).Model(&tms.DeviceInfo{})
 	tmpDb = tmpDb.Joins("JOIN merchant_device ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)

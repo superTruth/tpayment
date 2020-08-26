@@ -8,19 +8,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(tms.AppInDevice)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	req.ID = 0
@@ -29,10 +29,8 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

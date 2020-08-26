@@ -1,15 +1,23 @@
 package user
 
 import (
-	"github.com/labstack/echo"
 	"tpayment/conf"
 	"tpayment/models/account"
 	"tpayment/modules"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 登录
-func ValidateHandle(ctx echo.Context) error {
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+func ValidateHandle(ctx *gin.Context) {
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		modules.BaseSuccess(ctx, conf.UnknownError)
+		return
+	}
 
 	// 拼接response数据
 	ret := &LoginResponse{
@@ -19,6 +27,4 @@ func ValidateHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

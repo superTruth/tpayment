@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type AppInDevice struct {
@@ -36,7 +36,7 @@ const (
 	AppInDeviceExternalIdTypeBatchUpdate = "batch"
 )
 
-func GetAppsInDevice(db *models.MyDB, ctx echo.Context, externalId uint, externalIdType string, offset uint, limit uint) (uint, []*AppInDevice, error) {
+func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint, externalIdType string, offset uint, limit uint) (uint, []*AppInDevice, error) {
 	var ret []*AppInDevice
 
 	equalData := make(map[string]string)
@@ -76,7 +76,7 @@ func GetAppsInDevice(db *models.MyDB, ctx echo.Context, externalId uint, externa
 }
 
 // 根据device ID获取设备信息
-func GetAppInDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*AppInDevice, error) {
+func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppInDevice, error) {
 
 	ret := new(AppInDevice)
 
@@ -94,7 +94,7 @@ func GetAppInDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*AppInDevic
 
 // 1. 只有package id这种非法安装的app
 // 2. 包含app id这种配置安装的app
-func FindAppInDevice(db *models.MyDB, ctx echo.Context, deviceId uint, appInDevice *AppInDevice) (*AppInDevice, error) {
+func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint, appInDevice *AppInDevice) (*AppInDevice, error) {
 	ret := new(AppInDevice)
 	//err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
 	//	appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("tms_app app ON app.id=? AND deleted_at is null", appInDevice.AppID).

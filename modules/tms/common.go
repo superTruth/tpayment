@@ -6,20 +6,32 @@ import (
 	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/models/tms"
+	"tpayment/modules"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func CheckPermission(ctx echo.Context, deviceInfo *tms.DeviceInfo) error {
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+func CheckPermission(ctx *gin.Context, deviceInfo *tms.DeviceInfo) error {
+
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return errors.New("can't get user")
+	}
 
 	// 系统管理员可以操作一切
 	if userBean.Role == string(conf.RoleAdmin) {
 		return nil
 	}
 
-	agencys, ok := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-	if !ok {
+	var agencys []*agency.Agency
+	agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+	if ok {
+		agencys = agencysTmp.([]*agency.Agency)
+	} else {
+		modules.BaseError(ctx, conf.UnknownError)
 		return errors.New("get agency fail")
 	}
 

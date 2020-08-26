@@ -7,8 +7,8 @@ import (
 	"tpayment/models"
 	"tpayment/modules"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type DeviceTag struct {
@@ -23,7 +23,7 @@ func (DeviceTag) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, error) {
+func GetDeviceTagByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceTag, error) {
 
 	ret := new(DeviceTag)
 
@@ -39,7 +39,7 @@ func GetDeviceTagByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceTag, e
 	return ret, nil
 }
 
-func GetDeviceTagByIDs(db *models.MyDB, ctx echo.Context, ids models.StringArray) ([]*DeviceTag, error) {
+func GetDeviceTagByIDs(db *models.MyDB, ctx *gin.Context, ids models.StringArray) ([]*DeviceTag, error) {
 
 	var ret []*DeviceTag
 
@@ -52,7 +52,7 @@ func GetDeviceTagByIDs(db *models.MyDB, ctx echo.Context, ids models.StringArray
 	return ret, nil
 }
 
-func QueryDeviceTagRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceTag, error) {
+func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceTag, error) {
 
 	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {

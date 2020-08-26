@@ -4,8 +4,9 @@ import (
 	"strconv"
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type UserBean struct {
@@ -24,7 +25,7 @@ func (UserBean) TableName() string {
 }
 
 // 通过email查询
-func GetUserByEmail(db *models.MyDB, ctx echo.Context, email string) (*UserBean, error) {
+func GetUserByEmail(db *models.MyDB, ctx *gin.Context, email string) (*UserBean, error) {
 	ret := new(UserBean)
 
 	err := db.Model(&UserBean{}).Where("email=?", email).First(ret).Error
@@ -39,7 +40,7 @@ func GetUserByEmail(db *models.MyDB, ctx echo.Context, email string) (*UserBean,
 	return ret, nil
 }
 
-func GetUserById(db *models.MyDB, ctx echo.Context, id uint) (*UserBean, error) {
+func GetUserById(db *models.MyDB, ctx *gin.Context, id uint) (*UserBean, error) {
 	ret := new(UserBean)
 
 	err := db.Model(&UserBean{}).Where("id=?", id).First(ret).Error
@@ -54,7 +55,7 @@ func GetUserById(db *models.MyDB, ctx echo.Context, id uint) (*UserBean, error) 
 	return ret, nil
 }
 
-func QueryUserRecord(db *models.MyDB, ctx echo.Context, offset, limit, agencyId uint, filters map[string]string) (uint, []*UserBean, error) {
+func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId uint, filters map[string]string) (uint, []*UserBean, error) {
 	var ret []*UserBean
 
 	equalData := make(map[string]string)
@@ -101,7 +102,7 @@ func (AppIdBean) TableName() string {
 }
 
 // 查询AppID
-func GetAppIdByAppID(db *models.MyDB, ctx echo.Context, appId string) (*AppIdBean, error) {
+func GetAppIdByAppID(db *models.MyDB, ctx *gin.Context, appId string) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
 	err := db.Model(&AppIdBean{}).Where("app_id=?", appId).First(ret).Error
@@ -116,7 +117,7 @@ func GetAppIdByAppID(db *models.MyDB, ctx echo.Context, appId string) (*AppIdBea
 	return ret, nil
 }
 
-func GetAppIdByID(db *models.MyDB, ctx echo.Context, id uint) (*AppIdBean, error) {
+func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
 	err := db.Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
@@ -143,7 +144,7 @@ func (TokenBean) TableName() string {
 	return "user_token"
 }
 
-func GetTokenByUserId(db *models.MyDB, ctx echo.Context, userId, appId uint) (*TokenBean, error) {
+func GetTokenByUserId(db *models.MyDB, ctx *gin.Context, userId, appId uint) (*TokenBean, error) {
 	ret := new(TokenBean)
 
 	err := db.Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
@@ -158,7 +159,7 @@ func GetTokenByUserId(db *models.MyDB, ctx echo.Context, userId, appId uint) (*T
 	return ret, nil
 }
 
-func GetTokenBeanByToken(db *models.MyDB, ctx echo.Context, token string) (*TokenBean, error) {
+func GetTokenBeanByToken(db *models.MyDB, ctx *gin.Context, token string) (*TokenBean, error) {
 	ret := new(TokenBean)
 
 	err := db.Model(&TokenBean{}).Where("token=?", token).First(ret).Error

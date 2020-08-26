@@ -6,33 +6,61 @@ import (
 	"tpayment/models/account"
 	"tpayment/models/agency"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func GetAgencyId(ctx echo.Context, reqAgencyId uint) (uint, error) {
+func GetAgencyId(ctx *gin.Context, reqAgencyId uint) (uint, error) {
 	var agencyId uint
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return 0, errors.New("can't get user")
+	}
+
 	if userBean.Role == string(conf.RoleAdmin) {
 		if reqAgencyId == 0 {
 			return 0, errors.New("Admin user must contain agency id->")
 		}
 		agencyId = reqAgencyId
 	} else {
-		agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+		var agencys []*agency.Agency
+		agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+		if ok {
+			agencys = agencysTmp.([]*agency.Agency)
+		} else {
+			return 0, errors.New("can't get agency")
+		}
+
 		agencyId = agencys[0].ID
 	}
 
 	return agencyId, nil
 }
 
-func GetAgencyId2(ctx echo.Context) (uint, error) {
+func GetAgencyId2(ctx *gin.Context) (uint, error) {
 	var agencyId uint
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return 0, errors.New("can't get user")
+	}
+
 	if userBean.Role == string(conf.RoleAdmin) {
 		agencyId = 0
 	} else {
-		agencys, ok := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-		if !ok || len(agencys) == 0 {
+		var agencys []*agency.Agency
+		agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+		if ok {
+			agencys = agencysTmp.([]*agency.Agency)
+		} else {
+			return 0, errors.New("can't get agency")
+		}
+
+		if len(agencys) == 0 {
 			return 0, errors.New("no permission")
 		}
 
@@ -42,9 +70,12 @@ func GetAgencyId2(ctx echo.Context) (uint, error) {
 	return agencyId, nil
 }
 
-func IsAgencyAdmin(ctx echo.Context) *agency.Agency {
-	agencys, ok := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
-	if !ok {
+func IsAgencyAdmin(ctx *gin.Context) *agency.Agency {
+	var agencys []*agency.Agency
+	agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+	if ok {
+		agencys = agencysTmp.([]*agency.Agency)
+	} else {
 		return nil
 	}
 
@@ -55,10 +86,12 @@ func IsAgencyAdmin(ctx echo.Context) *agency.Agency {
 	return agencys[0]
 }
 
-func IsAdmin(ctx echo.Context) *account.UserBean {
-	userBean, ok := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-
-	if !ok {
+func IsAdmin(ctx *gin.Context) *account.UserBean {
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
 		return nil
 	}
 

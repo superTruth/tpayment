@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/base64"
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -10,20 +9,20 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-gomail/gomail"
-	"github.com/labstack/echo"
 )
 
-func RegisterHandle(ctx echo.Context) error {
+func RegisterHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(AddUserRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否已经存在的账号
@@ -31,7 +30,7 @@ func RegisterHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if user == nil {
 		var user *account.UserBean
@@ -53,20 +52,20 @@ func RegisterHandle(ctx echo.Context) error {
 		if err != nil {
 			logger.Info("CreateBaseRecord sql error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
-			return err
+			return
 		}
 
 		// 机器人注册，直接成功
 		if req.Role == string(conf.RoleMachine) {
 			modules.BaseSuccess(ctx, nil)
-			return nil
+			return
 		}
 
 	} else {
 		if user.Active || user.Role == string(conf.RoleMachine) {
 			logger.Warn(conf.RecordAlreadyExist.String())
 			modules.BaseError(ctx, conf.RecordAlreadyExist)
-			return errors.New(conf.RecordAlreadyExist.String())
+			return
 		}
 	}
 
@@ -75,12 +74,10 @@ func RegisterHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn("sendActiveEmail error->", err.Error())
 		modules.BaseError(ctx, conf.SendEmailFail)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }
 
 // 发送激活邮件
@@ -105,7 +102,7 @@ func sendActiveEmail(email string) error {
 	return nil
 }
 
-func ActiveHandel(ctx echo.Context) error {
+func ActiveHandel(ctx *gin.Context) {
 	userId := ctx.Param("user")
 
 	logger := tlog.GetLogger(ctx)
@@ -114,7 +111,7 @@ func ActiveHandel(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("DecodeString email error->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否已经存在的账号
@@ -122,12 +119,12 @@ func ActiveHandel(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if user == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 
 	// 激活账号
@@ -136,10 +133,8 @@ func ActiveHandel(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -9,20 +8,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func UpdateHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
-	fmt.Println("user UpdateHandle")
 
 	req := new(account.UserBean)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否已经存在的账号
@@ -30,12 +28,12 @@ func UpdateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if user == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordAlreadyExist)
-		return err
+		return
 	}
 
 	// 更改权限
@@ -44,12 +42,20 @@ func UpdateHandle(ctx echo.Context) error {
 	} else { // 查看是否是机构管理员，如果不是，只能更新自己的数据
 		agency := modules.IsAgencyAdmin(ctx)
 		if agency == nil {
-			currentUserBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+			var currentUserBean *account.UserBean
+			currentUserBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+			if ok {
+				currentUserBean = currentUserBeanTmp.(*account.UserBean)
+			} else {
+				modules.BaseError(ctx, conf.UnknownError)
+				return
+			}
+
 			if currentUserBean.ID != user.ID {
 				logger.Warn("can't update other user account: your account id->", currentUserBean.ID,
 					"  dest account id->", user.ID)
 				modules.BaseError(ctx, conf.NoPermission)
-				return err
+				return
 			}
 		} else {
 			// 修改用户不属于此机构用户
@@ -57,7 +63,7 @@ func UpdateHandle(ctx echo.Context) error {
 				logger.Warn("can't update other user account: your agency id->", agency.ID,
 					"  dest account id->", user.ID)
 				modules.BaseError(ctx, conf.NoPermission)
-				return err
+				return
 			}
 		}
 	}
@@ -70,10 +76,8 @@ func UpdateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("UpdateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

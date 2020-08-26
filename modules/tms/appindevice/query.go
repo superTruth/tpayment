@@ -9,19 +9,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func QueryHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
@@ -33,12 +33,12 @@ func QueryHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if err := tms2.CheckPermission(ctx, deviceBean); err != nil {
 		logger.Error("CheckPermission fail->", err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	total, dataRet, err := tms.GetAppsInDevice(models.DB(), ctx, req.DeviceId,
@@ -46,7 +46,7 @@ func QueryHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	// 整理数据
@@ -72,6 +72,4 @@ func QueryHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

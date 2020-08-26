@@ -8,24 +8,24 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func QueryAssociateHandle(ctx echo.Context) error {
+func QueryAssociateHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 	if req.AgencyId == 0 {
 		logger.Warn("ParameterError")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
@@ -36,7 +36,7 @@ func QueryAssociateHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	ret := &modules.BaseQueryResponse{
@@ -45,6 +45,4 @@ func QueryAssociateHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

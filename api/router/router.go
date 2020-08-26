@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"tpayment/api/router/middleware"
 	"tpayment/conf"
 	"tpayment/modules/agency"
 	"tpayment/modules/agency/acquirer"
@@ -25,18 +26,24 @@ import (
 	"tpayment/modules/tms/uploadfile"
 	"tpayment/modules/user"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func Init() (*echo.Echo, error) {
-	e := echo.New()
+func Init() (*gin.Engine, error) {
+	gin.SetMode(gin.ReleaseMode)
+	e := gin.New()
 
-	e.Use(PreHandle())        // 前置过滤
-	e.Use(AuthHandle())       // 授权过滤
-	e.Use(PermissionFilter()) // 权限过滤
+	//e := echo.New()
+	e.Use(
+		middleware.Logger,
+		middleware.NewRecovery,
+		middleware.NewCors(),
+		middleware.AuthHandle,
+		middleware.PermissionFilter,
+	)
 
-	e.GET("/", func(context echo.Context) error {
-		return context.String(http.StatusOK, "Hello, world!")
+	e.GET("/", func(context *gin.Context) {
+		context.String(http.StatusOK, "Hello, world!")
 	})
 
 	e.POST(conf.UrlAccountLogin, user.LoginHandle)       // 登录账号

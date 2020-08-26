@@ -8,29 +8,27 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func DeleteHandle(ctx echo.Context) error {
+func DeleteHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseIDRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	err = tms.ResetDeviceAgency(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Info("UpdateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

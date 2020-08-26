@@ -9,19 +9,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func DeleteHandle(ctx echo.Context) error {
+func DeleteHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseIDRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否已经存在的账号
@@ -29,12 +29,12 @@ func DeleteHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if associateBean == nil {
 		logger.Warn(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 
 	// 判断权限
@@ -42,7 +42,7 @@ func DeleteHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	err = models.DeleteBaseRecord(associateBean)
@@ -50,10 +50,8 @@ func DeleteHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

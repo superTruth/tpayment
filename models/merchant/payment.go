@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type PaymentSettingInDevice struct {
@@ -25,7 +25,7 @@ func (PaymentSettingInDevice) TableName() string {
 	return "merchant_payment_setting_in_device"
 }
 
-func GetPaymentSettingInDeviceById(db *models.MyDB, ctx echo.Context, id uint) (*PaymentSettingInDevice, error) {
+func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint) (*PaymentSettingInDevice, error) {
 	ret := new(PaymentSettingInDevice)
 
 	err := db.Model(&PaymentSettingInDevice{}).Where("id=?", id).First(ret).Error
@@ -40,7 +40,7 @@ func GetPaymentSettingInDeviceById(db *models.MyDB, ctx echo.Context, id uint) (
 	return ret, nil
 }
 
-func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx echo.Context, merchantDeviceId, offset, limit uint, filters map[string]string) (uint, []*PaymentSettingInDevice, error) {
+func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantDeviceId, offset, limit uint, filters map[string]string) (uint, []*PaymentSettingInDevice, error) {
 	var ret []*PaymentSettingInDevice
 
 	equalData := make(map[string]string)

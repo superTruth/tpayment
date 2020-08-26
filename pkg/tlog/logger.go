@@ -3,7 +3,7 @@ package tlog
 import (
 	"tpayment/conf"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
@@ -41,15 +41,15 @@ func (this *Logger) Error(args ...interface{}) {
 	this.sugar.Error(args...)
 }
 
-func SetLogger(ctx echo.Context, logger *Logger) {
+func SetLogger(ctx *gin.Context, logger *Logger) {
 	ctx.Set(conf.ContextTagLog, logger)
 }
 
-func GetLogger(ctx echo.Context) *Logger {
-	logger, ok := ctx.Get(conf.ContextTagLog).(*Logger)
+func GetLogger(ctx *gin.Context) *Logger {
+	logger, ok := ctx.Get(conf.ContextTagLog)
 
 	if ok {
-		return logger
+		return logger.(*Logger)
 	}
 
 	// 生成log

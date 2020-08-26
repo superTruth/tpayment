@@ -1,12 +1,13 @@
 package agency
 
 import (
+	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type Agency struct {
@@ -22,7 +23,7 @@ func (Agency) TableName() string {
 	return "agency"
 }
 
-func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*Agency, error) {
+func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*Agency, error) {
 	var ret []*Agency
 
 	equalData := make(map[string]string)
@@ -31,7 +32,14 @@ func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 	tmpDB := db.Model(&Agency{}).Where(sqlCondition)
 
 	// 非系统管理员，只查看跟他有关的机构
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return 0, ret, errors.New("can't get user")
+	}
+
 	if userBean.Role != string(conf.RoleAdmin) {
 		tmpDB = tmpDB.Joins("JOIN agency_user_associate ass ON ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
@@ -56,7 +64,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 	return total, ret, nil
 }
 
-func GetAgencyById(db *models.MyDB, ctx echo.Context, id uint) (*Agency, error) {
+func GetAgencyById(db *models.MyDB, ctx *gin.Context, id uint) (*Agency, error) {
 	ret := new(Agency)
 
 	err := db.Model(&Agency{}).Where("id=?", id).First(ret).Error

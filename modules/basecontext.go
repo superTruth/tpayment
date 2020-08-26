@@ -1,41 +1,29 @@
 package modules
 
 import (
-	"encoding/json"
 	"net/http"
 	"tpayment/conf"
-	"tpayment/pkg/tlog"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func BaseError(context echo.Context, err conf.ResultCode) {
-	logger := tlog.GetLogger(context)
-
+func BaseError(context *gin.Context, err conf.ResultCode) {
 	baseResp := &BaseResponse{
 		ErrorCode:    err,
 		ErrorMessage: err.String(),
 	}
 
-	resp, _ := json.Marshal(baseResp)
-	logger.Info("response->", string(resp))
-
-	// nolint
-	_ = context.JSON(http.StatusBadRequest, baseResp)
+	context.JSON(http.StatusBadRequest, baseResp)
 }
 
-func BaseSuccess(context echo.Context, data interface{}) {
-	logger := tlog.GetLogger(context)
+func BaseSuccess(context *gin.Context, data interface{}) {
 
 	baseResponse := BaseResponse{
 		ErrorCode: conf.SUCCESS,
 		Data:      data,
 	}
-	resp, _ := json.Marshal(baseResponse)
-	logger.Info("response->", string(resp))
 
-	// nolint
-	_ = context.JSON(http.StatusOK, baseResponse)
+	context.JSON(http.StatusOK, baseResponse)
 }
 
 type BaseResponse struct {

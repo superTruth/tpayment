@@ -8,15 +8,15 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func UpdateHandle(ctx echo.Context) error {
+func UpdateHandle(ctx *gin.Context) error {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(tms.DeviceInfo)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)

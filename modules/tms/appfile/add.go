@@ -13,24 +13,24 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(tms.AppFile)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 	if req.AppId == 0 {
 		logger.Warn(conf.ParameterError.String())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 获取机构ID，系统管理员为0
@@ -38,27 +38,27 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn("GetAgencyId2->", err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	bean, err := tms.GetAppByID(models.DB(), ctx, req.AppId)
 	if err != nil {
 		logger.Error("GetAppByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	if bean == nil {
 		logger.Info(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 
 	// 无权限删除
 	if agencyId != 0 && agencyId != bean.AgencyId {
 		logger.Warn("current agency id is:", bean.AgencyId, ", your id:", agencyId)
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	req.ID = 0
@@ -68,7 +68,7 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
@@ -77,11 +77,9 @@ func AddHandle(ctx echo.Context) error {
 	goroutine.Go(func() {
 		StartDecode(ctx, req.ID)
 	}, ctx)
-
-	return nil
 }
 
-func StartDecode(ctx echo.Context, id uint) {
+func StartDecode(ctx *gin.Context, id uint) {
 	logger := tlog.GetLogger(ctx)
 
 	logger.Info("start decode app file->", id)

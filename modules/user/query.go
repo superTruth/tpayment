@@ -1,7 +1,6 @@
 package user
 
 import (
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -10,19 +9,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func QueryHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
@@ -31,13 +30,29 @@ func QueryHandle(ctx echo.Context) error {
 
 	// 机构管理员
 	agencyId := uint(0)
-	userBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
-	agencys := ctx.Get(conf.ContextTagAgency).([]*agency.Agency)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		modules.BaseError(ctx, conf.UnknownError)
+		return
+	}
+
+	var agencys []*agency.Agency
+	agencysTmp, ok := ctx.Get(conf.ContextTagAgency)
+	if ok {
+		agencys = agencysTmp.([]*agency.Agency)
+	} else {
+		modules.BaseError(ctx, conf.UnknownError)
+		return
+	}
+
 	if userBean.Role != string(conf.RoleAdmin) { // 管理员，不需要过滤机构
 		if len(agencys) == 0 {
 			logger.Info("not admin and not agency")
 			modules.BaseError(ctx, conf.ParameterError)
-			return errors.New("not admin and not agency")
+			return
 		}
 		agencyId = agencys[0].ID
 	}
@@ -46,7 +61,7 @@ func QueryHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	ret := &modules.BaseQueryResponse{
@@ -55,6 +70,4 @@ func QueryHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

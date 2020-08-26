@@ -8,10 +8,10 @@ import (
 	"tpayment/models/merchant"
 	"tpayment/modules"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func CheckPermission(ctx echo.Context, merchantId uint) error {
+func CheckPermission(ctx *gin.Context, merchantId uint) error {
 	// 1. 是否存在这2个账号
 	merchantBean, err := merchant.GetMerchantById(models.DB(), ctx, merchantId)
 	if err != nil {
@@ -31,10 +31,17 @@ func CheckPermission(ctx echo.Context, merchantId uint) error {
 		return nil
 	}
 
-	currentUserBean := ctx.Get(conf.ContextTagUser).(*account.UserBean)
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return errors.New("can't get user")
+	}
+
 	// 当前账号是否是此merchant下面关联的管理账号
 	associateBean, err := merchant.GetUserMerchantAssociateByMerchantIdAndUserId(models.DB(), ctx,
-		merchantId, currentUserBean.ID)
+		merchantId, userBean.ID)
 	if err != nil {
 		return err
 	}

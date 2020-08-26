@@ -5,10 +5,10 @@ import (
 	"tpayment/models/account"
 	"tpayment/pkg/tlog"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func Auth(ctx echo.Context, token string) (*account.UserBean, *account.AppIdBean, error) {
+func Auth(ctx *gin.Context, token string) (*account.UserBean, *account.AppIdBean, error) {
 	logger := tlog.GetLogger(ctx)
 	// 创建 或者 更新  token记录
 	tokenBean, err := account.GetTokenBeanByToken(models.DB(), ctx, token)

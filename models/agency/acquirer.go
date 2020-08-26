@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type Acquirer struct {
@@ -36,7 +36,7 @@ func GetAcquirerById(id uint) (*Acquirer, error) {
 	return ret, nil
 }
 
-func QueryAcquirerRecord(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Acquirer, error) {
+func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Acquirer, error) {
 	equalData := make(map[string]string)
 	if agencyId != 0 {
 		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)

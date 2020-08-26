@@ -14,28 +14,28 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/labstack/echo"
 )
 
 // 申请一个上传文件的URL
-func RequestUploadFileUrl(ctx echo.Context) error {
+func RequestUploadFileUrl(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(UploadFileRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 检查参数是否正确
 	if req.FileSize == 0 || req.Tag == "" || req.FileName == "" {
 		logger.Warn("parameters miss")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	filePath := fmt.Sprintf("%v/%v/%v", req.Tag, strings.ReplaceAll(uuid.New().String(), "-", ""), req.FileName)
@@ -65,7 +65,7 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("pre sign fail->", err.Error())
 		modules.BaseError(ctx, conf.UnknownError)
-		return err
+		return
 	}
 
 	logger.Info("pre sign url->", url)
@@ -76,8 +76,6 @@ func RequestUploadFileUrl(ctx echo.Context) error {
 	//ret.Exp = exp
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }
 
 //func test() {

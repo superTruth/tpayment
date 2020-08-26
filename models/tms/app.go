@@ -5,8 +5,8 @@ import (
 	"tpayment/models"
 	"tpayment/modules"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type App struct {
@@ -23,7 +23,7 @@ func (App) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppByID(db *models.MyDB, ctx echo.Context, id uint) (*App, error) {
+func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint) (*App, error) {
 
 	ret := new(App)
 
@@ -39,7 +39,7 @@ func GetAppByID(db *models.MyDB, ctx echo.Context, id uint) (*App, error) {
 	return ret, nil
 }
 
-func QueryAppRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*App, error) {
+func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*App, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)

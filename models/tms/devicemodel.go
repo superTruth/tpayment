@@ -3,8 +3,7 @@ package tms
 import (
 	"tpayment/models"
 
-	"github.com/labstack/echo"
-
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
 
@@ -32,7 +31,7 @@ func GetModels() ([]DeviceModel, error) {
 }
 
 // 根据Model 获取设备信息
-func GetModelByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceModel, error) {
+func GetModelByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceModel, error) {
 	ret := new(DeviceModel)
 
 	err := db.Model(&DeviceModel{}).Where("id=?", id).First(ret).Error
@@ -47,7 +46,7 @@ func GetModelByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceModel, err
 	return ret, nil
 }
 
-func QueryModelRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceModel, error) {
+func QueryModelRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceModel, error) {
 	equalData := make(map[string]string)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 

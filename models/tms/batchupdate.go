@@ -5,8 +5,8 @@ import (
 	"tpayment/models"
 	"tpayment/modules"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type BatchUpdate struct {
@@ -31,7 +31,7 @@ func (BatchUpdate) TableName() string {
 	return "tms_batch_update"
 }
 
-func GetBatchUpdateRecordById(db *models.MyDB, ctx echo.Context, id uint) (*BatchUpdate, error) {
+func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint) (*BatchUpdate, error) {
 	ret := new(BatchUpdate)
 
 	err := db.Model(&BatchUpdate{}).Where("id=?", id).First(ret).Error
@@ -46,7 +46,7 @@ func GetBatchUpdateRecordById(db *models.MyDB, ctx echo.Context, id uint) (*Batc
 	return ret, nil
 }
 
-func QueryBatchUpdateRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*BatchUpdate, error) {
+func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*BatchUpdate, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -73,7 +73,7 @@ func QueryBatchUpdateRecord(db *models.MyDB, ctx echo.Context, offset, limit uin
 	return total, ret, nil
 }
 
-func GetBatchUpdateDevices(db *models.MyDB, ctx echo.Context, batchUpdate *BatchUpdate, offset uint, limit uint) ([]*DeviceInfo, error) {
+func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *BatchUpdate, offset uint, limit uint) ([]*DeviceInfo, error) {
 	tmpDb := db.Model(&DeviceInfo{})
 
 	agencyId, err := modules.GetAgencyId2(ctx)

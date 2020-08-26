@@ -5,8 +5,8 @@ import (
 	"tpayment/models"
 	"tpayment/modules"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type UploadFile struct {
@@ -23,7 +23,7 @@ func (UploadFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*UploadFile, error) {
+func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*UploadFile, error) {
 
 	ret := new(UploadFile)
 
@@ -39,7 +39,7 @@ func GetUploadFileByID(db *models.MyDB, ctx echo.Context, id uint) (*UploadFile,
 	return ret, nil
 }
 
-func QueryUploadFileRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*UploadFile, error) {
+func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*UploadFile, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)

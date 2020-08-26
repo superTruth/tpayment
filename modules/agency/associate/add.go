@@ -1,7 +1,6 @@
 package associate
 
 import (
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/account"
@@ -10,25 +9,25 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(agency.UserAgencyAssociate)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	if req.AgencyId == 0 || req.UserId == 0 {
 		logger.Warn("ParameterError")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询是否存在这2个ID
@@ -36,24 +35,24 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if userBean == nil {
 		logger.Warn("User Not Exist")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, req.AgencyId)
 	if err != nil {
 		logger.Info("GetAssociateById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if agencyBean == nil {
 		logger.Warn("Agency Not Exist")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 一个用户只可以关联一个agency
@@ -61,29 +60,27 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetAssociateByUserId sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if associateBean != nil {
 		logger.Warn(conf.UserCanOnlyInOneAgency.String())
 		modules.BaseError(ctx, conf.UserCanOnlyInOneAgency)
-		return errors.New(conf.UserCanOnlyInOneAgency.String())
+		return
 	}
 
 	// 如果是系统管理员，则无法关联
 	if userBean.Role != string(conf.RoleUser) { // 只有普通用户可以关联
 		logger.Info(conf.AdminCantAssociate.String())
 		modules.BaseError(ctx, conf.AdminCantAssociate)
-		return errors.New(conf.AdminCantAssociate.String())
+		return
 	}
 
 	err = models.CreateBaseRecord(req)
 	if err != nil {
 		logger.Info("CreateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

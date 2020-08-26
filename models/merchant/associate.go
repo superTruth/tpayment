@@ -5,8 +5,8 @@ import (
 	"tpayment/models"
 	"tpayment/models/account"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type UserMerchantAssociate struct {
@@ -21,7 +21,7 @@ func (UserMerchantAssociate) TableName() string {
 	return "merchant_user_associate"
 }
 
-func GetUserMerchantAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
 	err := db.Model(&UserMerchantAssociate{}).Where("id=?", id).First(ret).Error
@@ -36,7 +36,7 @@ func GetUserMerchantAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*
 	return ret, nil
 }
 
-func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx echo.Context, merchantId, userId uint) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Context, merchantId, userId uint) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
 	err := db.Model(&UserMerchantAssociate{}).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
@@ -59,7 +59,7 @@ type AssociateMerchantUserBean struct {
 	Role  string `json:"role"`
 }
 
-func QueryUsersByMerchantId(db *models.MyDB, ctx echo.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*AssociateMerchantUserBean, error) {
+func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*AssociateMerchantUserBean, error) {
 	equalData := make(map[string]string)
 	equalData["merchant_id"] = strconv.FormatUint(uint64(merchantId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)

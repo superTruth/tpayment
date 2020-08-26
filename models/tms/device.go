@@ -7,8 +7,8 @@ import (
 	"tpayment/models"
 	"tpayment/modules"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type DeviceInfo struct {
@@ -49,7 +49,7 @@ func GenerateDeviceInfo() *DeviceInfo {
 }
 
 // 根据Device SN 获取设备信息
-func GetDeviceBySn(db *models.MyDB, ctx echo.Context, deviceSn string) (*DeviceInfo, error) {
+func GetDeviceBySn(db *models.MyDB, ctx *gin.Context, deviceSn string) (*DeviceInfo, error) {
 
 	deviceInfo := new(DeviceInfo)
 
@@ -66,7 +66,7 @@ func GetDeviceBySn(db *models.MyDB, ctx echo.Context, deviceSn string) (*DeviceI
 }
 
 // 根据device ID获取设备信息
-func GetDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInfo, error) {
+func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceInfo, error) {
 
 	ret := new(DeviceInfo)
 
@@ -82,7 +82,7 @@ func GetDeviceByID(db *models.MyDB, ctx echo.Context, id uint) (*DeviceInfo, err
 	return ret, nil
 }
 
-func ResetDeviceAgency(db *models.MyDB, ctx echo.Context, id uint) error {
+func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint) error {
 	err := db.Model(&DeviceInfo{}).Where("id=?", id).Update("agency_id", 0).Error
 
 	if err != nil {
@@ -92,7 +92,7 @@ func ResetDeviceAgency(db *models.MyDB, ctx echo.Context, id uint) error {
 	return nil
 }
 
-func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
+func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
 	equalData := make(map[string]string)
 	equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
@@ -115,7 +115,7 @@ func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, of
 	return total, ret, nil
 }
 
-func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
+func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
 
 	agency := modules.IsAgencyAdmin(ctx)
 
@@ -143,7 +143,7 @@ func QueryDeviceRecord(db *models.MyDB, ctx echo.Context, offset, limit uint, fi
 	return total, ret, nil
 }
 
-func QueryTagsInDevice(db *models.MyDB, ctx echo.Context, device *DeviceInfo) ([]*DeviceTagFull, error) {
+func QueryTagsInDevice(db *models.MyDB, ctx *gin.Context, device *DeviceInfo) ([]*DeviceTagFull, error) {
 	var ret []*DeviceTagFull
 	filterTmp := make(map[string]interface{})
 	if modules.IsAdmin(ctx) == nil {

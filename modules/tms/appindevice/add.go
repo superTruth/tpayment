@@ -1,7 +1,6 @@
 package appindevice
 
 import (
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/tms"
@@ -10,26 +9,26 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	logger.Info("In App AddHandle")
 
 	req := new(tms.AppInDevice)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 	if req.ExternalId == 0 {
-		logger.Warn("req.ExternalId == 0", err.Error())
+		logger.Warn("req.ExternalId == 0")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 获取设备标识，查看是否有权限
@@ -37,32 +36,30 @@ func AddHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("GetDeviceByID fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if bean == nil {
 		logger.Error("device not found->", req.ExternalId)
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return err
+		return
 	}
 	if err := tms2.CheckPermission(ctx, bean); err != nil {
 		logger.Error("CheckPermission fail->", err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	errorCode := SmartAddAppInDevice(ctx, bean, req)
 	if errorCode != conf.SUCCESS {
 		modules.BaseError(ctx, errorCode)
-		return errors.New(errorCode.String())
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }
 
 // 智能添加app到设备
-func SmartAddAppInDevice(ctx echo.Context, device *tms.DeviceInfo, app *tms.AppInDevice) conf.ResultCode {
+func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppInDevice) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	// 查找是否已经存在这个app，如果存在，就更新当前规则，如果不存在，再创建新的记录

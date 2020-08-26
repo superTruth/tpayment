@@ -8,19 +8,19 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func QueryHandle(ctx echo.Context) error {
+func QueryHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseQueryRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 管理员必须要传入agency id
@@ -28,7 +28,7 @@ func QueryHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Warn("GetAgencyId no permission->", err.Error())
 		modules.BaseError(ctx, conf.NoPermission)
-		return err
+		return
 	}
 
 	if req.Limit > conf.MaxQueryCount { // 一次性不能搜索太多数据
@@ -39,7 +39,7 @@ func QueryHandle(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	ret := &modules.BaseQueryResponse{
@@ -48,6 +48,4 @@ func QueryHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, ret)
-
-	return nil
 }

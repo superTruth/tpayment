@@ -12,8 +12,8 @@ import (
 	"tpayment/pkg/goroutine"
 	"tpayment/pkg/tlog"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/labstack/echo"
 )
 
 /**
@@ -21,32 +21,32 @@ import (
 */
 var once sync.Once
 
-func HearBeat(ctx echo.Context) error {
+func HearBeat(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	once.Do(func() {
 		readDeviceModels(ctx)
 	}) // 启动一次读取设备类型，并且后面每10分钟同步一次，减少没必要的IO操作
 
-	data, err := ioutil.ReadAll(ctx.Request().Body)
+	data, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		logger.Warn("RequestApprove ReadAll->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	bean := new(RequestBean)
 	if err := json.Unmarshal(data, bean); err != nil {
 		logger.Warn("Unmarshal", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 检查参数是否正确
 	if bean.DeviceSn == "" || bean.DeviceModel == "" {
 		logger.Warn("parameters miss")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	// 查询出当前设备的信息
@@ -54,7 +54,7 @@ func HearBeat(ctx echo.Context) error {
 	if err != nil {
 		logger.Info("GetDeviceBySn sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 	if deviceInfo == nil { // 设备未创建的情况，需要创建
 		logger.Info("设备未创建的情况，需要创建")
@@ -69,7 +69,7 @@ func HearBeat(ctx echo.Context) error {
 	if err != nil {
 		logger.Error("设备更新或者创建失败->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	// 查询当前设备的app信息
@@ -84,7 +84,7 @@ func HearBeat(ctx echo.Context) error {
 		if err != nil {
 			logger.Error("GetAppsInDevice error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
-			return err
+			return
 		}
 		logger.Info("最多查出1000条记录->", len(dbApps))
 
@@ -96,7 +96,7 @@ func HearBeat(ctx echo.Context) error {
 		logger.Info("结束对比数据==============")
 		if errorCode != conf.SUCCESS {
 			modules.BaseError(ctx, errorCode)
-			return err
+			return
 		}
 		for i := 0; i < len(returnTmp); i++ {
 			retApps = append(retApps, returnTmp[i])
@@ -147,7 +147,6 @@ func HearBeat(ctx echo.Context) error {
 	ret.AppInfos = retApps
 
 	modules.BaseSuccess(ctx, ret)
-	return nil
 }
 
 // 匹配处理历史记录，并且返回需要前端处理的数据
@@ -160,7 +159,7 @@ func HearBeat(ctx echo.Context) error {
 		3. 错误信息
 */
 // 返回数据：
-func compareApps(ctx echo.Context, requestApps []*AppInfo, dbApps []*tms.AppInDevice) ([]*AppInfo, []*AppInfo, conf.ResultCode) {
+func compareApps(ctx *gin.Context, requestApps []*AppInfo, dbApps []*tms.AppInDevice) ([]*AppInfo, []*AppInfo, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 
 	// 未匹配到的上送数据
@@ -415,7 +414,7 @@ func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 
 var deviceModels map[string]uint
 
-func readDeviceModels(ctx echo.Context) {
+func readDeviceModels(ctx *gin.Context) {
 	goroutine.Go(func() {
 		logger := tlog.Logger{}
 		logger.Init(uuid.New().String())

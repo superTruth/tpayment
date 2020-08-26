@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"tpayment/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type AppFile struct {
@@ -27,7 +27,7 @@ func (AppFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppFileByID(db *models.MyDB, ctx echo.Context, id uint) (*AppFile, error) {
+func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppFile, error) {
 
 	ret := new(AppFile)
 
@@ -43,7 +43,7 @@ func GetAppFileByID(db *models.MyDB, ctx echo.Context, id uint) (*AppFile, error
 	return ret, nil
 }
 
-func QueryAppFileRecord(db *models.MyDB, ctx echo.Context, appId, offset, limit uint, filters map[string]string) (uint, []*AppFile, error) {
+func QueryAppFileRecord(db *models.MyDB, ctx *gin.Context, appId, offset, limit uint, filters map[string]string) (uint, []*AppFile, error) {
 	equalData := make(map[string]string)
 	equalData["app_id"] = strconv.FormatUint(uint64(appId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)

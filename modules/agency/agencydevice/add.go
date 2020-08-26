@@ -3,7 +3,6 @@ package agencydevice
 import (
 	"bufio"
 	"encoding/csv"
-	"errors"
 	"io"
 	"os"
 	"tpayment/conf"
@@ -15,25 +14,25 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandle(ctx echo.Context) error {
+func AddHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(DeviceBindRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	if req.AgencyId == 0 || (req.DeviceId == 0 && req.FileUrl == "") {
 		logger.Warn("ParameterError")
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	var handleRet conf.ResultCode
@@ -45,16 +44,14 @@ func AddHandle(ctx echo.Context) error {
 
 	if handleRet != conf.SUCCESS {
 		modules.BaseError(ctx, handleRet)
-		return errors.New(handleRet.String())
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }
 
 // 单个添加设备
-func AddByID(ctx echo.Context, agencyId, deviceId uint) conf.ResultCode {
+func AddByID(ctx *gin.Context, agencyId, deviceId uint) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	device := tms.DeviceInfo{
 		BaseModel: models.BaseModel{
@@ -75,7 +72,7 @@ func AddByID(ctx echo.Context, agencyId, deviceId uint) conf.ResultCode {
 // 批量文件添加设备
 const downloadDir = "./agencydevicefiles/"
 
-func AddByFile(ctx echo.Context, agencyId uint, fileUrl string) conf.ResultCode {
+func AddByFile(ctx *gin.Context, agencyId uint, fileUrl string) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	// 先下载文件

@@ -1,7 +1,6 @@
 package merchantdevicepayment
 
 import (
-	"errors"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/merchant"
@@ -9,44 +8,41 @@ import (
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func DeleteHandle(ctx echo.Context) error {
+func DeleteHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
 	req := new(modules.BaseIDRequest)
 
-	err := utils.Body2Json(ctx.Request().Body, req)
+	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
 		logger.Warn("Body2Json fail->", err.Error())
 		modules.BaseError(ctx, conf.ParameterError)
-		return err
+		return
 	}
 
 	deviceBean, err := merchant.GetPaymentSettingInDeviceById(models.DB(), ctx, req.ID)
 	if err != nil {
 		logger.Error("GetPaymentSettingInDeviceById fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	if deviceBean == nil {
 		logger.Error(conf.RecordNotFund.String())
 		modules.BaseError(ctx, conf.RecordNotFund)
-		return errors.New(conf.RecordNotFund.String())
+		return
 	}
 
-	// TODO 权限判断
 	err = models.DeleteBaseRecord(deviceBean)
 
 	if err != nil {
 		logger.Info("DeleteBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }

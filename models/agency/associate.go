@@ -4,8 +4,8 @@ import (
 	"tpayment/models"
 	"tpayment/models/account"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 type UserAgencyAssociate struct {
@@ -19,7 +19,7 @@ func (UserAgencyAssociate) TableName() string {
 	return "agency_user_associate"
 }
 
-func GetAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*UserAgencyAssociate, error) {
+func GetAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*UserAgencyAssociate, error) {
 	ret := new(UserAgencyAssociate)
 
 	err := db.Model(&UserAgencyAssociate{}).Where("id=?", id).First(ret).Error
@@ -34,7 +34,7 @@ func GetAssociateById(db *models.MyDB, ctx echo.Context, id uint) (*UserAgencyAs
 	return ret, nil
 }
 
-func GetAssociateByUserId(db *models.MyDB, ctx echo.Context, userId uint) (*UserAgencyAssociate, error) {
+func GetAssociateByUserId(db *models.MyDB, ctx *gin.Context, userId uint) (*UserAgencyAssociate, error) {
 	ret := new(UserAgencyAssociate)
 
 	err := db.Model(&UserAgencyAssociate{}).Where("user_id=?", userId).First(ret).Error
@@ -56,7 +56,7 @@ type AssociateAgencyUserBean struct {
 	Name  string `gorm:"column:name" json:"name"`
 }
 
-func QueryUsersByAgencyId(db *models.MyDB, ctx echo.Context, agencyId, offset, limit uint) (uint, []*AssociateAgencyUserBean, error) {
+func QueryUsersByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint) (uint, []*AssociateAgencyUserBean, error) {
 	// conditions
 	tmpDb := db.Table("user").Model(&account.UserBean{})
 	tmpDb = tmpDb.Joins("JOIN agency_user_associate ass ON ass.agency_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", agencyId)

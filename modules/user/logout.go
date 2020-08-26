@@ -7,20 +7,20 @@ import (
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
-func LogoutHandle(ctx echo.Context) error {
+func LogoutHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
-	token := ctx.Request().Header[conf.HeaderTagToken][0]
+	token := ctx.Request.Header[conf.HeaderTagToken][0]
 
 	tokenBean, err := account.GetTokenBeanByToken(models.DB(), ctx, token)
 
 	if err != nil {
 		logger.Error("GetTokenBeanByToken sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		return err
+		return
 	}
 
 	if tokenBean != nil {
@@ -28,6 +28,4 @@ func LogoutHandle(ctx echo.Context) error {
 	}
 
 	modules.BaseSuccess(ctx, nil)
-
-	return nil
 }
