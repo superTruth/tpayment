@@ -27,7 +27,6 @@ func AuthHandle(ctx *gin.Context) {
 	if len(tokens) == 0 {
 		logger.Info("authHandle error->", conf.NeedTokenInHeader.String())
 		modules.BaseError(ctx, conf.NeedTokenInHeader)
-		ctx.Next()
 		return
 	}
 
@@ -36,13 +35,11 @@ func AuthHandle(ctx *gin.Context) {
 	if err != nil { // 数据库出错
 		logger.Error("Auth db error2->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
-		ctx.Next()
 		return
 	}
 	if userBean == nil { // token验证失败
 		logger.Error("authHandle token not exist")
 		modules.BaseError(ctx, conf.TokenInvalid)
-		ctx.Next()
 		return
 	}
 
@@ -54,7 +51,6 @@ func AuthHandle(ctx *gin.Context) {
 		if err != nil {
 			logger.Error("QueryAgencyRecord db error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
-			ctx.Next()
 			return
 		}
 		ctx.Set(conf.ContextTagAgency, agencyBean)
