@@ -8,7 +8,7 @@
 
   "db_account": "root:RVmeukTrZAhxWWvY@tcp(tpayment.ctzbtzry87ad.eu-west-3.rds.amazonaws.com)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
-  "s3_domain": "amazonaws.com.cn",
+  "s3_domain": "amazonaws.com",
   "s3_region": "eu-west-3",
   "s3_key": "AKIAQG3YEEGI7GMJPZGG",
   "s3_secret": "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",

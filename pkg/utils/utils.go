@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"strings"
 )
 
 func Body2Json(body io.Reader, destBean interface{}) error {
@@ -14,6 +15,19 @@ func Body2Json(body io.Reader, destBean interface{}) error {
 	}
 
 	return json.Unmarshal(data, &destBean)
+}
+
+func SplitDomain(url string) string {
+	if len(url) < 4 {
+		return ""
+	}
+	a1 := strings.Split(url, "//")[1]
+	if len(a1) < 3 {
+		return ""
+	}
+	a2 := strings.Split(a1, "/")[0]
+
+	return a2
 }
 
 //func Struct2Map(src interface{}) []map[string]interface{} {
