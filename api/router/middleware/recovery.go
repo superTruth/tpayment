@@ -28,4 +28,5 @@ func newRecovery(ctx *gin.Context) {
 	logger.Error("exception->", string(debug.Stack()))
 
 	modules.BaseError(ctx, conf.PanicError)
+	ctx.Abort()
 }

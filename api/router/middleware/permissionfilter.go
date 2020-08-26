@@ -28,6 +28,7 @@ func PermissionFilter(ctx *gin.Context) {
 	} else {
 		logger.Error("user is null")
 		modules.BaseError(ctx, conf.UnknownError)
+		ctx.Abort()
 		return
 	}
 
@@ -45,6 +46,7 @@ func PermissionFilter(ctx *gin.Context) {
 		strings.Contains(ctx.Request.RequestURI, "/payment/tms/model") {
 		logger.Warn("no agency permission")
 		modules.BaseError(ctx, conf.NoPermission)
+		ctx.Abort()
 		return
 	}
 
@@ -67,6 +69,7 @@ func PermissionFilter(ctx *gin.Context) {
 			if len(agencys) == 0 {
 				logger.Info("not admin or not agency")
 				modules.BaseError(ctx, conf.NoPermission)
+				ctx.Abort()
 				return
 			}
 		}
