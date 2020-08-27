@@ -59,7 +59,7 @@ func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	}
 
 	var ret []*UploadFile
-	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+	if err = tmpDb.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
 

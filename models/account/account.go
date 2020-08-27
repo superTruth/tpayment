@@ -74,7 +74,7 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 	}
 
 	// 查询记录
-	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

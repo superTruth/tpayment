@@ -57,7 +57,7 @@ func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, mercha
 	}
 
 	// 查询记录
-	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error
 	if err != nil {
 		return 0, nil, err
 	}

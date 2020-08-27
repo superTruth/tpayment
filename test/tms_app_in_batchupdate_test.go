@@ -22,7 +22,7 @@ func TestCreateTmsAppInBatchUpdate(t *testing.T) {
 	}
 
 	reqBean := &tms.AppInDevice{
-		ExternalId: 3,
+		ExternalId: 7,
 		Status:     conf.TmsStatusPendingInstall,
 		AppID:      7,
 		AppFileId:  12,
