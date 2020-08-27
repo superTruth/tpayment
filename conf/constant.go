@@ -2,6 +2,8 @@ package conf
 
 const HeaderTagRequestId = "X-Request-Id"
 const HeaderTagToken = "X-Access-Token"
+const HeaderTagAccessKey = "X-Access-Key"
+const HeaderTagAccessHash = "X-Access-Hash"
 
 const ContextTagLog = "Log"
 const ContextTagUser = "User"

@@ -21,9 +21,10 @@ func ValidateHandle(ctx *gin.Context) {
 
 	// 拼接response数据
 	ret := &LoginResponse{
-		Role:  userBean.Role,
-		Name:  userBean.Name,
-		Email: userBean.Email,
+		UserID: userBean.ID,
+		Role:   userBean.Role,
+		Name:   userBean.Name,
+		Email:  userBean.Email,
 	}
 
 	modules.BaseSuccess(ctx, ret)

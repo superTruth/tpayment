@@ -22,6 +22,7 @@ Response:
 Request Example:
 ```json
 {
+    "user_id": 123,
 	"app_id": "123456",
 	"app_secret": "123456",
 	"email": "fang.qiang7@bindo.com",
@@ -50,6 +51,7 @@ Response Example:
 Response Example:
 ```json
 {
+    "user_id": 123,
     "email": "fang.qiang7@bindo.com",
     "name": "Fang",
     "role": "user"

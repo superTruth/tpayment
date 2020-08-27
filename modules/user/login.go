@@ -110,10 +110,11 @@ func LoginHandle(ctx *gin.Context) {
 
 	// 拼接response数据
 	ret := &LoginResponse{
-		Token: tokenBean.Token,
-		Role:  accountBean.Role,
-		Name:  accountBean.Name,
-		Email: accountBean.Email,
+		UserID: accountBean.ID,
+		Token:  tokenBean.Token,
+		Role:   accountBean.Role,
+		Name:   accountBean.Name,
+		Email:  accountBean.Email,
 	}
 
 	modules.BaseSuccess(ctx, ret)

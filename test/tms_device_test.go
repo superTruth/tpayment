@@ -43,8 +43,9 @@ func TestUpdateTmsDevice(t *testing.T) {
 }
 
 func TestQueryTmsDevice(t *testing.T) {
-	TestLogin(t)
+	//TestLogin(t)
 	fmt.Println("query agency", line)
+	token := "03e74911-2d09-44f3-9171-6acbee219cd1"
 	header := http.Header{
 		conf.HeaderTagToken: []string{token},
 	}

@@ -8,10 +8,11 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token,omitempty"`
-	Role  string `json:"role,omitempty"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	UserID uint   `json:"user_id,omitempty"`
+	Token  string `json:"token,omitempty"`
+	Role   string `json:"role,omitempty"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
 }
 
 type AddUserRequest struct {

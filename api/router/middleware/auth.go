@@ -22,17 +22,17 @@ func AuthHandle(ctx *gin.Context) {
 		return
 	}
 
-	// 判断token
-	tokens := ctx.Request.Header[conf.HeaderTagToken]
-	if len(tokens) == 0 {
-		logger.Info("authHandle error->", conf.NeedTokenInHeader.String())
-		modules.BaseError(ctx, conf.NeedTokenInHeader)
-		ctx.Abort()
-		return
-	}
+	//// 判断token
+	//tokens := ctx.Request.Header[conf.HeaderTagToken]
+	//if len(tokens) == 0 {
+	//	logger.Info("authHandle error->", conf.NeedTokenInHeader.String())
+	//	modules.BaseError(ctx, conf.NeedTokenInHeader)
+	//	ctx.Abort()
+	//	return
+	//}
 
-	// 验证token的有效性
-	userBean, _, err := user.Auth(ctx, tokens[0])
+	// 验证登录权限
+	userBean, _, err := user.Auth(ctx)
 	if err != nil { // 数据库出错
 		logger.Error("Auth db error2->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
