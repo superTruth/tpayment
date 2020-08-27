@@ -41,7 +41,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, fi
 	}
 
 	if userBean.Role != string(conf.RoleAdmin) {
-		tmpDB = tmpDB.Order("updated_at desc").Joins("JOIN agency_user_associate ass ON ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
+		tmpDB = tmpDB.Joins("JOIN agency_user_associate ass ON ass.user_id = ? AND ass.deleted_at IS NULL", userBean.ID)
 	}
 
 	// 统计总数
@@ -52,7 +52,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, fi
 	}
 
 	// 查询记录
-	err = tmpDB.Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
