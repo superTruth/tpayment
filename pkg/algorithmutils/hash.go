@@ -8,6 +8,6 @@ import (
 
 func Hmac(key []byte, data string) string {
 	hashFunc := hmac.New(sha256.New, key)
-	hashFunc.Write([]byte(data))
+	_, _ = hashFunc.Write([]byte(data))
 	return hex.EncodeToString(hashFunc.Sum([]byte("")))
 }
