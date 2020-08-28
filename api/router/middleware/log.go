@@ -18,6 +18,8 @@ func Logger(ctx *gin.Context) {
 	logger.Init(requestId)
 	tlog.SetLogger(ctx, logger)
 	defer logger.Destroy()
+	tlog.SetGoroutineLogger(logger)
+	defer tlog.FreeGoroutineLogger()
 
 	content, _ := httputil.DumpRequest(ctx.Request, true)
 	logger.Info("request->", string(content))

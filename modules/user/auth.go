@@ -17,11 +17,13 @@ import (
 
 func Auth(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, error) {
 	tokens := ctx.Request.Header[conf.HeaderTagToken]
-	if len(tokens) != 0 {
-		return AuthByToken(ctx, tokens[0])
-	}
+	return AuthByToken(ctx, tokens[0])
 
-	return AuthByAccessKey(ctx)
+	//if len(tokens) != 0 {
+	//	return AuthByToken(ctx, tokens[0])
+	//}
+	//
+	//return AuthByAccessKey(ctx)
 }
 
 // token验证
