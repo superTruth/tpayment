@@ -14,8 +14,11 @@ func Logger(ctx *gin.Context) {
 	requestId := uuid.New().String()
 
 	// 生成log
-	logger := new(tlog.Logger)
-	logger.Init(requestId)
+	//logger := new(tlog.Logger)
+	//logger.Init(requestId)
+
+	logger := tlog.NewLog(requestId)
+
 	tlog.SetLogger(ctx, logger)
 	defer logger.Destroy()
 	tlog.SetGoroutineLogger(logger)

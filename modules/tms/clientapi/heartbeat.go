@@ -416,8 +416,8 @@ var deviceModels map[string]uint
 
 func readDeviceModels(ctx *gin.Context) {
 	goroutine.Go(func() {
-		logger := tlog.Logger{}
-		logger.Init(uuid.New().String())
+		logger := tlog.NewLog(uuid.New().String()) //tlog.Logger{}
+		//logger.Init(uuid.New().String())
 		for {
 			modelArray, err := tms.GetModels()
 			if err == nil {

@@ -15,8 +15,7 @@ func GetGoroutineLogger() *Logger {
 	id := gls.GetGoroutineID()
 	logger, ok := loggerMap[id]
 	if !ok {
-		logger = new(Logger)
-		logger.Init(strconv.FormatUint(id, 10))
+		logger = NewLog(strconv.FormatUint(id, 10))
 		return logger
 	}
 
