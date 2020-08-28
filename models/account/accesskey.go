@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/modules"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -63,7 +62,6 @@ func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	if ok {
 		userBean = userBeanTmp.(*UserBean)
 	} else {
-		modules.BaseError(ctx, conf.UnknownError)
 		return 0, ret, errors.New("can't get user")
 	}
 
