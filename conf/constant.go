@@ -17,6 +17,11 @@ const (
 	RoleMachine UserRole = "machine"
 )
 
+const (
+	MerchantManager  UserRole = "manager"
+	MerchantEmployee UserRole = "employee"
+)
+
 const MaxQueryCount = 100
 
 const (

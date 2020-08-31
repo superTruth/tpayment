@@ -45,7 +45,7 @@ func CheckPermission(ctx *gin.Context, merchantId uint) error {
 	if err != nil {
 		return err
 	}
-	if associateBean == nil || associateBean.Role != string(conf.RoleAdmin) {
+	if associateBean == nil || associateBean.Role != string(conf.MerchantManager) {
 		return errors.New("no permission for the merchant")
 	}
 
