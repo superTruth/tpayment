@@ -22,14 +22,15 @@ func AuthHandle(ctx *gin.Context) {
 		return
 	}
 
-	//// 判断token
-	//tokens := ctx.Request.Header[conf.HeaderTagToken]
-	//if len(tokens) == 0 {
-	//	logger.Info("authHandle error->", conf.NeedTokenInHeader.String())
-	//	modules.BaseError(ctx, conf.NeedTokenInHeader)
-	//	ctx.Abort()
-	//	return
-	//}
+	// 判断token
+	if len(ctx.Request.Header[conf.HeaderTagToken]) == 0 &&
+		(len(ctx.Request.Header[conf.HeaderTagAccessKey]) == 0 ||
+			len(ctx.Request.Header[conf.HeaderTagAccessHash]) == 0) {
+		logger.Info("authHandle error->", conf.NeedTokenInHeader.String())
+		modules.BaseError(ctx, conf.NeedTokenInHeader)
+		ctx.Abort()
+		return
+	}
 
 	// 验证登录权限
 	userBean, _, err := user.Auth(ctx)
