@@ -1,15 +1,18 @@
 package conf
 
 const (
-	UrlAccountLogin    = "/payment/account/login"
-	UrlAccountLogout   = "/payment/account/logout"
-	UrlAccountValidate = "/payment/account/validate"
-	UrlAccountAdd      = "/payment/account/add"
-	UrlAccountDelete   = "/payment/account/delete"
-	UrlAccountUpdate   = "/payment/account/update"
-	UrlAccountQuery    = "/payment/account/query"
-	UrlAccountRegister = "/payment/account/register"
-	UrlAccountActive   = "/payment/account/active/:user"
+	UrlAccountLogin        = "/payment/account/login"
+	UrlAccountLogout       = "/payment/account/logout"
+	UrlAccountValidate     = "/payment/account/validate"
+	UrlAccountAdd          = "/payment/account/add"
+	UrlAccountDelete       = "/payment/account/delete"
+	UrlAccountUpdate       = "/payment/account/update"
+	UrlAccountQuery        = "/payment/account/query"
+	UrlAccountRegister     = "/payment/account/register"
+	UrlAccountActive       = "/payment/account/active/:user"
+	UrlAccountAccessAdd    = "/payment/account/access/add"
+	UrlAccountAccessQuery  = "/payment/account/access/query"
+	UrlAccountAccessDelete = "/payment/account/access/delete"
 
 	UrlAgencyAdd    = "/payment/agency/add"
 	UrlAgencyUpdate = "/payment/agency/update"

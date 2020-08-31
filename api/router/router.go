@@ -25,6 +25,7 @@ import (
 	"tpayment/modules/tms/devicetag"
 	"tpayment/modules/tms/uploadfile"
 	"tpayment/modules/user"
+	"tpayment/modules/user/accesskey"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,6 +56,9 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlAccountQuery, user.QueryHandle)       // 查找账号
 	e.POST(conf.UrlAccountRegister, user.RegisterHandle) // 注册账号
 	e.GET(conf.UrlAccountActive, user.ActiveHandel)      // 激活账号
+	e.POST(conf.UrlAccountAccessAdd, accesskey.AddHandle)
+	e.POST(conf.UrlAccountAccessQuery, accesskey.QueryHandle)
+	e.POST(conf.UrlAccountAccessDelete, accesskey.DeleteHandle)
 
 	e.POST(conf.UrlAgencyAdd, agency.AddHandle)       // 添加机构
 	e.POST(conf.UrlAgencyUpdate, agency.UpdateHandle) // 更新机构

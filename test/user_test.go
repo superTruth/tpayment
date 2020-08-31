@@ -15,9 +15,9 @@ import (
 	"tpayment/modules/user"
 )
 
-const BaseUrl = "http://localhost:80"
+//const BaseUrl = "http://localhost:80"
 
-//const BaseUrl = "https://www.paymentstg.horizonpay.cn"
+const BaseUrl = "https://www.paymentstg.horizonpay.cn"
 
 //const BaseUrl = "https://www.payment.horizonpay.cn"
 
@@ -229,9 +229,9 @@ func TestQueryUser(t *testing.T) {
 
 	reqBean := &modules.BaseQueryRequest{
 		Offset: 0,
-		Limit:  100,
+		Limit:  1000,
 		Filters: map[string]string{
-			"email": "fang.qiang",
+			"email": "fang",
 		},
 	}
 
