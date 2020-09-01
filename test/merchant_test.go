@@ -92,9 +92,9 @@ func TestQueryMerchant(t *testing.T) {
 	reqBean := &modules.BaseQueryRequest{
 		Offset: 0,
 		Limit:  100,
-		Filters: map[string]string{
-			"name": "merchant",
-		},
+		//Filters: map[string]string{
+		//	"name": "merchant",
+		//},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

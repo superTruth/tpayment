@@ -62,7 +62,6 @@ func PermissionFilter(ctx *gin.Context) {
 		ctx.Request.RequestURI == conf.UrlAccountQuery ||
 		ctx.Request.RequestURI == conf.UrlMerchantAdd ||
 		ctx.Request.RequestURI == conf.UrlMerchantUpdate ||
-		ctx.Request.RequestURI == conf.UrlMerchantQuery ||
 		strings.Contains(ctx.Request.RequestURI, "/payment/tms") {
 
 		if userBean.Role == string(conf.RoleUser) { // 管理员，不需要过滤机构
