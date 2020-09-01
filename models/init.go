@@ -29,7 +29,7 @@ func InitDB() {
 	db.DB.DB().SetMaxOpenConns(256)
 	db.DB.DB().SetMaxIdleConns(8)
 	db.DB.DB().SetConnMaxLifetime(360 * time.Second)
-	db.DB.SetLogger(new(DBlogger))
+	//db.DB.SetLogger(new(DBlogger))
 	db.DB.LogMode(true)
 }
 

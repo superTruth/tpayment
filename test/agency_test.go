@@ -71,9 +71,9 @@ func TestQueryAgency(t *testing.T) {
 	reqBean := &modules.BaseQueryRequest{
 		Offset: 0,
 		Limit:  100,
-		Filters: map[string]string{
-			"name": "mer",
-		},
+		//Filters: map[string]string{
+		//	"name": "mer",
+		//},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
