@@ -141,3 +141,21 @@ func TestDeleteBatchUpdate(t *testing.T) {
 
 	fmt.Println("rep->", string(repByte))
 }
+
+func TestStartHandleBatchUpdate(t *testing.T) {
+	TestLogin(t)
+
+	fmt.Println("handle user", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &modules.BaseIDRequest{ID: 11}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsBatchUpdateStartHandle, time.Second*10)
+
+	fmt.Println("rep->", string(repByte))
+}

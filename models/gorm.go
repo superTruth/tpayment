@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql/driver"
+	"strconv"
+	"strings"
 	"tpayment/pkg/gorm_json"
 )
 
@@ -14,6 +16,19 @@ func (c StringArray) Value() (driver.Value, error) {
 
 func (c *StringArray) Scan(input interface{}) error {
 	return gorm_json.Scan(input, c)
+}
+
+func (c *StringArray) String() string {
+	sb := strings.Builder{}
+
+	for i := 0; i < len(*c); i++ {
+		if sb.Len() != 0 {
+			sb.WriteString(",")
+		}
+		sb.WriteString((*c)[i])
+	}
+
+	return sb.String()
 }
 
 // int类型
@@ -34,4 +49,17 @@ func (c *IntArray) Change2UintArray() []uint {
 	}
 
 	return tmp
+}
+
+func (c *IntArray) String() string {
+	sb := strings.Builder{}
+
+	for i := 0; i < len(*c); i++ {
+		if sb.Len() != 0 {
+			sb.WriteString(",")
+		}
+		sb.WriteString(strconv.FormatUint(uint64((*c)[i]), 10))
+	}
+
+	return sb.String()
 }

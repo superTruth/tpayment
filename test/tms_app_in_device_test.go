@@ -76,10 +76,10 @@ func TestQueryTmsAppInDevice(t *testing.T) {
 	reqBean := &modules.BaseQueryRequest{
 		Offset:   0,
 		Limit:    100,
-		DeviceId: 6,
-		//Filters: map[string]string{
-		//	"device_sn": "PAX-A920-0821157228",
-		//},
+		DeviceId: 7,
+		Filters: map[string]string{
+			"name": "",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
