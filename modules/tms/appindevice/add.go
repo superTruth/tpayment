@@ -73,7 +73,7 @@ func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppI
 	if bean == nil {
 		logger.Info("app not exist->", app.AppFileId)
 		bean := &tms.AppInDevice{
-			ExternalId:     app.ExternalId,
+			ExternalId:     device.ID,
 			ExternalIdType: tms.AppInDeviceExternalIdTypeDevice,
 			Status:         app.Status,
 			AppID:          app.AppID,
