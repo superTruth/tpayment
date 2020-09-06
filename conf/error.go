@@ -19,6 +19,7 @@ const (
 	UserNotActive          ResultCode = "13"
 	UserCanOnlyInOneAgency ResultCode = "14"
 	AdminCantAssociate     ResultCode = "15"
+	DataIsUsing            ResultCode = "16"
 )
 
 var ResultCodeText = map[ResultCode]string{
@@ -38,6 +39,7 @@ var ResultCodeText = map[ResultCode]string{
 	UserNotActive:          "user not active",
 	UserCanOnlyInOneAgency: "user can only in one agency",
 	AdminCantAssociate:     "admin cant associate",
+	DataIsUsing:            "data in using",
 }
 
 func (this ResultCode) String() string {

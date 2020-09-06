@@ -14,8 +14,9 @@ import (
 type DeviceTag struct {
 	models.BaseModel
 
-	AgencyId uint   `json:"agency_id" gorm:"column:agency_id"`
-	Name     string `json:"name" gorm:"column:name"` // 外键
+	AgencyId    uint   `json:"agency_id" gorm:"column:agency_id"`
+	Name        string `json:"name" gorm:"column:name"` // 外键
+	Description string `json:"description" gorm:"column:description"`
 }
 
 func (DeviceTag) TableName() string {
@@ -80,4 +81,17 @@ func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint,
 	}
 
 	return total, ret, nil
+}
+
+func IsTagUsing(db *models.MyDB, ctx *gin.Context, tagId uint) (bool, error) {
+	ret := new(DeviceAndTagMid)
+	err := db.Model(&DeviceAndTagMid{}).Where("tag_id=?", tagId).First(ret).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
 }

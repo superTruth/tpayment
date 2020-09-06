@@ -1086,7 +1086,8 @@ Response Example:
 Request Example:
 ```json
 {
-    "name": "Tag2"
+    "name": "Tag2",
+    "description":"123123"
 }
 ```
 
@@ -1107,7 +1108,8 @@ Request Example:
 ```json
 {
     "id": 123,
-    "name": ""
+    "name": "",
+    "description":"123123"
 }
 ```
 

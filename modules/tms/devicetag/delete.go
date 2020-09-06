@@ -51,6 +51,19 @@ func DeleteHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 数据正在使用，无法删除
+	isUsing, err := tms.IsTagUsing(models.DB(), ctx, req.ID)
+	if err != nil {
+		logger.Info("IsTagUsing sql error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return
+	}
+	if isUsing {
+		logger.Info("tag is using->", req.ID)
+		modules.BaseError(ctx, conf.DataIsUsing)
+		return
+	}
+
 	err = models.DeleteBaseRecord(bean)
 
 	if err != nil {
