@@ -243,11 +243,10 @@ func TestQueryUser(t *testing.T) {
 }
 
 func TestRegister(t *testing.T) {
-	//{"email":"L8188VCA8V6238","pwd":"7eb550d2-2e57-4599-93e4-c91983565060","role":"machine"}
 	reqBean := &user.AddUserRequest{
-		Email: "L8188VCA8V6238",
-		Pwd:   "7eb550d2-2e57-4599-93e4-c91983565060",
-		Role:  string(conf.RoleMachine),
+		Email: "446876407@qq.com",
+		Pwd:   "123456",
+		Role:  string(conf.RoleUser),
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

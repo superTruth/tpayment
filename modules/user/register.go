@@ -2,6 +2,8 @@ package user
 
 import (
 	"encoding/base64"
+	"fmt"
+	"net/http"
 	"tpayment/conf"
 	"tpayment/internal/encryption"
 	"tpayment/models"
@@ -38,8 +40,6 @@ func RegisterHandle(ctx *gin.Context) {
 		return
 	}
 	if user == nil {
-		var user *account.UserBean
-
 		// 如果不是机器的话，就直接是普通用户
 		if req.Role != string(conf.RoleMachine) {
 			req.Role = string(conf.RoleUser)
@@ -96,6 +96,8 @@ func sendActiveEmail(email string) error {
 	body := "Active here <a href = " + conf.GetConfigData().Domain + "payment/account/active/" + base64.StdEncoding.EncodeToString([]byte(email)) + ">Click</a><br>"
 	m.SetBody("text/html", body)
 
+	fmt.Println("Truth url->", body)
+
 	d := gomail.NewDialer(conf.GetConfigData().EmailHost, conf.GetConfigData().EmailHostPort,
 		conf.GetConfigData().EmailUserAccount, conf.GetConfigData().EmailUserPwd)
 	err := d.DialAndSend(m)
@@ -141,5 +143,5 @@ func ActiveHandel(ctx *gin.Context) {
 		return
 	}
 
-	modules.BaseSuccess(ctx, nil)
+	ctx.JSON(http.StatusOK, "Your Account:"+user.Email+" Active Success")
 }

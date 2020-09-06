@@ -1,10 +1,10 @@
 {
-  "domain": "http://localhost:80/",
-  "email_host": "smtp.office365.com",
-  "email_host_port": 587,
-  "email_user_account": "fang.qiang@bindo.com",
-  "email_user_pwd": "F1a2n3g4",
-  "email_user_name": "no_reply",
+  "domain": "https://www.paymentstg.horizonpay.cn/",
+  "email_host": "smtp.mxhichina.com",
+  "email_host_port": 25,
+  "email_user_account": "no_reply@horizonpay.cn",
+  "email_user_pwd": "VpTgt6AS",
+  "email_user_name": "HorizonPay",
 
   "db_account": "root:RVmeukTrZAhxWWvY@tcp(tpayment.ctzbtzry87ad.eu-west-3.rds.amazonaws.com)/tpayment?charset=utf8&parseTime=True&loc=Local",
 
