@@ -1,5 +1,5 @@
 {
-  "domain": "http://localhost:80/",
+  "domain": "https://www.paymentstg.horizonpay.cn/",
   "email_host": "smtp.mxhichina.com",
   "email_host_port": 25,
   "email_user_account": "no_reply@horizonpay.cn",
