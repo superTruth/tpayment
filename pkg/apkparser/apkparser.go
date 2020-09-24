@@ -52,24 +52,27 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 		fmt.Println("[*] Create temp fileutils failed:", err)
 		return nil, err
 	}
+
+	// nolint
+	defer f.Close()
+
 	_, err = io.Copy(f, res.Body)
 	if err != nil {
 		return nil, err
 	}
-	// nolint
-	defer f.Close()
-	return a.GetApkInfo(filePath)
 
+	return a.GetApkInfo(filePath)
 }
 
 func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {
 	pkg, err := apk.OpenFile(filePath)
 	// nolint
-	defer pkg.Close()
 	if err != nil {
 		fmt.Println("打开APK文件错误:", err)
 		return nil, err
 	}
+	defer pkg.Close()
+
 	manifest := pkg.Manifest()
 	apkInfo := ApkInfo{}
 	apkInfo.Package = pkg.PackageName()

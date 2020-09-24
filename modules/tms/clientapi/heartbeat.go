@@ -384,31 +384,33 @@ func copyRequestInfo2DeviceInfo(requestDevice *RequestBean, deviceInfo *tms.Devi
 func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 	retApp := new(AppInfo)
 
-	if configApp.App.Name != "" {
-		retApp.Name = configApp.App.Name
-	}
-	if configApp.App.PackageId != "" {
-		retApp.PackageId = configApp.App.PackageId
-	}
-
-	if configApp.AppFile.VersionName != "" {
-		retApp.VersionName = configApp.AppFile.VersionName
-	}
-	if configApp.AppFile.VersionCode != 0 {
-		retApp.VersionCode = configApp.AppFile.VersionCode
-	}
-	if configApp.AppFile.UpdateDescription != "" {
-		retApp.Description = configApp.AppFile.UpdateDescription
+	if configApp.App != nil {
+		if configApp.App.Name != "" {
+			retApp.Name = configApp.App.Name
+		}
+		if configApp.App.PackageId != "" {
+			retApp.PackageId = configApp.App.PackageId
+		}
 	}
 
-	retApp.FileInfo = new(FileInfo)
-	if configApp.AppFile.FileName != "" {
-		retApp.FileInfo.Name = configApp.AppFile.FileName
+	if configApp.AppFile != nil {
+		if configApp.AppFile.VersionName != "" {
+			retApp.VersionName = configApp.AppFile.VersionName
+		}
+		if configApp.AppFile.VersionCode != 0 {
+			retApp.VersionCode = configApp.AppFile.VersionCode
+		}
+		if configApp.AppFile.UpdateDescription != "" {
+			retApp.Description = configApp.AppFile.UpdateDescription
+		}
+		retApp.FileInfo = new(FileInfo)
+		if configApp.AppFile.FileName != "" {
+			retApp.FileInfo.Name = configApp.AppFile.FileName
+		}
+		if configApp.AppFile.FileUrl != "" {
+			retApp.FileInfo.Url = configApp.AppFile.FileUrl
+		}
 	}
-	if configApp.AppFile.FileUrl != "" {
-		retApp.FileInfo.Url = configApp.AppFile.FileUrl
-	}
-
 	return retApp
 }
 
