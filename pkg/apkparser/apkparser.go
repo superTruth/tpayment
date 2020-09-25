@@ -1,6 +1,9 @@
 package apkparser
 
 import (
+	"bytes"
+	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,8 +12,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/avast/apkparser"
+
 	"github.com/google/uuid"
-	"github.com/shogo82148/androidbinary/apk"
 )
 
 type ApkParser struct {
@@ -64,31 +68,45 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 	return a.GetApkInfo(filePath)
 }
 
-func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {
-	pkg, err := apk.OpenFile(filePath)
-	// nolint
-	if err != nil {
-		fmt.Println("打开APK文件错误:", err)
-		return nil, err
-	}
-	defer pkg.Close()
-
-	manifest := pkg.Manifest()
-	apkInfo := ApkInfo{}
-	apkInfo.Package = pkg.PackageName()
-	apkInfo.VersionName = manifest.VersionName.MustString()
-	apkInfo.VersionCode = int(manifest.VersionCode.MustInt32())
-	return &apkInfo, nil
+type ManifestBean struct {
+	XMLName     xml.Name `xml:"manifest"`
+	Package     string   `xml:"package,attr"`
+	VersionCode int      `xml:"platformBuildVersionCode,attr"`
+	VersionName string   `xml:"platformBuildVersionName,attr"`
 }
 
-//func (a *ApkParser) isFileExist(filePath string) bool {
-//	info, err := os.Stat(filePath)
-//	if os.IsNotExist(err) {
-//		fmt.Println(info)
-//		return false
-//	}
-//	return true
-//}
+func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {
+
+	buf := new(bytes.Buffer)
+	enc := xml.NewEncoder(buf)
+	enc.Indent("", "\t")
+	zipErr, resErr, manErr := apkparser.ParseApk(filePath, enc)
+	if zipErr != nil {
+		fmt.Println("Failed to open the APK: ", zipErr.Error())
+		return nil, errors.New("zip err->" + zipErr.Error())
+	}
+
+	if resErr != nil {
+		fmt.Println("Failed to parse resources:", resErr.Error())
+		return nil, errors.New("resErr err->" + resErr.Error())
+	}
+	if manErr != nil {
+		fmt.Println("Failed to parse AndroidManifest.xml:", manErr.Error())
+		return nil, errors.New("manErr err->" + resErr.Error())
+	}
+
+	manifestBean := new(ManifestBean)
+	err := xml.Unmarshal(buf.Bytes(), manifestBean)
+	if err != nil {
+		return nil, err
+	}
+
+	apkInfo := ApkInfo{}
+	apkInfo.Package = manifestBean.Package
+	apkInfo.VersionName = manifestBean.VersionName
+	apkInfo.VersionCode = manifestBean.VersionCode
+	return &apkInfo, nil
+}
 
 // 创建本地缓存文件夹
 func checkAndCreateLocalPath() (string, error) {

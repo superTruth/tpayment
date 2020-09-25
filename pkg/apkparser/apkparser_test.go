@@ -1,10 +1,14 @@
 package apkparser
 
 import (
+	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/avast/apkparser"
 )
 
 func TestApkParser(t *testing.T) {
@@ -28,4 +32,36 @@ func TestApkParser(t *testing.T) {
 
 	apkByte, _ := json.Marshal(*apkInfo)
 	fmt.Println("apk Info", string(apkByte))
+}
+
+func TestApkParser2(t *testing.T) {
+	filePath := "/Users/truth/Downloads/horizon_mdm.apk"
+
+	buf := new(bytes.Buffer)
+	enc := xml.NewEncoder(buf)
+	enc.Indent("", "\t")
+	zipErr, resErr, manErr := apkparser.ParseApk(filePath, enc)
+	if zipErr != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open the APK: %s", zipErr.Error())
+		os.Exit(1)
+		return
+	}
+
+	if resErr != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse resources: %s", resErr.Error())
+	}
+	if manErr != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse AndroidManifest.xml: %s", manErr.Error())
+		os.Exit(1)
+		return
+	}
+
+	manifestBean := new(ManifestBean)
+	err := xml.Unmarshal(buf.Bytes(), manifestBean)
+	if err != nil {
+		return
+	}
+
+	fmt.Println("buf->", manifestBean)
+	//fmt.Println()
 }

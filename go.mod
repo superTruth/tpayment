@@ -3,6 +3,7 @@ module tpayment
 go 1.13
 
 require (
+	github.com/avast/apkparser v0.0.0-20200924103028-30471fa5618f
 	github.com/aws/aws-sdk-go v1.33.12
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
