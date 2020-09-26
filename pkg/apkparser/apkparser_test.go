@@ -35,7 +35,7 @@ func TestApkParser(t *testing.T) {
 }
 
 func TestApkParser2(t *testing.T) {
-	filePath := "/Users/truth/Downloads/horizon_mdm.apk"
+	filePath := "/Users/truth/Downloads/horizon_demo.apk"
 
 	buf := new(bytes.Buffer)
 	enc := xml.NewEncoder(buf)
@@ -56,6 +56,7 @@ func TestApkParser2(t *testing.T) {
 		return
 	}
 
+	fmt.Println("ret->", buf.String())
 	manifestBean := new(ManifestBean)
 	err := xml.Unmarshal(buf.Bytes(), manifestBean)
 	if err != nil {

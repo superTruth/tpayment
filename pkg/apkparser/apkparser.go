@@ -71,8 +71,8 @@ func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
 type ManifestBean struct {
 	XMLName     xml.Name `xml:"manifest"`
 	Package     string   `xml:"package,attr"`
-	VersionCode int      `xml:"platformBuildVersionCode,attr"`
-	VersionName string   `xml:"platformBuildVersionName,attr"`
+	VersionCode int      `xml:"versionCode,attr"`
+	VersionName string   `xml:"versionName,attr"`
 }
 
 func (a *ApkParser) GetApkInfo(filePath string) (*ApkInfo, error) {

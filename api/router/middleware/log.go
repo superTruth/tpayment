@@ -3,6 +3,7 @@ package middleware
 import (
 	"bytes"
 	"net/http/httputil"
+	"tpayment/conf"
 	"tpayment/pkg/tlog"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,9 @@ func Logger(ctx *gin.Context) {
 	defer logger.Destroy()
 	tlog.SetGoroutineLogger(logger)
 	defer tlog.FreeGoroutineLogger()
+
+	ctx.Request.Header[conf.HeaderTagRequestId] = []string{requestId}
+	ctx.Writer.Header()[conf.HeaderTagRequestId] = []string{requestId}
 
 	content, _ := httputil.DumpRequest(ctx.Request, true)
 	logger.Info("request->", string(content))
