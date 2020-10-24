@@ -3,6 +3,7 @@ package algorithmutils
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"math/rand"
 )
@@ -21,4 +22,9 @@ func RandomHmacKey() []byte {
 	}
 
 	return ret
+}
+
+func Sha256(data []byte) string {
+	ret := sha256.Sum256(data)
+	return base64.StdEncoding.EncodeToString(ret[:])
 }
