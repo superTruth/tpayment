@@ -1,6 +1,7 @@
 package user
 
 import (
+	"crypto/tls"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -100,6 +101,7 @@ func sendActiveEmail(email string) error {
 
 	d := gomail.NewDialer(conf.GetConfigData().EmailHost, conf.GetConfigData().EmailHostPort,
 		conf.GetConfigData().EmailUserAccount, conf.GetConfigData().EmailUserPwd)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	err := d.DialAndSend(m)
 
 	if err != nil {

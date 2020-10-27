@@ -99,7 +99,7 @@ func ValidateEcc(orgBean *applePayOrgBean) error {
 
 	p7.Content = sb.Bytes()
 
-	return p7.Verify(x509.SHA256WithRSA)
+	return p7.Verify(x509.ECDSAWithSHA256)
 }
 
 func GenerateValidatePkcs7(signData []byte) (*pkcs7.PKCS7, error) {

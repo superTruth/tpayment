@@ -14,7 +14,7 @@ import (
 func TestApkParser(t *testing.T) {
 	//{"version_name":"1.0.18_0-1-6","version_code":5,"package":"com.octopuscards.octopusframework"}
 	//{"version_name":"1.0.18_0-1-5","version_code":5,"package":"com.octopuscards.octopusframework"}
-	filePath := "/Users/truth/Downloads/horizon_mdm.apk"
+	filePath := "/Users/truth/Downloads/signed_horizon_sdkimpl.apk" //"/Users/truth/Downloads/horizon_mdm.apk"
 
 	_, err := os.OpenFile(filePath, os.O_RDONLY, 0)
 

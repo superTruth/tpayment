@@ -1,7 +1,7 @@
 {
   "domain": "https://www.paymentstg.horizonpay.cn/",
   "email_host": "smtp.mxhichina.com",
-  "email_host_port": 25,
+  "email_host_port": 587,
   "email_user_account": "no_reply@horizonpay.cn",
   "email_user_pwd": "VpTgt6AS",
   "email_user_name": "HorizonPay",
