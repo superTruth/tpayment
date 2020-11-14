@@ -80,9 +80,9 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 	var dataPlainByte []byte
 	switch applePayOrgBean.Version {
 	case RsaEncryption:
-		err := validateSignature(applePayOrgBean, ValidateRsa)
+		err := validateSignature(applePayOrgBean, validateRsa)
 		if err != nil {
-			fmt.Println("ValidateRsa->", err.Error())
+			fmt.Println("validateRsa->", err.Error())
 			return nil, err
 		}
 
@@ -93,9 +93,9 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 		}
 	case EccEncryption:
 		fmt.Println("ecc")
-		err := validateSignature(applePayOrgBean, ValidateEcc)
+		err := validateSignature(applePayOrgBean, validateEcc)
 		if err != nil {
-			fmt.Println("ValidateRsa->", err.Error())
+			fmt.Println("validateRsa->", err.Error())
 			return nil, err
 		}
 

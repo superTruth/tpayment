@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func ValidateRsa(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
+func validateRsa(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
 	wrappedKeyBytes, err := base64.StdEncoding.DecodeString(orgBean.Header.WrappedKey)
 	if err != nil {
 		fmt.Println("DecodeString2 fail->", err.Error())
@@ -47,8 +47,7 @@ func ValidateRsa(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
 	return p7.Verify(x509.SHA256WithRSA)
 }
 
-func ValidateEcc(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
-	fmt.Println("ValidateEcc")
+func validateEcc(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
 	ephemeralPubKeyBytes := []byte("-----BEGIN PUBLIC KEY-----\n" + orgBean.Header.EphemeralPublicKey + "\n-----END PUBLIC KEY-----")
 	pukByte, _ := pem.Decode(ephemeralPubKeyBytes)
 	if pukByte == nil {
@@ -71,7 +70,7 @@ func ValidateEcc(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
 	}
 
 	sb := bytes.Buffer{}
-	sb.Write(ephemeralPubKeyBytes)
+	sb.Write(pukByte.Bytes)
 	sb.Write(dataBytes)
 	sb.Write(transactionIdBytes)
 	sb.Write(applicationDataBytes)
@@ -82,15 +81,15 @@ func ValidateEcc(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
 }
 
 var (
-	oidData                   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
-	oidSignedData             = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 2}
-	oidEnvelopedData          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
-	oidSignedAndEnvelopedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 4}
-	oidDigestedData           = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 5}
-	oidEncryptedData          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
-	oidAttributeContentType   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 3}
-	oidAttributeMessageDigest = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 4}
-	oidAttributeSigningTime   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 5}
+	//oidData                   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
+	//oidSignedData             = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 2}
+	//oidEnvelopedData          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
+	//oidSignedAndEnvelopedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 4}
+	//oidDigestedData           = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 5}
+	//oidEncryptedData          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
+	//oidAttributeContentType   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 3}
+	//oidAttributeMessageDigest = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 4}
+	oidAttributeSigningTime = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 5}
 
 	loadApplePayCAProcess sync.Once
 	applePayCA            *x509.Certificate
@@ -117,6 +116,7 @@ func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkc
 			return
 		}
 		if !applePayCA.IsCA {
+			fmt.Println("apple pay ca is not ca")
 			panic("apple pay ca not root ca")
 			return
 		}
@@ -125,7 +125,7 @@ func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkc
 	p7, err := pkcs7.Parse(signData)
 	if err != nil {
 		fmt.Println("pkcs7.Parse->", err.Error())
-		return err
+		return errors.New("parse pkcs7 fail->" + err.Error())
 	}
 	// a. find leaf inter cer
 	var (
@@ -148,21 +148,20 @@ func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkc
 		return errors.New("certification not correct")
 	}
 
-	//// b. check intermediate cer inter is signed from apple ca
-	//if inter.CheckSignatureFrom(applePayCA) != nil {
-	//	return errors.New("intermediate is not signed by apple pay CA G3")
-	//}
-	//
-	//// c. check leaf cer is signed from intermediate cer
-	//if leafCer.CheckSignatureFrom(inter) != nil {
-	//	return errors.New("leaf is not signed by intermediate cer")
-	//}
+	// b. check intermediate cer inter is signed from apple ca
+	if inter.CheckSignatureFrom(applePayCA) != nil {
+		return errors.New("intermediate is not signed by apple pay CA G3")
+	}
+
+	// c. check leaf cer is signed from intermediate cer
+	if leafCer.CheckSignatureFrom(inter) != nil {
+		return errors.New("leaf is not signed by intermediate cer")
+	}
 
 	// d. Validate the token’s signature
 	err = validateSignatureFunc(p7, orgBean)
 	if err != nil {
-		fmt.Println("validateSignatureFunc->", err.Error())
-		return err
+		return errors.New("validate signature fail->" + err.Error())
 	}
 
 	// e. validate sign time
