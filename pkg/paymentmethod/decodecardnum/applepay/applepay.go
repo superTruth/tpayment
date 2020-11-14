@@ -4,21 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 )
-
-//{
-//"applicationPrimaryAccountNumber": "370295571160496",
-//"applicationExpirationDate": "200930",
-//"currencyCode": "344",
-//"transactionAmount": 7500,
-//"deviceManufacturerIdentifier": "030010030273",
-//"paymentDataType": "3DSecure",
-//"paymentData": {
-//"onlinePaymentCryptogram": "IIg4zmwB1NHJNWwHBAAKoDEBhgA="
-//}
-//}
 
 type ApplePayBean struct {
 	ApplicationPrimaryAccountNumber string `json:"applicationPrimaryAccountNumber"`
@@ -37,17 +23,18 @@ type PaymentData struct {
 	EncryptedPINData        string `json:"encryptedPINData"`
 }
 
+type headerBean struct {
+	ApplicationData    string `json:"applicationData,omitempty"`
+	EphemeralPublicKey string `json:"ephemeralPublicKey,omitempty"`
+	WrappedKey         string `json:"wrappedKey,omitempty"`
+	PublicKeyHash      string `json:"publicKeyHash,omitempty"`
+	TransactionId      string `json:"transactionId,omitempty"`
+}
 type applePayOrgBean struct {
-	Data   string `json:"data"`
-	Header struct {
-		ApplicationData    string `json:"applicationData,omitempty"`
-		EphemeralPublicKey string `json:"ephemeralPublicKey,omitempty"`
-		WrappedKey         string `json:"wrappedKey,omitempty"`
-		PublicKeyHash      string `json:"publicKeyHash,omitempty"`
-		TransactionId      string `json:"transactionId,omitempty"`
-	} `json:"header"`
-	Signature string `json:"signature"`
-	Version   string `json:"version"`
+	Data      string      `json:"data"`
+	Header    *headerBean `json:"header"`
+	Signature string      `json:"signature"`
+	Version   string      `json:"version"`
 }
 
 const (
@@ -55,36 +42,58 @@ const (
 	EccEncryption = "EC_v1"
 )
 
-func DecodeApplePay(token, privateKey string) (*ApplePayBean, error) {
-	// step 1 解析base64
-	//tokenBytes, err := base64.StdEncoding.DecodeString(token)
-	//if err != nil {
-	//	return nil, err
-	//}
+func covertApplePayToken(token string) (*applePayOrgBean, error) {
+	ret := new(applePayOrgBean)
+	if err := json.Unmarshal([]byte(token), ret); err != nil {
+		return nil, err
+	}
 
-	applePayOrgBean := new(applePayOrgBean)
-	if err := json.Unmarshal([]byte(token), applePayOrgBean); err != nil {
+	if ret.Data == "" || ret.Header == nil || ret.Signature == "" || ret.Version == "" ||
+		ret.Header.PublicKeyHash == "" {
+		return nil, errors.New("token is invalidation")
+	}
+
+	return ret, nil
+}
+
+// 获取使用的Key Hash
+func GetApplePayKeyHash(token string) (string, error) {
+	applePayOrgBean, err := covertApplePayToken(token)
+	if err != nil {
+		return "", err
+	}
+
+	return applePayOrgBean.Header.PublicKeyHash, err
+}
+
+type ConfigKey struct {
+	PublicKey string
+	PrivateKey string
+}
+
+func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
+	applePayOrgBean, err := covertApplePayToken(token)
+	if err != nil {
 		return nil, err
 	}
 
 	var dataPlainByte []byte
 	switch applePayOrgBean.Version {
 	case RsaEncryption:
-		err := ValidateRsa(applePayOrgBean)
+		err := validateSignature(applePayOrgBean, ValidateRsa)
 		if err != nil {
 			fmt.Println("ValidateRsa->", err.Error())
 			return nil, err
 		}
 
-		priKeyFile, _ := os.Open("/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/www.fang.com.key")
-		priKeyBytes, _ := ioutil.ReadAll(priKeyFile)
-		dataPlainByte, err = DecodeRsa(applePayOrgBean, string(priKeyBytes), "")
+		dataPlainByte, err = DecodeRsa(applePayOrgBean, key)
 		if err != nil {
 			fmt.Println("DecodeRsa fail->", err)
 			return nil, err
 		}
 	case EccEncryption:
-		err := ValidateEcc(applePayOrgBean)
+		fmt.Println("ecc")
+		err := validateSignature(applePayOrgBean, ValidateEcc)
 		if err != nil {
 			fmt.Println("ValidateRsa->", err.Error())
 			return nil, err

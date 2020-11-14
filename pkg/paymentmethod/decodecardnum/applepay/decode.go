@@ -12,8 +12,8 @@ import (
 )
 
 // Rsa
-func DecodeRsa(orgBean *applePayOrgBean, privateKey string, privateKeyPwd string) ([]byte, error) {
-	privateKeyBean, err := parseRsaPriKey(privateKey, privateKeyPwd)
+func DecodeRsa(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
+	privateKeyBean, err := parseRsaPriKey(key.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +37,8 @@ func DecodeRsa(orgBean *applePayOrgBean, privateKey string, privateKeyPwd string
 	return algorithmutils.AESGCMDecrypt(dataBytes, wrapKeyPlain, make([]byte, 16))
 }
 
-func parseRsaPriKey(priKeyData string, privateKeyPwd string) (*rsa.PrivateKey, error) {
+func parseRsaPriKey(priKeyData string) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode([]byte(priKeyData))
-	if x509.IsEncryptedPEMBlock(block) {
-		block.Bytes, _ = x509.DecryptPEMBlock(block, []byte(privateKeyPwd))
-	}
 
 	priKeyBean, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
