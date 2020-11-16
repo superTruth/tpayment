@@ -47,7 +47,7 @@ var demoTokenEcc = `{
   }
 }`
 
-const eccPukFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/apple_pay_ecc.cer"
+const eccPukFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/apple_pay_ecc.crt"
 const eccPrivateFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/ecc.key"
 
 func TestDecodeApplePayEcc(t *testing.T) {

@@ -67,7 +67,7 @@ func GetApplePayKeyHash(token string) (string, error) {
 }
 
 type ConfigKey struct {
-	PublicKey string
+	PublicKey  string
 	PrivateKey string
 }
 
@@ -96,6 +96,11 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 		err := validateSignature(applePayOrgBean, validateEcc)
 		if err != nil {
 			fmt.Println("validateRsa->", err.Error())
+			return nil, err
+		}
+		dataPlainByte, err = DecodeEcc(applePayOrgBean, key)
+		if err != nil {
+			fmt.Println("DecodeEcc fail->", err)
 			return nil, err
 		}
 
