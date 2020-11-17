@@ -1,9 +1,14 @@
 package applepay
 
 import (
+	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 type ApplePayBean struct {
@@ -67,8 +72,10 @@ func GetApplePayKeyHash(token string) (string, error) {
 }
 
 type ConfigKey struct {
-	PublicKey  string
-	PrivateKey string
+	PublicKey     string
+	PrivateKey    string
+	TlsPublicKey  string
+	TlsPrivateKey string
 }
 
 func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
@@ -111,4 +118,70 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 	fmt.Println("dataPlainByte->", string(dataPlainByte))
 
 	return nil, nil
+}
+
+// Session
+type SessionRequestBean struct {
+	EndPointUrl        string `json:"-"`
+	MerchantIdentifier string `json:"merchantIdentifier"`
+	DisplayName        string `json:"displayName"`
+	Initiative         string `json:"initiative"`
+	InitiativeContext  string `json:"initiativeContext"`
+}
+
+type SessionResponseBean struct {
+	StatusMessage string `json:"statusMessage"`
+	StatusCode    string `json:"statusCode"`
+}
+
+func CreateSession(reqBean *SessionRequestBean, key *ConfigKey) (string, error) {
+	// 配置TLS双向认证证书
+	cer, err := tls.X509KeyPair([]byte(key.TlsPublicKey), []byte(key.TlsPrivateKey))
+	//tls.X509KeyPair([]byte())
+	if err != nil {
+		return "", errors.New("tls key error->" + err.Error())
+	}
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{cer},
+	}
+
+	client := http.Client{
+		Timeout: time.Second * 50,
+	}
+
+	client.Transport = &http.Transport{
+		TLSClientConfig: config,
+	}
+
+	reqBean.Initiative = "web"
+
+	reqByte, err := json.Marshal(reqBean)
+	if err != nil {
+		return "", errors.New("request body error->" + err.Error())
+	}
+
+	req, err := http.NewRequest(http.MethodPost, reqBean.EndPointUrl, bytes.NewReader(reqByte))
+	if err != nil {
+		return "", errors.New("NewRequest fail->" + err.Error())
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", errors.New("client.Do fail->" + err.Error())
+	}
+
+	respByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", errors.New("read response data fail->" + err.Error())
+	}
+
+	// 返回失败的情况
+	if resp.StatusCode != http.StatusOK {
+		errorRespBean := new(SessionResponseBean)
+		_ = json.Unmarshal(respByte, errorRespBean)
+		return "", errors.New(errorRespBean.StatusMessage)
+	}
+
+	return string(respByte), nil
 }

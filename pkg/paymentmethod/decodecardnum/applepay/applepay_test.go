@@ -1,6 +1,7 @@
 package applepay
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -78,4 +79,36 @@ func TestPukHash(t *testing.T) {
 	}
 
 	fmt.Println("hash->", ret)
+}
+
+const sessionPukFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/tls_rsa.crt"
+const sessionPrivateFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/www.fang.com.key"
+
+func TestApplePaySession(t *testing.T) {
+	pukFile, _ := os.Open(sessionPukFilePath)
+	pukBytes, _ := ioutil.ReadAll(pukFile)
+
+	priKeyFile, _ := os.Open(sessionPrivateFilePath)
+	priKeyBytes, _ := ioutil.ReadAll(priKeyFile)
+
+	_, err := tls.X509KeyPair(pukBytes, priKeyBytes)
+	fmt.Println("LoadX509KeyPair->", err == nil)
+
+	responseMsg, err := CreateSession(&SessionRequestBean{
+		EndPointUrl:        "https://cn-apple-pay-gateway.apple.com/paymentservices/paymentSession",
+		MerchantIdentifier: "merchant.fang.test",
+		DisplayName:        "Fang",
+		Initiative:         "web",
+		InitiativeContext:  "www.paymentstg.horizonpay.cn",
+	}, &ConfigKey{
+		TlsPublicKey:  string(pukBytes),
+		TlsPrivateKey: string(priKeyBytes),
+	})
+
+	if err != nil {
+		t.Error("create session fail->", err.Error())
+		return
+	}
+
+	fmt.Println("session message->", responseMsg)
 }

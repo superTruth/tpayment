@@ -31,7 +31,6 @@ type ApkInfo struct {
 
 // Download APK and
 func (a *ApkParser) DownloadApkInfo() (*ApkInfo, error) {
-
 	// 检查LocalPath是否创建
 	basePath, err := checkAndCreateLocalPath()
 	if err != nil {
