@@ -9,7 +9,10 @@ type TxnReq struct {
 	Amount   string `json:"amount"`
 	Currency string `json:"currency"`
 
-	CreditCardBean *CreditCardBean `json:"credit_card"`
+	CreditCardBean      *CreditCardBean      `json:"credit_card"`
+	CreditCardTokenBean *CreditCardTokenBean `json:"credit_card_token_bean"`
+	ApplePayBean        *ApplePayBean        `json:"apple_pay"`
+	CreditCard3DSBean   *CreditCard3DSBean   `json:"credit_card_3ds"`
 }
 
 type CreditCardBean struct {
@@ -27,5 +30,18 @@ type CreditCardBean struct {
 	Cvv            string `json:"cvv"`
 	IccRequest     string `json:"icc_request"`
 	PIN            string `json:"pin"`
-	Token          string `json:"token"`
+}
+
+type CreditCardTokenBean struct {
+	Token string `json:"token"`
+}
+
+type ApplePayBean struct {
+	Token string `json:"token"`
+}
+
+type CreditCard3DSBean struct {
+	Enable     bool   `json:"enable"`
+	SuccessUrl string `json:"success_url"`
+	FailUrl    string `json:"fail_url"`
 }
