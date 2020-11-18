@@ -12,13 +12,14 @@ import (
 )
 
 type ApplePayBean struct {
-	ApplicationPrimaryAccountNumber string `json:"applicationPrimaryAccountNumber"`
-	ApplicationExpirationDate       string `json:"applicationExpirationDate"` // YYMMDD
-	CurrencyCode                    string `json:"currencyCode"`
-	TransactionAmount               string `json:"transactionAmount"`
-	CardholderName                  string `json:"cardholderName"`
-	DeviceManufacturerIdentifier    string `json:"deviceManufacturerIdentifier"`
-	PaymentDataType                 string `json:"paymentDataType"`
+	ApplicationPrimaryAccountNumber string       `json:"applicationPrimaryAccountNumber"`
+	ApplicationExpirationDate       string       `json:"applicationExpirationDate"` // YYMMDD
+	CurrencyCode                    string       `json:"currencyCode"`
+	TransactionAmount               string       `json:"transactionAmount"`
+	CardholderName                  string       `json:"cardholderName"`
+	DeviceManufacturerIdentifier    string       `json:"deviceManufacturerIdentifier"`
+	PaymentDataType                 string       `json:"paymentDataType"`
+	PaymentData                     *PaymentData `json:"paymentData"`
 }
 
 type PaymentData struct {
@@ -93,9 +94,9 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 			return nil, err
 		}
 
-		dataPlainByte, err = DecodeRsa(applePayOrgBean, key)
+		dataPlainByte, err = decodeRsa(applePayOrgBean, key)
 		if err != nil {
-			fmt.Println("DecodeRsa fail->", err)
+			fmt.Println("decodeRsa fail->", err)
 			return nil, err
 		}
 	case EccEncryption:
@@ -105,14 +106,14 @@ func DecodeApplePay(token string, key *ConfigKey) (*ApplePayBean, error) {
 			fmt.Println("validateRsa->", err.Error())
 			return nil, err
 		}
-		dataPlainByte, err = DecodeEcc(applePayOrgBean, key)
+		dataPlainByte, err = decodeEcc(applePayOrgBean, key)
 		if err != nil {
-			fmt.Println("DecodeEcc fail->", err)
+			fmt.Println("decodeEcc fail->", err)
 			return nil, err
 		}
 
 	default:
-		return nil, errors.New("not support encryption method " + applePayOrgBean.Version)
+		return nil, errors.New("not support basekey method " + applePayOrgBean.Version)
 	}
 
 	fmt.Println("dataPlainByte->", string(dataPlainByte))

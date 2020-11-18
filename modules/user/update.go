@@ -2,11 +2,10 @@ package user
 
 import (
 	"tpayment/conf"
-	"tpayment/internal/encryption"
+	"tpayment/internal/basekey"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
-	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -27,7 +26,7 @@ func UpdateHandle(ctx *gin.Context) {
 
 	// 密码进行hash
 	if req.Pwd != "" {
-		req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
+		req.Pwd = basekey.Hash([]byte(req.Pwd))
 	}
 
 	// 查询是否已经存在的账号

@@ -34,4 +34,8 @@ const (
 	Refund          = "refund"
 	PreAuth         = "pre_auth"
 	PreAuthComplete = "pre_auth_complete"
+
+	// QR Code Type
+	BarCode = "barcode"
+	QRCode  = "qrcode"
 )

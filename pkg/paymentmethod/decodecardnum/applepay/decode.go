@@ -17,7 +17,7 @@ import (
 )
 
 // Rsa
-func DecodeRsa(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
+func decodeRsa(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
 	privateKeyBean, err := cer.ParsePrivateKeyFromPem(key.PrivateKey, "")
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func DecodeRsa(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
 }
 
 // ECC
-func DecodeEcc(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
+func decodeEcc(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error) {
 	wrapKeyPlain, err := eccApplePayDecode(orgBean, key)
 	if err != nil {
 		fmt.Println("parse key fail->", err.Error())

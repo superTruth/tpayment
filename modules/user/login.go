@@ -2,11 +2,10 @@ package user
 
 import (
 	"tpayment/conf"
-	"tpayment/internal/encryption"
+	"tpayment/internal/basekey"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
-	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -51,7 +50,7 @@ func LoginHandle(ctx *gin.Context) {
 	}
 
 	// 密码进行hash
-	req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
+	req.Pwd = basekey.Hash([]byte(req.Pwd))
 
 	// 验证密码是否正确
 	if accountBean.Pwd != req.Pwd {

@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	"tpayment/conf"
-	"tpayment/internal/encryption"
+	"tpayment/internal/basekey"
 	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
-	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -31,7 +30,7 @@ func RegisterHandle(ctx *gin.Context) {
 	}
 
 	// 密码进行hash
-	req.Pwd = algorithmutils.Hmac(encryption.BaseKey(), req.Pwd)
+	req.Pwd = basekey.Hash([]byte(req.Pwd))
 
 	// 查询是否已经存在的账号
 	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)

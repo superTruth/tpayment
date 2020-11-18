@@ -1,4 +1,4 @@
-package creditcard
+package qrcode
 
 import (
 	"errors"
@@ -9,26 +9,22 @@ import (
 
 var rules = []*brandRule{
 	{
-		cardBrand:  conf.Visa,
-		cardNumLen: []int{13, 16, 19},
+		cardBrand:  conf.WeChatPay,
+		cardNumLen: []int{17},
 		cardNumPreFix: []*preFixNum{
 			{
-				start: 400000,
-				end:   500000,
+				start: 100000,
+				end:   200000,
 			},
 		},
 	},
 	{
-		cardBrand:  conf.MasterCard,
+		cardBrand:  conf.Alipay,
 		cardNumLen: []int{16},
 		cardNumPreFix: []*preFixNum{
 			{
-				start: 222100,
-				end:   273000,
-			},
-			{
-				start: 510000,
-				end:   560000,
+				start: 280000,
+				end:   290000,
 			},
 		},
 	},
@@ -39,30 +35,6 @@ var rules = []*brandRule{
 			{
 				start: 620000,
 				end:   630000,
-			},
-		},
-	},
-	{
-		cardBrand:  conf.AE,
-		cardNumLen: []int{15},
-		cardNumPreFix: []*preFixNum{
-			{
-				start: 340000,
-				end:   350000,
-			},
-			{
-				start: 370000,
-				end:   380000,
-			},
-		},
-	},
-	{
-		cardBrand:  conf.JCB,
-		cardNumLen: []int{16},
-		cardNumPreFix: []*preFixNum{
-			{
-				start: 352800,
-				end:   359000,
 			},
 		},
 	},

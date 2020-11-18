@@ -21,6 +21,9 @@ const (
 	AdminCantAssociate     ResultCode = "15"
 	DataIsUsing            ResultCode = "16"
 	NotSupport             ResultCode = "17"
+	DecodeError            ResultCode = "18"
+	DecodeCardBrandError   ResultCode = "19"
+	DecodeQRError          ResultCode = "20"
 )
 
 var ResultCodeText = map[ResultCode]string{
@@ -42,6 +45,9 @@ var ResultCodeText = map[ResultCode]string{
 	AdminCantAssociate:     "admin cant associate",
 	DataIsUsing:            "data in using",
 	NotSupport:             "not support",
+	DecodeError:            "decode error",
+	DecodeCardBrandError:   "decode card brand error",
+	DecodeQRError:          "decode qr code error",
 }
 
 func (this ResultCode) String() string {

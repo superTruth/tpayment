@@ -8,9 +8,9 @@ import (
 	"math/rand"
 )
 
-func Hmac(key []byte, data string) string {
+func Hmac(key []byte, data []byte) string {
 	hashFunc := hmac.New(sha256.New, key)
-	_, _ = hashFunc.Write([]byte(data))
+	_, _ = hashFunc.Write(data)
 	return hex.EncodeToString(hashFunc.Sum([]byte("")))
 }
 
