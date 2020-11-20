@@ -14,7 +14,7 @@ import (
 
 // 预处理提交的数据，
 // 1. 分析出支付方式，  2. 分析出用卡方式
-func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
+func preHandleRequest(ctx *gin.Context, txn *TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	var err error
 
@@ -25,7 +25,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
 		txn.RealPaymentMethod, err = creditcard.Decode(txn.CreditCardBean.CardNumber)
 		if err != nil {
 			logger.Warn("creditcard.Decode error->", err.Error())
-			return "", conf.DecodeCardBrandError
+			return conf.DecodeCardBrandError
 		}
 	case conf.RequestApplePay: // apple pay
 		txn.RealEntryType = conf.ApplePay
@@ -34,7 +34,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
 		pukHash, err := applepay.GetApplePayKeyHash(txn.ApplePayBean.Token)
 		if err != nil {
 			logger.Warn("get apple pay hash fail->", err.Error())
-			return "", conf.ParameterError
+			return conf.ParameterError
 		}
 
 		applePayKey := new(key.ApplePayKey)
@@ -42,7 +42,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
 		applePayKey, err = applePayKey.GetKeyByHash(models.DB(), ctx, pukHash)
 		if err != nil {
 			logger.Error("GetKeyByHash fail->", err.Error())
-			return "", conf.DBError
+			return conf.DBError
 		}
 		if applePayKey == nil {
 			logger.Info("use apple pay key->", applePayKey.ID)
@@ -54,7 +54,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
 
 			if err != nil {
 				logger.Warn("applepay.DecodeApplePay fail->", err.Error())
-				return "", conf.DecodeError
+				return conf.DecodeError
 			}
 			txn.CreditCardBean = &CreditCardBean{
 				CardExpMonth:            applePayBean.ApplicationExpirationDate[2:4],
@@ -85,19 +85,27 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) (string, conf.ResultCode) {
 			txn.RealPaymentMethod, err = creditcard.Decode(emvQRContent.CardNum)
 			if err != nil {
 				logger.Warn("creditcard.Decode error->", err.Error())
-				return "", conf.DecodeCardBrandError
+				return conf.DecodeCardBrandError
 			}
 
 			txn.CreditCardBean = &CreditCardBean{
 				CardNumber: emvQRContent.CardNum,
+				CardTrack2: emvQRContent.Track2,
+				CardSn:     emvQRContent.CardSn,
 				IccRequest: emvQRContent.ICCData,
 			}
 
-			break
+			txn.RealPaymentMethod, err = creditcard.Decode(txn.CreditCardBean.CardNumber)
+			if err != nil {
+				logger.Warn("creditcard.Decode error->", err.Error())
+				return conf.DecodeCardBrandError
+			}
+			return conf.SUCCESS
 		}
 
 		logger.Warn("can't decode the qr code->", txn.ConsumerPresentQR.Content)
-		return "", conf.DecodeQRError
+		return conf.DecodeQRError
 	}
-	return "", conf.NotSupport
+
+	return conf.SUCCESS
 }
