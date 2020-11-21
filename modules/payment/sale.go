@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +13,7 @@ import (
 func SaleHandle(ctx *gin.Context) {
 	logger := tlog.GetLogger(ctx)
 
-	req := new(TxnReq)
+	req := new(api_define.TxnReq)
 
 	err := utils.Body2Json(ctx.Request.Body, req)
 	if err != nil {
@@ -30,8 +31,20 @@ func SaleHandle(ctx *gin.Context) {
 	}
 
 	// 提取payment processing rule
+	req.PaymentProcessRule, errorCode = matchProcessRule(ctx, req)
+	if errorCode != conf.SUCCESS {
+		logger.Warn("matchProcessRule fail->", errorCode.String())
+		modules.BaseError(ctx, errorCode)
+		return
+	}
 
 	// 获取merchant account, acquirer
+	errorCode = fetchMerchantAccount(ctx, req)
+	if errorCode != conf.SUCCESS {
+		logger.Warn("fetchMerchantAccount fail->", errorCode.String())
+		modules.BaseError(ctx, errorCode)
+		return
+	}
 
 	// 执行交易
 

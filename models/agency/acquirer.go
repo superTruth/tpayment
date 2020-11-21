@@ -21,6 +21,21 @@ func (Acquirer) TableName() string {
 	return "agency_acquirer"
 }
 
+func (acq *Acquirer) Get(db *models.MyDB, ctx *gin.Context, id uint) (*Acquirer, error) {
+	ret := new(Acquirer)
+
+	err := db.Model(acq).Where("id=?", id).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 func GetAcquirerById(id uint) (*Acquirer, error) {
 	ret := new(Acquirer)
 

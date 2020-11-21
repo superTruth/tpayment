@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/models"
 	"tpayment/models/payment/key"
@@ -14,7 +15,7 @@ import (
 
 // 预处理提交的数据，
 // 1. 分析出支付方式，  2. 分析出用卡方式
-func preHandleRequest(ctx *gin.Context, txn *TxnReq) conf.ResultCode {
+func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	var err error
 
@@ -56,7 +57,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) conf.ResultCode {
 				logger.Warn("applepay.DecodeApplePay fail->", err.Error())
 				return conf.DecodeError
 			}
-			txn.CreditCardBean = &CreditCardBean{
+			txn.CreditCardBean = &api_define.CreditCardBean{
 				CardExpMonth:            applePayBean.ApplicationExpirationDate[2:4],
 				CardExpYear:             applePayBean.ApplicationExpirationDate[:2],
 				CardExpDay:              applePayBean.ApplicationExpirationDate[4:],
@@ -88,7 +89,7 @@ func preHandleRequest(ctx *gin.Context, txn *TxnReq) conf.ResultCode {
 				return conf.DecodeCardBrandError
 			}
 
-			txn.CreditCardBean = &CreditCardBean{
+			txn.CreditCardBean = &api_define.CreditCardBean{
 				CardNumber: emvQRContent.CardNum,
 				CardTrack2: emvQRContent.Track2,
 				CardSn:     emvQRContent.CardSn,

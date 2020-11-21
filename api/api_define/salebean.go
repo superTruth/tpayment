@@ -1,12 +1,15 @@
-package payment
+package api_define
 
+import "tpayment/models/payment/paymentprocessrule"
+
+// 请求数据
 type TxnReq struct {
 	Uuid          string `json:"uuid"`
 	TxnType       string `json:"txn_type"`
 	DeviceID      string `json:"device_id"`
 	PaymentMethod string `json:"payment_method"`
 
-	MerchantID string `json:"merchant_id"`
+	MerchantID uint `json:"merchant_id"`
 
 	Amount   string `json:"amount"`
 	Currency string `json:"currency"`
@@ -17,8 +20,10 @@ type TxnReq struct {
 	CreditCard3DSBean   *CreditCard3DSBean   `json:"credit_card_3ds"`
 	ConsumerPresentQR   *ConsumerPresentQR   `json:"consumer_present_qr"`
 
-	RealPaymentMethod string `json:"real_payment_method"`
-	RealEntryType     string `json:"real_entry_type"`
+	// 后期处理填充
+	RealPaymentMethod  string                                 `json:"real_payment_method"`
+	RealEntryType      string                                 `json:"real_entry_type"`
+	PaymentProcessRule *paymentprocessrule.PaymentProcessRule `json:"payment_process_rule"`
 }
 
 type CreditCardBean struct {
@@ -39,6 +44,12 @@ type CreditCardBean struct {
 	PIN                     string `json:"pin"`
 	ECI                     string `json:"eci"`
 	OnlinePaymentCryptogram string `json:"online_payment_cryptogram"`
+
+	IccResponse  string `json:"icc_response"`
+	TraceNum     string `json:"trace_num"`
+	BatchNum     string `json:"batch_num"`
+	AuthCode     string `json:"auth_code"`
+	ResponseCode string `json:"response_code"`
 }
 
 type CreditCardTokenBean struct {
@@ -58,4 +69,31 @@ type CreditCard3DSBean struct {
 type ConsumerPresentQR struct {
 	CodeType string `json:"code_type"`
 	Content  string `json:"content"`
+}
+
+// 回复数据
+type TxnResp struct {
+	Uuid          string `json:"uuid"`
+	TxnID         string `json:"txn_id"`
+	TxnType       string `json:"txn_type"`
+	DeviceID      string `json:"device_id"`
+	PaymentMethod string `json:"payment_method"`
+
+	MerchantID uint `json:"merchant_id"`
+
+	Amount   string `json:"amount"`
+	Currency string `json:"currency"`
+
+	TransactionState string `json:"transaction_state"`
+	ErrorCode        string `json:"error_code"`
+	ErrorDesc        string `json:"error_desc"`
+
+	DateTime           string `json:"date_time"`
+	AcquirerMerchantID string `json:"acquirer_merchant_id"`
+	AcquirerTerminalID string `json:"acquirer_terminal_id"`
+	AcquirerRRN        string `json:"acquirer_rrn"`
+	AcquirerName       string `json:"acquirer_name"`
+	AcquirerType       string `json:"acquirer_type"`
+
+	CreditCardBean *CreditCardBean `json:"credit_card"`
 }
