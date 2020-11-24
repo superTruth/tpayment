@@ -9,10 +9,10 @@ import (
 
 type BindDevice struct {
 	models.BaseModel
-	DeviceID                string `json:"device_id"`
-	PaymentProcessingRuleID uint   `json:"payment_processing_rule_id"`
-	TID                     string `json:"tid"`
-	Addition                string `json:"addition"`
+	DeviceID                string `gorm:"device_id"`
+	PaymentProcessingRuleID uint   `gorm:"payment_processing_rule_id"`
+	TID                     string `gorm:"tid"`
+	Addition                string `gorm:"addition"`
 }
 
 func (BindDevice) TableName() string {

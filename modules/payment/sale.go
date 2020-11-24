@@ -46,6 +46,8 @@ func SaleHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 保存交易记录
+
 	// 执行交易
 
 }

@@ -5,6 +5,8 @@ import (
 	"tpayment/conf"
 	"tpayment/models/agency"
 	"tpayment/models/merchant"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SaleRequest struct {
@@ -18,7 +20,7 @@ type SaleResponse struct {
 }
 
 type ISale interface {
-	Sale(req *SaleRequest) (*SaleResponse, conf.ResultCode)
+	Sale(ctx *gin.Context, req *SaleRequest) (*SaleResponse, conf.ResultCode)
 }
 
 type IVoid interface {

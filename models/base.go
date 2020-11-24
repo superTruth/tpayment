@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -12,6 +14,9 @@ type BaseModel struct {
 	CreatedAt time.Time  `gorm:"created_at" json:"created_at,omitempty"`
 	UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at,omitempty"`
 	DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at,omitempty"`
+
+	Db  *MyDB        `gorm:"-"`
+	Ctx *gin.Context `gorm:"-"`
 }
 
 func CreateBaseRecord(record interface{}) error {

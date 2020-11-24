@@ -13,6 +13,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/processout/applepay v0.0.0-20180122110035-c63b59c3c1ec // indirect
 	github.com/shogo82148/androidbinary v1.0.1
+	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/zhulingbiezhi/pkcs7 v0.0.0-20171102021638-a793d8b5348d
 	go.mozilla.org/pkcs7 v0.0.0-20200128120323-432b2356ecb1
 	go.uber.org/zap v1.14.1
