@@ -78,7 +78,7 @@ func StartUpdate(ctx *gin.Context, id uint) {
 			logger.Info("device updating -->", devices[j].DeviceSn, ",", devices[j].ID)
 			for k := 0; k < len(apps); k++ { // 每一个app
 				ret := appindevice.SmartAddAppInDevice(ctx, devices[j], apps[k])
-				if ret != conf.SUCCESS {
+				if ret != conf.Success {
 					errStr := fmt.Sprint("config fail: ", ret.String(),
 						", source file->", apps[k].AppFileId,
 						", dest device->", devices[j].DeviceSn)

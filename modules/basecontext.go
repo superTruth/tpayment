@@ -19,7 +19,7 @@ func BaseError(context *gin.Context, err conf.ResultCode) {
 func BaseSuccess(context *gin.Context, data interface{}) {
 
 	baseResponse := BaseResponse{
-		ErrorCode: conf.SUCCESS,
+		ErrorCode: conf.Success,
 		Data:      data,
 	}
 

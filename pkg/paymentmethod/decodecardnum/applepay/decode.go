@@ -122,11 +122,11 @@ func eccApplePayDecode(orgBean *applePayOrgBean, key *ConfigKey) ([]byte, error)
 
 func calcAesKey(merchantID, secret []byte) []byte {
 	hashMethod := sha256.New()
-	hashMethod.Write([]byte{0, 0, 0, 1})
-	hashMethod.Write(secret)
-	hashMethod.Write([]byte("\x0Did-aes256-GCM"))
-	hashMethod.Write([]byte("Apple"))
-	hashMethod.Write(merchantID)
+	_, _ = hashMethod.Write([]byte{0, 0, 0, 1})
+	_, _ = hashMethod.Write(secret)
+	_, _ = hashMethod.Write([]byte("\x0Did-aes256-GCM"))
+	_, _ = hashMethod.Write([]byte("Apple"))
+	_, _ = hashMethod.Write(merchantID)
 	key := hashMethod.Sum(nil)
 	return key
 }

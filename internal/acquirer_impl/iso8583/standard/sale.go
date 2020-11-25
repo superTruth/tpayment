@@ -14,7 +14,10 @@ import (
 func (wlb *API) Sale(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquirer_impl.SaleResponse, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 
-	var err error
+	var (
+		err error
+	)
+
 	// 获取账号信息
 	account := &acquirer.Account{
 		BaseModel: models.BaseModel{
@@ -33,8 +36,13 @@ func (wlb *API) Sale(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquire
 	// 拼接发送数据
 
 	// 流水号增加
+	err = account.IncTraceNum()
+	if err != nil {
+		logger.Error("IncTraceNum ", account.Tag, "fail->", err.Error())
+		return nil, conf.DBError
+	}
 
-	//
+	// 开始交易
 
-	return nil, conf.SUCCESS
+	return nil, conf.Success
 }

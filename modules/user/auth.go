@@ -86,7 +86,7 @@ func AuthByAccessKey(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, e
 	method := ctx.Request.Method
 	bodyStr := dumpBodyContent(ctx)
 
-	calcHash := algorithmutils.Hmac(secretByte, method+bodyStr)
+	calcHash := algorithmutils.Hmac(secretByte, []byte(method+bodyStr))
 
 	if calcHash != hashes[0] {
 		logger.Warn("hash validate fail")

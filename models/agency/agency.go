@@ -23,6 +23,20 @@ func (Agency) TableName() string {
 	return "agency"
 }
 
+func (a *Agency) Get(id uint) (*Agency, error) {
+	ret := new(Agency)
+	err := a.Db.Model(a).Where("id=?", id).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*Agency, error) {
 	var ret []*Agency
 

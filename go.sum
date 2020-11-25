@@ -10,6 +10,8 @@ github.com/avast/apkverifier v0.0.0-20200217135742-aa28c80b82ae/go.mod h1:SV58cy
 github.com/avast/apkverifier v0.0.0-20200416105355-97c5338f32f0/go.mod h1:HskRSJJJbP3poUkDRAyRAdDVSsh5J1mz8cRc2/B4kbc=
 github.com/aws/aws-sdk-go v1.33.12 h1:eydMoSwfrSTD9PWKUJOiDL7+/UwDW8AjInUGVE5Llh4=
 github.com/aws/aws-sdk-go v1.33.12/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
+github.com/bigpigeon/logrus v1.0.5 h1:Vao3yOLK38MSfW8Qb+QCNHaqZuUSJ065A/jQQy6vhco=
+github.com/bigpigeon/logrus v1.0.5/go.mod h1:Dl049bR/Z6lp+JN6hMfTGDPEiY/CAzgaLB/isEJHfb8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -176,3 +178,5 @@ gopkg.in/yaml.v2 v2.2.8 h1:obN1ZagJSUGI0Ek/LBmuj4SNLPfIny3KsKFopxRdj10=
 gopkg.in/yaml.v2 v2.2.8/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 honnef.co/go/tools v0.0.1-2019.2.3 h1:3JgtbtFHMiCmsznwGVTUWbgGov+pVqnlf1dEJTNAXeM=
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
+sources.bindo.cn/backend/golib v0.0.2 h1:N1YkbKgIZVVMqGK7lT418heszPDpRS/FqGFzX0iQgFA=
+sources.bindo.cn/backend/golib v0.0.2/go.mod h1:+LV7KDX9/Ak+81YLkHX+yzsQKjDe973t0tGkE5hMdUY=

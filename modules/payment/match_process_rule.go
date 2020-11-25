@@ -4,7 +4,7 @@ import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/payment/binddevice"
+	"tpayment/models/payment/acquirer"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/pkg/tlog"
 
@@ -13,6 +13,7 @@ import (
 
 func matchProcessRule(ctx *gin.Context, txn *api_define.TxnReq) (*paymentprocessrule.PaymentProcessRule, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
+	var errorCode conf.ResultCode
 
 	rule := new(paymentprocessrule.PaymentProcessRule)
 
@@ -75,23 +76,30 @@ func matchProcessRule(ctx *gin.Context, txn *api_define.TxnReq) (*paymentprocess
 		return nil, conf.NoPaymentProcessRule
 	}
 
-	// 如果有绑定设备匹配，则优先匹配绑定设备Rule
+	// 分配TID
 	if txn.DeviceID != "" {
-		bindBean := new(binddevice.BindDevice)
-		for i, payRule := range matchRules {
-			payRule.BindDevice, err = bindBean.Get(models.DB(), ctx,
-				payRule.ID, txn.DeviceID)
-			if err != nil {
-				return nil, conf.DBError
+		tid := &acquirer.Terminal{
+			BaseModel: models.BaseModel{
+				Db:  models.DB(),
+				Ctx: ctx,
+			},
+		}
+
+		count, err := tid.GetTotal(txn.PaymentProcessRule.MerchantAccountID)
+		if err != nil {
+			logger.Warn("get total error->", err.Error())
+			return nil, conf.DBError
+		}
+		if count > 0 { // 没有tid，则认为是不需要绑定TID
+			tid, errorCode =
+				tid.GetOneAvailable(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
+			if errorCode != conf.Success {
+				logger.Warn("can't get available tid->", txn.DeviceID)
+				return nil, errorCode
 			}
-			// 没找到
-			if payRule.BindDevice == nil {
-				continue
-			}
-			// 找到
-			return payRules[i], conf.SUCCESS
+			txn.PaymentProcessRule.MerchantAccount.TID = tid // 可能会没有
 		}
 	}
 
-	return matchRules[0], conf.SUCCESS
+	return matchRules[0], conf.Success
 }

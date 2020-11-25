@@ -101,12 +101,12 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 				logger.Warn("creditcard.Decode error->", err.Error())
 				return conf.DecodeCardBrandError
 			}
-			return conf.SUCCESS
+			return conf.Success
 		}
 
 		logger.Warn("can't decode the qr code->", txn.ConsumerPresentQR.Content)
 		return conf.DecodeQRError
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }

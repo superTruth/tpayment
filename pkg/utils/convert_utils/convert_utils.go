@@ -91,9 +91,6 @@ func Long2BytesHex(value uint64, length int) []byte {
 	for i := 0; i < len(ret); i++ {
 		ret[len(ret)-1-i] = (byte)(tmp & 0xFF)
 		tmp >>= 8
-		if tmp <= 0 {
-			break
-		}
 	}
 	return ret
 }
@@ -169,9 +166,6 @@ func Long2BytesBCD(value uint64, length int) []byte {
 	for i := 0; i < len(ret); i++ {
 		ret[len(ret)-1-i] = int2BCD((int)(tmp % 100))
 		tmp /= 100
-		if tmp <= 0 {
-			break
-		}
 	}
 
 	return ret

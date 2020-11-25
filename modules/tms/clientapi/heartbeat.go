@@ -94,7 +94,7 @@ func HearBeat(ctx *gin.Context) {
 		var errorCode conf.ResultCode
 		requestApps, returnTmp, errorCode = compareApps(ctx, requestApps, dbApps)
 		logger.Info("结束对比数据==============")
-		if errorCode != conf.SUCCESS {
+		if errorCode != conf.Success {
 			modules.BaseError(ctx, errorCode)
 			return
 		}
@@ -351,7 +351,7 @@ func compareApps(ctx *gin.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 		}
 	}
 
-	return unmatchApps, needReturnApp, conf.SUCCESS
+	return unmatchApps, needReturnApp, conf.Success
 }
 
 // 拷贝请求设备信息到设备信息

@@ -9,9 +9,10 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/zhulingbiezhi/pkcs7"
 	"sync"
 	"time"
+
+	"github.com/zhulingbiezhi/pkcs7"
 )
 
 func validateRsa(p7 *pkcs7.PKCS7, orgBean *applePayOrgBean) error {
@@ -96,8 +97,7 @@ var (
 )
 
 const (
-	maxValidateTime = 5 * time.Minute
-	applePayCa      = `MIICQzCCAcmgAwIBAgIILcX8iNLFS5UwCgYIKoZIzj0EAwMwZzEbMBkGA1UEAwwSQXBwbGUgUm9vdCBDQSAtIEczMSYwJAYDVQQLDB1BcHBsZSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwHhcNMTQwNDMwMTgxOTA2WhcNMzkwNDMwMTgxOTA2WjBnMRswGQYDVQQDDBJBcHBsZSBSb290IENBIC0gRzMxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzB2MBAGByqGSM49AgEGBSuBBAAiA2IABJjpLz1AcqTtkyJygRMc3RCV8cWjTnHcFBbZDuWmBSp3ZHtfTjjTuxxEtX/1H7YyYl3J6YRbTzBPEVoA/VhYDKX1DyxNB0cTddqXl5dvMVztK517IDvYuVTZXpmkOlEKMaNCMEAwHQYDVR0OBBYEFLuw3qFYM4iapIqZ3r6966/ayySrMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMDA2gAMGUCMQCD6cHEFl4aXTQY2e3v9GwOAEZLuN+yRhHFD/3meoyhpmvOwgPUnPWTxnS4at+qIxUCMG1mihDK1A3UT82NQz60imOlM27jbdoXt2QfyFMm+YhidDkLF1vLUagM6BgD56KyKA==`
+	applePayCa = `MIICQzCCAcmgAwIBAgIILcX8iNLFS5UwCgYIKoZIzj0EAwMwZzEbMBkGA1UEAwwSQXBwbGUgUm9vdCBDQSAtIEczMSYwJAYDVQQLDB1BcHBsZSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwHhcNMTQwNDMwMTgxOTA2WhcNMzkwNDMwMTgxOTA2WjBnMRswGQYDVQQDDBJBcHBsZSBSb290IENBIC0gRzMxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzB2MBAGByqGSM49AgEGBSuBBAAiA2IABJjpLz1AcqTtkyJygRMc3RCV8cWjTnHcFBbZDuWmBSp3ZHtfTjjTuxxEtX/1H7YyYl3J6YRbTzBPEVoA/VhYDKX1DyxNB0cTddqXl5dvMVztK517IDvYuVTZXpmkOlEKMaNCMEAwHQYDVR0OBBYEFLuw3qFYM4iapIqZ3r6966/ayySrMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMDA2gAMGUCMQCD6cHEFl4aXTQY2e3v9GwOAEZLuN+yRhHFD/3meoyhpmvOwgPUnPWTxnS4at+qIxUCMG1mihDK1A3UT82NQz60imOlM27jbdoXt2QfyFMm+YhidDkLF1vLUagM6BgD56KyKA==`
 )
 
 func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkcs7.PKCS7, *applePayOrgBean) error) error {
@@ -113,12 +113,10 @@ func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkc
 		if err != nil {
 			fmt.Println("apple pay ca parseCertificate fail->", err.Error())
 			panic("apple pay ca parseCertificate fail")
-			return
 		}
 		if !applePayCA.IsCA {
 			fmt.Println("apple pay ca is not ca")
 			panic("apple pay ca not root ca")
-			return
 		}
 	})
 
@@ -172,7 +170,7 @@ func validateSignature(orgBean *applePayOrgBean, validateSignatureFunc func(*pkc
 				signTime = new(time.Time)
 				_, err := asn1.Unmarshal(attr.Value.Bytes, signTime)
 				if err != nil {
-					signTime = nil
+					signTime = nil // nolint
 					return errors.New("unmarshal time fail->" + err.Error())
 				}
 			}

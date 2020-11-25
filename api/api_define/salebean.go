@@ -1,6 +1,9 @@
 package api_define
 
-import "tpayment/models/payment/paymentprocessrule"
+import (
+	"tpayment/models/payment/paymentprocessrule"
+	"tpayment/models/payment/record"
+)
 
 // 请求数据
 type TxnReq struct {
@@ -24,6 +27,10 @@ type TxnReq struct {
 	RealPaymentMethod  string                                 `json:"real_payment_method"`
 	RealEntryType      string                                 `json:"real_entry_type"`
 	PaymentProcessRule *paymentprocessrule.PaymentProcessRule `json:"payment_process_rule"`
+	FromName           string                                 `json:"from_name"`
+	FromIp             string                                 `json:"from_ip"`
+	CashierID          string                                 `json:"cashier_id"`
+	TxnRecord          *record.TxnRecord                      `json:"txn_record"`
 }
 
 type CreditCardBean struct {
@@ -74,7 +81,7 @@ type ConsumerPresentQR struct {
 // 回复数据
 type TxnResp struct {
 	Uuid          string `json:"uuid"`
-	TxnID         string `json:"txn_id"`
+	TxnID         uint   `json:"txn_id"`
 	TxnType       string `json:"txn_type"`
 	DeviceID      string `json:"device_id"`
 	PaymentMethod string `json:"payment_method"`

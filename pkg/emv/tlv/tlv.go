@@ -61,8 +61,6 @@ func parseOneNode(orgData []byte, offset int, isPBOC bool) (*Node, int, error) {
 		} else {
 			tagLen = 2
 		}
-	} else {
-		tagLen = 1
 	}
 
 	// 提取Tag

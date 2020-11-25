@@ -41,6 +41,20 @@ func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint) (*Merchant, err
 	return ret, nil
 }
 
+func (m *Merchant) Get(id uint) (*Merchant, error) {
+	ret := new(Merchant)
+	err := m.Db.Model(m).Where("id=?", id).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // 获取机构下面的商户
 func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Merchant, error) {
 	equalData := make(map[string]string)

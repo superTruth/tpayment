@@ -2,7 +2,6 @@ package paymentprocessrule
 
 import (
 	"tpayment/models"
-	"tpayment/models/payment/binddevice"
 	"tpayment/models/payment/merchantaccount"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +17,6 @@ type PaymentProcessRule struct {
 	PaymentEntryTypes *models.StringArray `json:"payment_entry_types"`
 	PaymentTypes      *models.StringArray `json:"payment_types"`
 
-	BindDevice      *binddevice.BindDevice           `json:"-"`
 	MerchantAccount *merchantaccount.MerchantAccount `json:"-"`
 }
 
@@ -32,6 +30,5 @@ func (rule *PaymentProcessRule) GetByMerchantID(db *models.MyDB, ctx *gin.Contex
 	if err != nil {
 		return nil, err
 	}
-
 	return ret, nil
 }

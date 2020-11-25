@@ -21,6 +21,7 @@ var demoTokenRsa = `
 }
 `
 
+// nolint
 const pubKeyFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/apple_pay.cer"
 const privateFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/www.fang.com.key"
 

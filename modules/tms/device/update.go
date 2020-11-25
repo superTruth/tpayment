@@ -55,7 +55,7 @@ func UpdateHandle(ctx *gin.Context) {
 
 	// 合并tags
 	errorCode := mergeTags(ctx, req)
-	if errorCode != conf.SUCCESS {
+	if errorCode != conf.Success {
 		modules.BaseError(ctx, errorCode)
 		return
 	}
@@ -69,7 +69,7 @@ func mergeTags(ctx *gin.Context, device *tms.DeviceInfo) conf.ResultCode {
 
 	// 前端没传入
 	if device.Tags == nil {
-		return conf.SUCCESS
+		return conf.Success
 	}
 
 	dbTags, err := tms.QueryTagsInDevice(models.DB(), ctx, device)
@@ -131,5 +131,5 @@ func mergeTags(ctx *gin.Context, device *tms.DeviceInfo) conf.ResultCode {
 		}
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }

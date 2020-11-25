@@ -3,20 +3,22 @@ package merchantaccount
 import (
 	"tpayment/models"
 	"tpayment/models/agency"
+	"tpayment/models/payment/acquirer"
 
 	"github.com/gin-gonic/gin"
 )
 
 type MerchantAccount struct {
 	models.BaseModel
-	Name       string              `json:"name"`
-	Currencies *models.StringArray `json:"currencies"`
-	AcquirerID uint                `json:"acquirer_id"`
-	MID        string              `json:"mid"`
-	Addition   string              `json:"addition"`
-	Disable    bool                `json:"disable"`
+	Name       string              `gorm:"name"`
+	Currencies *models.StringArray `gorm:"currencies"`
+	AcquirerID uint                `gorm:"acquirer_id"`
+	MID        string              `gorm:"mid"`
+	Addition   string              `gorm:"addition"`
+	Disable    bool                `gorm:"disable"`
 
-	Acquirer *agency.Acquirer `json:"-"`
+	Acquirer *agency.Acquirer   `gorm:"-"`
+	TID      *acquirer.Terminal `gorm:"-"`
 }
 
 func (MerchantAccount) TableName() string {

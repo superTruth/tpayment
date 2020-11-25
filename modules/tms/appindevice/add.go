@@ -50,7 +50,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	errorCode := SmartAddAppInDevice(ctx, bean, req)
-	if errorCode != conf.SUCCESS {
+	if errorCode != conf.Success {
 		modules.BaseError(ctx, errorCode)
 		return
 	}
@@ -83,13 +83,13 @@ func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppI
 			logger.Error("Create fail->", err.Error())
 			return conf.DBError
 		}
-		return conf.SUCCESS
+		return conf.Success
 	}
 
 	// app存在, 并且和原始配置一模一样，则不需要操作
 	if (app.AppFileId == bean.AppFileId) && (app.Status == bean.Status) {
 		logger.Info("app not change->", app.AppFileId)
-		return conf.SUCCESS
+		return conf.Success
 	}
 
 	// app需要update的情况
@@ -102,5 +102,5 @@ func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppI
 		return conf.DBError
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }

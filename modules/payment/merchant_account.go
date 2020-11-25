@@ -41,5 +41,5 @@ func fetchMerchantAccount(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultC
 		return conf.ProcessRuleSettingError
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }

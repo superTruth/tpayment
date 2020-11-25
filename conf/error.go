@@ -3,7 +3,7 @@ package conf
 type ResultCode string
 
 const (
-	SUCCESS                 ResultCode = "00"
+	Success                 ResultCode = "00"
 	UnknownError            ResultCode = "99"
 	PanicError              ResultCode = "98"
 	ParameterError          ResultCode = "03"
@@ -26,10 +26,15 @@ const (
 	DecodeQRError           ResultCode = "20"
 	NoPaymentProcessRule    ResultCode = "21"
 	ProcessRuleSettingError ResultCode = "22"
+	TIDIsBusy               ResultCode = "23"
+	NoAvailableTID          ResultCode = "24"
+	Reversal                ResultCode = "25"
+	CantReachAcquirer       ResultCode = "26"
+	RejectByAcquirer        ResultCode = "27"
 )
 
 var ResultCodeText = map[ResultCode]string{
-	SUCCESS:                 "success",
+	Success:                 "success",
 	ParameterError:          "parameter error",
 	UnknownError:            "internal error 99",
 	PanicError:              "internal error 98",
@@ -52,6 +57,11 @@ var ResultCodeText = map[ResultCode]string{
 	DecodeQRError:           "decode qr code error",
 	NoPaymentProcessRule:    "no payment process rule",
 	ProcessRuleSettingError: "process rule setting error",
+	TIDIsBusy:               "TID is busy",
+	NoAvailableTID:          "no available TID",
+	Reversal:                "need reversal",
+	CantReachAcquirer:       "can't reach acquirer",
+	RejectByAcquirer:        "reject by acquirer",
 }
 
 func (this ResultCode) String() string {

@@ -42,7 +42,7 @@ func AddHandle(ctx *gin.Context) {
 		handleRet = AddByFile(ctx, req.AgencyId, req.FileUrl)
 	}
 
-	if handleRet != conf.SUCCESS {
+	if handleRet != conf.Success {
 		modules.BaseError(ctx, handleRet)
 		return
 	}
@@ -66,7 +66,7 @@ func AddByID(ctx *gin.Context, agencyId, deviceId uint) conf.ResultCode {
 		return conf.DBError
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }
 
 // 批量文件添加设备
@@ -153,5 +153,5 @@ func AddByFile(ctx *gin.Context, agencyId uint, fileUrl string) conf.ResultCode 
 		}
 	}
 
-	return conf.SUCCESS
+	return conf.Success
 }
