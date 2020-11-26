@@ -1,6 +1,8 @@
 package api_define
 
 import (
+	"tpayment/models/agency"
+	"tpayment/models/merchant"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/models/payment/record"
 )
@@ -23,6 +25,9 @@ type TxnReq struct {
 	CreditCard3DSBean   *CreditCard3DSBean   `json:"credit_card_3ds"`
 	ConsumerPresentQR   *ConsumerPresentQR   `json:"consumer_present_qr"`
 
+	// 用于void,refund，tips，等二次交易
+	OriginTxnID uint `json:"origin_txn_id"`
+
 	// 后期处理填充
 	RealPaymentMethod  string                                 `json:"real_payment_method"`
 	RealEntryType      string                                 `json:"real_entry_type"`
@@ -31,6 +36,9 @@ type TxnReq struct {
 	FromIp             string                                 `json:"from_ip"`
 	CashierID          string                                 `json:"cashier_id"`
 	TxnRecord          *record.TxnRecord                      `json:"txn_record"`
+	OrgRecord          *record.TxnRecord                      `json:"org_record"`
+	MerchantInfo       *merchant.Merchant                     `json:"merchant_info"`
+	AgencyInfo         *agency.Agency                         `json:"agency_info"`
 }
 
 type CreditCardBean struct {

@@ -4,6 +4,8 @@ import (
 	"time"
 	"tpayment/models"
 
+	"github.com/jinzhu/gorm"
+
 	"github.com/shopspring/decimal"
 )
 
@@ -36,16 +38,16 @@ type TxnRecord struct {
 	AcquirerAuthCode string `json:"acquirer_auth_code"`
 	AcquirerReconID  string `json:"acquirer_recon_id"`
 
-	CompleteAt          time.Time `json:"complete_at"`
-	AcquirerTxnDateTime time.Time `json:"acquirer_txn_date_time"`
+	CompleteAt          *time.Time `json:"complete_at"`
+	AcquirerTxnDateTime *time.Time `json:"acquirer_txn_date_time"`
 
-	Status               string    `json:"status"`
-	VoidAt               time.Time `json:"void_at"`
-	RefundTimes          uint      `json:"refund_times"`
-	RefundAt             time.Time `json:"refund_at"`
-	CaptureAt            time.Time `json:"capture_at"`
-	GatewaySettlementAt  time.Time `json:"gateway_settlement_at"`
-	AcquirerSettlementAt time.Time `json:"acquirer_settlement_at"`
+	Status               string     `json:"status"`
+	VoidAt               *time.Time `json:"void_at"`
+	RefundTimes          uint       `json:"refund_times"`
+	RefundAt             *time.Time `json:"refund_at"`
+	CaptureAt            *time.Time `json:"capture_at"`
+	GatewaySettlementAt  *time.Time `json:"gateway_settlement_at"`
+	AcquirerSettlementAt *time.Time `json:"acquirer_settlement_at"`
 
 	PaymentFromName     string `json:"payment_from_name"`
 	PaymentFromIP       string `json:"payment_from_ip"`
@@ -74,4 +76,52 @@ func (t *TxnRecord) UpdateStatus(status string) error {
 	}
 	t.Status = status
 	return nil
+}
+
+// 更新sale交易结果
+func (t *TxnRecord) UpdateTxnResult() error {
+	err := t.Db.Model(t).Where("id=?", t.ID).Select(
+		[]string{"acquirer_rrn", "acquirer_auth_code",
+			"acquirer_recon_id", "complete_at", "acquirer_txn_date_time",
+			"status", "acquirer_batch_num", "consumer_identify"}).Updates(t).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 更新void状态
+func (t *TxnRecord) UpdateVoidStatus() error {
+	err := t.Db.Model(t).Where("id=?", t.ID).Select(
+		[]string{"void_at"}).Updates(t).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 更新refund状态
+func (t *TxnRecord) UpdateRefundStatus() error {
+	err := t.Db.Model(t).Where("id=?", t.ID).Select(
+		[]string{"total_amount", "refund_times", "refund_at"}).Updates(t).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 查询一条记录
+func (t *TxnRecord) GetByID(id uint) (*TxnRecord, error) {
+	ret := new(TxnRecord)
+	err := t.Db.Model(t).Where("id=?", id).First(ret).Error
+	if gorm.ErrRecordNotFound == err { // 没有记录, 就创建一条记录
+		if err != nil {
+			return nil, err
+		}
+		return t, err
+	}
+	return ret, err
 }

@@ -18,7 +18,7 @@ type MerchantAccount struct {
 	Disable    bool                `gorm:"disable"`
 
 	Acquirer *agency.Acquirer   `gorm:"-"`
-	TID      *acquirer.Terminal `gorm:"-"`
+	Terminal *acquirer.Terminal `gorm:"-"`
 }
 
 func (MerchantAccount) TableName() string {

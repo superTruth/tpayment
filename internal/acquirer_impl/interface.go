@@ -3,20 +3,17 @@ package acquirer_impl
 import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
-	"tpayment/models/agency"
-	"tpayment/models/merchant"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SaleRequest struct {
-	TxqReq       *api_define.TxnReq
-	AgencyInfo   *agency.Agency
-	MerchantInfo *merchant.Merchant
+	TxqReq *api_define.TxnReq
 }
 
 type SaleResponse struct {
-	TxnResp *api_define.TxnResp
+	TxnResp         *api_define.TxnResp
+	AcquirerReconID string
 }
 
 type ISale interface {
@@ -24,5 +21,9 @@ type ISale interface {
 }
 
 type IVoid interface {
-	Void()
+	Void(ctx *gin.Context, req *SaleRequest) (*SaleResponse, conf.ResultCode)
+}
+
+type IRefund interface {
+	Refund(ctx *gin.Context, req *SaleRequest) (*SaleResponse, conf.ResultCode)
 }

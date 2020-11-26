@@ -105,4 +105,11 @@ const (
 	UrlTmsHeartBeat = "/payment/tms/heartbeat"
 
 	UrlFileAdd = "/payment/file/add"
+
+	// Payment
+	UrlSale            = "/payment/sale"
+	UrlVoid            = "/payment/void"
+	UrlRefund          = "/payment/refund"
+	UrlPreAuth         = "/payment/pre_auth"
+	UrlPreAuthComplete = "/payment/pre_auth_complete"
 )

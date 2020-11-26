@@ -1,10 +1,9 @@
-package payment
+package sale
 
 import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/models"
-	"tpayment/models/payment/acquirer"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/pkg/tlog"
 
@@ -74,31 +73,6 @@ func matchProcessRule(ctx *gin.Context, txn *api_define.TxnReq) (*paymentprocess
 	// 未匹配到任何rule
 	if len(matchRules) == 0 {
 		return nil, conf.NoPaymentProcessRule
-	}
-
-	// 分配TID
-	if txn.DeviceID != "" {
-		tid := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db:  models.DB(),
-				Ctx: ctx,
-			},
-		}
-
-		count, err := tid.GetTotal(txn.PaymentProcessRule.MerchantAccountID)
-		if err != nil {
-			logger.Warn("get total error->", err.Error())
-			return nil, conf.DBError
-		}
-		if count > 0 { // 没有tid，则认为是不需要绑定TID
-			tid, errorCode =
-				tid.GetOneAvailable(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
-			if errorCode != conf.Success {
-				logger.Warn("can't get available tid->", txn.DeviceID)
-				return nil, errorCode
-			}
-			txn.PaymentProcessRule.MerchantAccount.TID = tid // 可能会没有
-		}
 	}
 
 	return matchRules[0], conf.Success

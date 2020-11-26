@@ -31,6 +31,8 @@ const (
 	Reversal                ResultCode = "25"
 	CantReachAcquirer       ResultCode = "26"
 	RejectByAcquirer        ResultCode = "27"
+	Settled                 ResultCode = "28"
+	Voided                  ResultCode = "29"
 )
 
 var ResultCodeText = map[ResultCode]string{
@@ -57,11 +59,13 @@ var ResultCodeText = map[ResultCode]string{
 	DecodeQRError:           "decode qr code error",
 	NoPaymentProcessRule:    "no payment process rule",
 	ProcessRuleSettingError: "process rule setting error",
-	TIDIsBusy:               "TID is busy",
-	NoAvailableTID:          "no available TID",
+	TIDIsBusy:               "Terminal is busy",
+	NoAvailableTID:          "no available Terminal",
 	Reversal:                "need reversal",
 	CantReachAcquirer:       "can't reach acquirer",
 	RejectByAcquirer:        "reject by acquirer",
+	Settled:                 "settled",
+	Voided:                  "voided",
 }
 
 func (this ResultCode) String() string {

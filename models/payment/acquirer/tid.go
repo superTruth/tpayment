@@ -23,6 +23,20 @@ func (Terminal) TableName() string {
 	return "tid"
 }
 
+// 获取
+func (tid *Terminal) Get(id uint) (*Terminal, error) {
+	ret := new(Terminal)
+	err := tid.Db.Model(tid).Where("id=?", id).First(ret).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // 获取一条可用的TID
 func (tid *Terminal) GetOneAvailable(merchantAccountID uint, deviceID string) (*Terminal, conf.ResultCode) {
 	var (

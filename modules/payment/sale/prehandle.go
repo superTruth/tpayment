@@ -1,4 +1,4 @@
-package payment
+package sale
 
 import (
 	"strconv"
@@ -7,9 +7,7 @@ import (
 	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/models/merchant"
-	"tpayment/models/payment/acquirer"
 	"tpayment/models/payment/key"
-	"tpayment/models/payment/merchantaccount"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/models/payment/record"
 	"tpayment/pkg/paymentmethod/decodecardnum/applepay"
@@ -44,22 +42,10 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 		if errCode != conf.Success {
 			return errCode
 		}
-
-		// 从payment process rule查找匹配merchant account和TID
-		errCode = fetchMerchantAccountFirstTime(ctx, txn)
-		if errCode != conf.Success {
-			return errCode
-		}
 	} else {
 		txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
 		// 查找原始交易
 		errCode = fetchOrgRecord(ctx, txn)
-		if errCode != conf.Success {
-			return errCode
-		}
-
-		// 从原始交易查找merchant account和TID
-		errCode = fetchMerchantAccountFromOrg(ctx, txn)
 		if errCode != conf.Success {
 			return errCode
 		}
@@ -283,124 +269,6 @@ func matchProcessRule2(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode
 	}
 
 	txn.PaymentProcessRule = matchRules[0]
-
-	return conf.Success
-}
-
-// 查找merchant account
-func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
-	var errorCode conf.ResultCode
-
-	// 查找merchant account
-	var err error
-	merchantBean := new(merchantaccount.MerchantAccount)
-	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccountID)
-	if err != nil {
-		logger.Error("merchantBean.Get->", err.Error())
-		return conf.DBError
-	}
-	if txn.PaymentProcessRule.MerchantAccount == nil {
-		logger.Warn("can't find merchant account in payment process id->", txn.PaymentProcessRule.ID)
-		return conf.ProcessRuleSettingError
-	}
-
-	// 查找acquirer
-	acquirerBean := new(agency.Acquirer)
-	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccount.AcquirerID)
-	if err != nil {
-		logger.Error("acquirerBean.Get->", err.Error())
-		return conf.DBError
-	}
-	if txn.PaymentProcessRule.MerchantAccount.Acquirer == nil {
-		logger.Warn("can't find acquirer in merchant id->", txn.PaymentProcessRule.MerchantAccount.ID)
-		return conf.ProcessRuleSettingError
-	}
-
-	// 分配TID
-	if txn.DeviceID != "" {
-		tid := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db:  models.DB(),
-				Ctx: ctx,
-			},
-		}
-
-		count, err := tid.GetTotal(txn.PaymentProcessRule.MerchantAccountID)
-		if err != nil {
-			logger.Warn("get total error->", err.Error())
-			return conf.DBError
-		}
-		if count > 0 { // 没有tid，则认为是不需要绑定TID
-			tid, errorCode =
-				tid.GetOneAvailable(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
-			if errorCode != conf.Success {
-				logger.Warn("can't get available tid->", txn.DeviceID)
-				return errorCode
-			}
-			txn.PaymentProcessRule.MerchantAccount.Terminal = tid // 可能会没有
-		}
-	}
-
-	return conf.Success
-}
-
-func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
-
-	txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
-	// 查找merchant account
-	var err error
-	merchantBean := new(merchantaccount.MerchantAccount)
-	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(models.DB(), ctx, txn.OrgRecord.MerchantAccountID)
-	if err != nil {
-		logger.Error("merchantBean.Get->", err.Error())
-		return conf.DBError
-	}
-	if txn.PaymentProcessRule.MerchantAccount == nil {
-		logger.Warn("can't find merchant account in payment process id->", txn.PaymentProcessRule.ID)
-		return conf.ProcessRuleSettingError
-	}
-
-	// 查找acquirer
-	acquirerBean := new(agency.Acquirer)
-	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccount.AcquirerID)
-	if err != nil {
-		logger.Error("acquirerBean.Get->", err.Error())
-		return conf.DBError
-	}
-	if txn.PaymentProcessRule.MerchantAccount.Acquirer == nil {
-		logger.Warn("can't find acquirer in merchant id->", txn.PaymentProcessRule.MerchantAccount.ID)
-		return conf.ProcessRuleSettingError
-	}
-
-	// 查找TID
-	if txn.OrgRecord.TerminalID != 0 {
-		terminalID := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db:  models.DB(),
-				Ctx: ctx,
-			},
-		}
-		terminalID, err = terminalID.Get(txn.OrgRecord.TerminalID)
-		if err != nil {
-			logger.Error("terminalID.Get ", txn.OrgRecord.TerminalID, "->", err.Error())
-			return conf.DBError
-		}
-		if terminalID == nil {
-			logger.Error("can't find the terminal ", txn.OrgRecord.TerminalID)
-			return conf.RecordNotFund
-		}
-		terminalID.BaseModel = models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		}
-		txn.PaymentProcessRule.MerchantAccount.Terminal = terminalID
-	}
 
 	return conf.Success
 }
