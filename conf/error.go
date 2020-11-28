@@ -33,6 +33,7 @@ const (
 	RejectByAcquirer        ResultCode = "27"
 	Settled                 ResultCode = "28"
 	Voided                  ResultCode = "29"
+	NotMatchTID             ResultCode = "30"
 )
 
 var ResultCodeText = map[ResultCode]string{
@@ -66,6 +67,7 @@ var ResultCodeText = map[ResultCode]string{
 	RejectByAcquirer:        "reject by acquirer",
 	Settled:                 "settled",
 	Voided:                  "voided",
+	NotMatchTID:             "not match tid",
 }
 
 func (this ResultCode) String() string {

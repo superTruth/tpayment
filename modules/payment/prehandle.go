@@ -25,27 +25,33 @@ import (
 // 预处理提交的数据，
 // 1. 分析出支付方式，  2. 分析出用卡方式
 func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
+	logger := tlog.GetLogger(ctx)
 	var errCode conf.ResultCode
 	// 查找商户信息
+	logger.Info("查找商户信息")
 	errCode = fetchMerchantAgencyInfo2(ctx, txn)
 	if errCode != conf.Success {
 		return errCode
 	}
 
 	// 匹配支付Payment Process Rule
+	logger.Info("匹配支付Payment")
 	errCode = decodePaymentData(ctx, txn)
 	if errCode != conf.Success {
 		return errCode
 	}
 
 	// 匹配payment process rule
+	logger.Info("匹配payment process rule")
 	if txn.OriginTxnID == 0 { // 首次交易
+		logger.Info("首次交易")
 		errCode = matchProcessRule2(ctx, txn)
 		if errCode != conf.Success {
 			return errCode
 		}
 
 		// 从payment process rule查找匹配merchant account和TID
+		logger.Info("fetchMerchantAccountFirstTime")
 		errCode = fetchMerchantAccountFirstTime(ctx, txn)
 		if errCode != conf.Success {
 			return errCode
@@ -66,6 +72,7 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 	}
 
 	// 提前生成record
+	logger.Info("提前生成record")
 	errCode = preBuildRecord(ctx, txn)
 	if errCode != conf.Success {
 		return errCode
@@ -341,6 +348,10 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 				return errorCode
 			}
 			txn.PaymentProcessRule.MerchantAccount.Terminal = tid // 可能会没有
+			if txn.PaymentProcessRule.MerchantAccount.Terminal != nil {
+				txn.PaymentProcessRule.MerchantAccount.Terminal.BaseModel.Db = models.DB()
+				txn.PaymentProcessRule.MerchantAccount.Terminal.BaseModel.Ctx = ctx
+			}
 		}
 	}
 
@@ -469,7 +480,6 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			PaymentFromName:     txn.FromName,
 			PaymentFromIP:       txn.FromIp,
 			PaymentFromDeviceID: txn.DeviceID,
-			InvoiceNum:          "",
 			CashierID:           txn.CashierID,
 		}
 		if txn.CreditCardBean != nil && txn.CreditCardBean.CardNumber != "" {
@@ -490,11 +500,11 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			PaymentFromName:     txn.FromName,
 			PaymentFromIP:       txn.FromIp,
 			PaymentFromDeviceID: txn.DeviceID,
-			InvoiceNum:          "",
 			CashierID:           txn.CashierID,
 			ConsumerIdentify:    txn.OrgRecord.ConsumerIdentify,
 		}
 	}
 
+	txn.TxnRecord = ret
 	return conf.Success
 }

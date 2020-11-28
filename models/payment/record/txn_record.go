@@ -21,48 +21,51 @@ const (
 type TxnRecord struct {
 	models.BaseModel
 
-	MerchantID            uint            `json:"merchant_id"`
-	TotalAmount           decimal.Decimal `json:"total_amount"`
-	Amount                decimal.Decimal `json:"amount"`
-	Currency              string          `json:"currency"`
-	MerchantAccountID     uint            `json:"merchant_account_id"`
-	TerminalID            uint            `json:"terminal_id"`
-	PaymentMethod         string          `json:"payment_method"`
-	PaymentEntryType      string          `json:"payment_entry_type"`
-	PaymentType           string          `json:"payment_type"`
-	CustomerPaymentMethod string          `json:"customer_payment_method"`
+	MerchantID            uint            `gorm:"column:merchant_id"`
+	TotalAmount           decimal.Decimal `gorm:"column:total_amount"`
+	Amount                decimal.Decimal `gorm:"column:amount"`
+	Currency              string          `gorm:"column:currency"`
+	MerchantAccountID     uint            `gorm:"column:merchant_account_id"`
+	TerminalID            uint            `gorm:"column:terminal_id"`
+	PaymentMethod         string          `gorm:"column:payment_method"`
+	PaymentEntryType      string          `gorm:"column:payment_entry_type"`
+	PaymentType           string          `gorm:"column:payment_type"`
+	CustomerPaymentMethod string          `gorm:"column:customer_payment_method"`
 
-	ReferenceID      string `json:"reference_id"`
-	PartnerUUID      string `json:"partner_uuid"`
-	AcquirerRRN      string `json:"acquirer_rrn"`
-	AcquirerAuthCode string `json:"acquirer_auth_code"`
-	AcquirerReconID  string `json:"acquirer_recon_id"`
+	ReferenceID      string `gorm:"column:reference_id"`
+	PartnerUUID      string `gorm:"column:partner_uuid"`
+	AcquirerRRN      string `gorm:"column:acquirer_rrn"`
+	AcquirerAuthCode string `gorm:"column:acquirer_auth_code"`
+	AcquirerReconID  string `gorm:"column:acquirer_recon_id"`
 
-	CompleteAt          *time.Time `json:"complete_at"`
-	AcquirerTxnDateTime *time.Time `json:"acquirer_txn_date_time"`
+	CompleteAt          *time.Time `gorm:"column:complete_at"`
+	AcquirerTxnDateTime *time.Time `gorm:"column:acquirer_txn_date_time"`
 
-	Status               string     `json:"status"`
-	VoidAt               *time.Time `json:"void_at"`
-	RefundTimes          uint       `json:"refund_times"`
-	RefundAt             *time.Time `json:"refund_at"`
-	CaptureAt            *time.Time `json:"capture_at"`
-	GatewaySettlementAt  *time.Time `json:"gateway_settlement_at"`
-	AcquirerSettlementAt *time.Time `json:"acquirer_settlement_at"`
+	Status    string `gorm:"column:status"`
+	ErrorCode string `json:"error_code"`
+	ErrorDes  string `json:"error_des"`
 
-	PaymentFromName     string `json:"payment_from_name"`
-	PaymentFromIP       string `json:"payment_from_ip"`
-	PaymentFromDeviceID string `json:"payment_from_device_id"`
+	VoidAt               *time.Time `gorm:"column:void_at"`
+	RefundTimes          uint       `gorm:"column:refund_times"`
+	RefundAt             *time.Time `gorm:"column:refund_at"`
+	CaptureAt            *time.Time `gorm:"column:capture_at"`
+	GatewaySettlementAt  *time.Time `gorm:"column:gateway_settlement_at"`
+	AcquirerSettlementAt *time.Time `gorm:"column:acquirer_settlement_at"`
 
-	GatewayBatchNum  string `json:"gateway_batch_num"`
-	AcquirerBatchNum string `json:"acquirer_batch_num"`
-	InvoiceNum       string `json:"invoice_num"`
+	PaymentFromName     string `gorm:"column:payment_from_name"`
+	PaymentFromIP       string `gorm:"column:payment_from_ip"`
+	PaymentFromDeviceID string `gorm:"column:payment_from_device_id"`
 
-	ConsumerIdentify string `json:"consumer_identify"` // 消费者ID，信用卡用卡号，微信支付宝交易完成后会返回对应的ID
-	CashierID        string `json:"cashier_id"`        // 操作人员ID
+	GatewayBatchNum  uint `gorm:"column:gateway_batch_num"`
+	AcquirerBatchNum uint `gorm:"column:acquirer_batch_num"`
+	InvoiceNum       uint `gorm:"column:invoice_num"`
+
+	ConsumerIdentify string `gorm:"column:consumer_identify"` // 消费者ID，信用卡用卡号，微信支付宝交易完成后会返回对应的ID
+	CashierID        string `gorm:"column:cashier_id"`        // 操作人员ID
 }
 
 func (TxnRecord) TableName() string {
-	return "txn_recode"
+	return "payment_txn_record"
 }
 
 func (t *TxnRecord) Create(record *TxnRecord) error {

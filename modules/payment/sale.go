@@ -5,6 +5,7 @@ import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
+	"tpayment/internal/acquirer_impl/factory"
 	"tpayment/models"
 	"tpayment/models/payment/record"
 	"tpayment/modules"
@@ -15,18 +16,9 @@ import (
 
 const saleMaxExpTime = time.Minute * 5
 
-func SaleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
+func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 	var err error
-	//
-	//req := new(api_define.TxnReq)
-	//
-	//err := utils.Body2Json(ctx.Request.Body, req)
-	//if err != nil {
-	//	logger.Warn("Body2Json fail->", err.Error())
-	//	modules.BaseError(ctx, conf.ParameterError)
-	//	return
-	//}
 
 	// 创建response数据
 	resp := preBuildResp(req)
@@ -44,11 +36,13 @@ func SaleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		if errorCode != conf.Success {
 			return resp, errorCode
 		}
-		defer req.PaymentProcessRule.MerchantAccount.Terminal.UnLock()
+		defer func() {
+			req.PaymentProcessRule.MerchantAccount.Terminal.UnLock()
+		}()
 	}
 
 	// 获取sale交易对象
-	acquirerImpl, ok := acquirer_impl.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
+	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
 	if !ok {
 		logger.Warn("can't find acquirer impl->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError
@@ -59,6 +53,7 @@ func SaleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, conf.UnknownError
 	}
 
+	logger.Info("save.....", (req.TxnRecord == nil))
 	// 保存交易记录
 	req.TxnRecord.BaseModel = models.BaseModel{
 		Db:  models.DB(),
@@ -70,11 +65,17 @@ func SaleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, conf.DBError
 	}
 
+	logger.Info("mergeRespAfterPreHandle.....")
+	// 再次合并数据到返回结果
+	mergeRespAfterPreHandle(resp, req)
+
+	logger.Info("执行交易.....")
 	// 执行交易
 	saleResp, errorCode := saleImp.Sale(ctx, &acquirer_impl.SaleRequest{
 		TxqReq: req,
 	})
 
+	logger.Info("txn result->", errorCode)
 	switch errorCode {
 	case conf.Success: // success 逻辑写后面
 

@@ -11,18 +11,18 @@ import (
 type ApplePayKey struct {
 	models.BaseModel
 
-	AgencyID      string `gorm:"agency_id"`
-	PublicKeyHash string `gorm:"public_key_hash"`
-	Domain        string `gorm:"domain"`
+	AgencyID      uint   `gorm:"column:agency_id"`
+	PublicKeyHash string `gorm:"column:public_key_hash"`
+	Domain        string `gorm:"column:domain"`
 
-	PublicKey     string `gorm:"public_key"`
-	PrivateKey    string `gorm:"private_key"`
-	TlsPublicKey  string `gorm:"tls_public_key"`
-	TlsPrivateKey string `gorm:"tls_private_key"`
+	PublicKey     string `gorm:"column:public_key"`
+	PrivateKey    string `gorm:"column:private_key"`
+	TlsPublicKey  string `gorm:"column:tls_public_key"`
+	TlsPrivateKey string `gorm:"column:tls_private_key"`
 }
 
 func (ApplePayKey) TableName() string {
-	return "apple_pay_key"
+	return "payment_apple_pay_key"
 }
 
 func (key *ApplePayKey) GetKeyByHash(db *models.MyDB, ctx *gin.Context, publicHash string) (*ApplePayKey, error) {

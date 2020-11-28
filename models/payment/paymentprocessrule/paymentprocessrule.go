@@ -10,12 +10,12 @@ import (
 type PaymentProcessRule struct {
 	models.BaseModel
 
-	MerchantID uint `json:"merchant_id"`
+	MerchantID uint `gorm:"column:merchant_id"`
 
-	MerchantAccountID uint                `json:"merchant_account_id"`
-	PaymentMethods    *models.StringArray `json:"payment_methods"`
-	PaymentEntryTypes *models.StringArray `json:"payment_entry_types"`
-	PaymentTypes      *models.StringArray `json:"payment_types"`
+	MerchantAccountID uint                `gorm:"column:merchant_account_id"`
+	PaymentMethods    *models.StringArray `gorm:"column:payment_methods;type:JSON"`
+	PaymentEntryTypes *models.StringArray `gorm:"column:payment_entry_types;type:JSON"`
+	PaymentTypes      *models.StringArray `gorm:"column:payment_types;type:JSON"`
 
 	MerchantAccount *merchantaccount.MerchantAccount `json:"-"`
 }
@@ -26,7 +26,7 @@ func (PaymentProcessRule) TableName() string {
 
 func (rule *PaymentProcessRule) GetByMerchantID(db *models.MyDB, ctx *gin.Context, merchantID uint) ([]*PaymentProcessRule, error) {
 	var ret []*PaymentProcessRule
-	err := db.Model(rule).Where("merchant_id=?", merchantID).Find(ret).Error
+	err := db.Model(rule).Where("merchant_id=?", merchantID).Find(&ret).Error
 	if err != nil {
 		return nil, err
 	}

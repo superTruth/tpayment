@@ -14,7 +14,7 @@ import (
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
 	"tpayment/modules/merchant/merchantdevicepayment"
-	"tpayment/modules/payment/sale"
+	payment2 "tpayment/modules/payment"
 	"tpayment/modules/tms/app"
 	"tpayment/modules/tms/appfile"
 	"tpayment/modules/tms/appinbatchupdate"
@@ -154,7 +154,9 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlFileAdd, fileupload.RequestUploadFileUrl) // 创建文件
 
 	// Payment
-	e.POST(conf.UrlSale, sale.Handle)
+	e.POST(conf.UrlSale, payment2.SaleHandle)
+	e.POST(conf.UrlVoid, payment2.VoidHandle)
+	e.POST(conf.UrlRefund, payment2.RefundHandle)
 
 	return e, nil
 }

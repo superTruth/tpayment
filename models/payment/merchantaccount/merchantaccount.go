@@ -10,23 +10,23 @@ import (
 
 type MerchantAccount struct {
 	models.BaseModel
-	Name       string              `gorm:"name"`
-	Currencies *models.StringArray `gorm:"currencies"`
-	AcquirerID uint                `gorm:"acquirer_id"`
-	MID        string              `gorm:"mid"`
-	Addition   string              `gorm:"addition"`
-	Disable    bool                `gorm:"disable"`
+	Name       string              `gorm:"column:name"`
+	Currencies *models.StringArray `gorm:"column:currencies;type:JSON"`
+	AcquirerID uint                `gorm:"column:acquirer_id"`
+	MID        string              `gorm:"column:mid"`
+	Addition   string              `gorm:"column:addition"`
+	Disable    bool                `gorm:"column:disable"`
 
 	Acquirer *agency.Acquirer   `gorm:"-"`
 	Terminal *acquirer.Terminal `gorm:"-"`
 }
 
 func (MerchantAccount) TableName() string {
-	return "merchant_account"
+	return "payment_merchant_account"
 }
 
 func (m *MerchantAccount) Get(db *models.MyDB, ctx *gin.Context, merchantID uint) (*MerchantAccount, error) {
-	var ret *MerchantAccount
+	var ret = new(MerchantAccount)
 	err := db.Model(m).Where("id=?", merchantID).Find(ret).Error
 	if err != nil {
 		return nil, err

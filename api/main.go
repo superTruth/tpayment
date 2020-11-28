@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	conf.InitConfigData()
 
 	models.InitDB()

@@ -53,7 +53,7 @@ type CreditCardBean struct {
 	CardTrack2              string `json:"card_track2"`
 	CardTrack3              string `json:"card_track3"`
 	CardHolderName          string `json:"card_holder_name"`
-	IsMsdCard               string `json:"is_msd_card"`
+	IsMsdCard               bool   `json:"is_msd_card"`
 	Cvv                     string `json:"cvv"`
 	IccRequest              string `json:"icc_request"`
 	PIN                     string `json:"pin"`
@@ -61,8 +61,8 @@ type CreditCardBean struct {
 	OnlinePaymentCryptogram string `json:"online_payment_cryptogram"`
 
 	IccResponse  string `json:"icc_response"`
-	TraceNum     string `json:"trace_num"`
-	BatchNum     string `json:"batch_num"`
+	TraceNum     uint   `json:"trace_num"`
+	BatchNum     uint   `json:"batch_num"`
 	AuthCode     string `json:"auth_code"`
 	ResponseCode string `json:"response_code"`
 }

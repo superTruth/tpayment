@@ -5,6 +5,7 @@ import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
+	"tpayment/internal/acquirer_impl/factory"
 	"tpayment/models"
 	"tpayment/models/payment/record"
 	"tpayment/modules"
@@ -17,7 +18,7 @@ import (
 
 const voidMaxExpTime = time.Minute * 5
 
-func VoidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
+func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 	var err error
 
@@ -52,7 +53,7 @@ func VoidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 	}
 
 	// 获取void交易对象
-	acquirerImpl, ok := acquirer_impl.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
+	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
 	if !ok {
 		logger.Warn("can't find acquirer impl->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError
@@ -105,7 +106,7 @@ func VoidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		err = models.DB().Transaction(func(tx *gorm.DB) error {
 			// 原始记录
 			req.OrgRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{tx},
+				Db:  &models.MyDB{DB: tx},
 				Ctx: ctx,
 			}
 
@@ -117,7 +118,7 @@ func VoidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 
 			// 新记录
 			req.TxnRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{tx},
+				Db:  &models.MyDB{DB: tx},
 				Ctx: ctx,
 			}
 

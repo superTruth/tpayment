@@ -9,18 +9,18 @@ import (
 type Account struct {
 	models.BaseModel
 
-	AcquirerID string `gorm:"acquirer_id"`
-	Tag        string `gorm:"tag"`
-	TraceNum   uint   `gorm:"trace_num"`
-	BatchNum   uint   `gorm:"batch_num"`
+	AcquirerID string `gorm:"column:acquirer_id"`
+	Tag        string `gorm:"column:tag"`
+	TraceNum   uint   `gorm:"column:trace_num"`
+	BatchNum   uint   `gorm:"column:batch_num"`
 }
 
 func (Account) TableName() string {
-	return "acquirer_account"
+	return "payment_acquirer_account"
 }
 
 func (account *Account) GetOrCreate(acquirerID, tag string) (*Account, error) {
-	var ret *Account
+	var ret = new(Account)
 	err := account.Db.Model(account).Where("acquirer_id=? AND tag=?",
 		acquirerID, tag).First(ret).Error
 	if err != nil {

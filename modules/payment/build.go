@@ -9,34 +9,37 @@ import (
 
 func preBuildResp(req *api_define.TxnReq) *api_define.TxnResp {
 	ret := &api_define.TxnResp{
-		Uuid:               req.Uuid,
-		TxnID:              req.TxnRecord.ID,
-		TxnType:            req.TxnType,
-		DeviceID:           req.DeviceID,
-		PaymentMethod:      req.PaymentMethod,
-		MerchantID:         req.MerchantID,
-		Amount:             req.Amount,
-		Currency:           req.Currency,
-		TransactionState:   record.Pending,
-		AcquirerMerchantID: req.PaymentProcessRule.MerchantAccount.MID,
-		AcquirerTerminalID: "",
-		AcquirerName:       req.PaymentProcessRule.MerchantAccount.Acquirer.Name,
-		AcquirerType:       req.RealPaymentMethod,
-		CreditCardBean:     nil,
-	}
-
-	// Terminal
-	if req.PaymentProcessRule.MerchantAccount.Terminal != nil &&
-		req.PaymentProcessRule.MerchantAccount.Terminal.TID != "" {
-		ret.AcquirerTerminalID = req.PaymentProcessRule.MerchantAccount.Terminal.TID
+		Uuid:             req.Uuid,
+		TxnType:          req.TxnType,
+		DeviceID:         req.DeviceID,
+		PaymentMethod:    req.PaymentMethod,
+		MerchantID:       req.MerchantID,
+		Amount:           req.Amount,
+		Currency:         req.Currency,
+		TransactionState: record.Pending,
 	}
 
 	return ret
 }
 
+func mergeRespAfterPreHandle(resp *api_define.TxnResp, req *api_define.TxnReq) {
+	resp.TxnID = req.TxnRecord.ID
+	resp.AcquirerMerchantID = req.PaymentProcessRule.MerchantAccount.MID
+	resp.AcquirerName = req.PaymentProcessRule.MerchantAccount.Acquirer.Name
+	resp.AcquirerType = req.RealPaymentMethod
+
+	// Terminal
+	if req.PaymentProcessRule.MerchantAccount.Terminal != nil &&
+		req.PaymentProcessRule.MerchantAccount.Terminal.TID != "" {
+		resp.AcquirerTerminalID = req.PaymentProcessRule.MerchantAccount.Terminal.TID
+	}
+}
+
 func mergeAcquirerResponse(resp *api_define.TxnResp, acquirerResp *acquirer_impl.SaleResponse) {
 	resp.AcquirerRRN = acquirerResp.TxnResp.AcquirerRRN
-
+	resp.TransactionState = acquirerResp.TxnResp.TransactionState
+	resp.ErrorDesc = acquirerResp.TxnResp.ErrorDesc
+	resp.ErrorCode = acquirerResp.TxnResp.ErrorCode
 	// 拷贝信用卡数据
 	if acquirerResp.TxnResp.CreditCardBean != nil {
 		if resp.CreditCardBean == nil {

@@ -12,15 +12,15 @@ import (
 
 type Terminal struct {
 	models.BaseModel
-	DeviceID          string `gorm:"device_id"`
-	MerchantAccountID uint   `gorm:"merchant_account_id"`
-	TID               string `gorm:"tid"`
-	Addition          string `gorm:"addition"`
-	AvailableAt       int64  `gorm:"available_at"`
+	DeviceID          string `gorm:"column:device_id"`
+	MerchantAccountID uint   `gorm:"column:merchant_account_id"`
+	TID               string `gorm:"column:tid"`
+	Addition          string `gorm:"column:addition"`
+	AvailableAt       int64  `gorm:"column:available_at"`
 }
 
 func (Terminal) TableName() string {
-	return "tid"
+	return "payment_tid"
 }
 
 // 获取
@@ -40,7 +40,7 @@ func (tid *Terminal) Get(id uint) (*Terminal, error) {
 // 获取一条可用的TID
 func (tid *Terminal) GetOneAvailable(merchantAccountID uint, deviceID string) (*Terminal, conf.ResultCode) {
 	var (
-		ret      *Terminal
+		ret      = new(Terminal)
 		freeTIDs []*Terminal
 		err      error
 	)
@@ -98,7 +98,7 @@ func (tid *Terminal) GetTotal(merchantAccountID uint) (int, error) {
 func (tid *Terminal) Lock(timeOut time.Duration) conf.ResultCode {
 	logger := tlog.GetLogger(tid.Ctx)
 
-	expTime := time.Now().Unix() + int64(timeOut)
+	expTime := time.Now().Unix() + int64(timeOut/time.Second)
 	db := tid.Db.Model(tid).
 		Where("id=? AND available_at=?", tid.ID, tid.AvailableAt).
 		Update("available_at", expTime)
