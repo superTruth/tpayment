@@ -15,7 +15,7 @@ import (
 type Merchant struct {
 	models.BaseModel
 
-	AgencyId uint   `json:"agency_id" gorm:"column:agency_id"`
+	AgencyId uint64 `json:"agency_id" gorm:"column:agency_id"`
 	Name     string `json:"name,omitempty" gorm:"column:name"`
 	Tel      string `json:"tel,omitempty"  gorm:"column:tel"`
 	Addr     string `json:"addr,omitempty" gorm:"column:addr"`
@@ -26,7 +26,7 @@ func (Merchant) TableName() string {
 	return "merchant"
 }
 
-func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint) (*Merchant, error) {
+func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint64) (*Merchant, error) {
 	ret := new(Merchant)
 
 	err := db.Model(&Merchant{}).Where("id=?", id).First(ret).Error
@@ -41,7 +41,7 @@ func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint) (*Merchant, err
 	return ret, nil
 }
 
-func (m *Merchant) Get(id uint) (*Merchant, error) {
+func (m *Merchant) Get(id uint64) (*Merchant, error) {
 	ret := new(Merchant)
 	err := m.Db.Model(m).Where("id=?", id).First(ret).Error
 
@@ -56,7 +56,7 @@ func (m *Merchant) Get(id uint) (*Merchant, error) {
 }
 
 // 获取机构下面的商户
-func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Merchant, error) {
+func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint64, filters map[string]string) (uint64, []*Merchant, error) {
 	equalData := make(map[string]string)
 	if agencyId != 0 {
 		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
@@ -67,7 +67,7 @@ func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, 
 	tmpDb := db.Model(&Merchant{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -82,7 +82,7 @@ func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, 
 }
 
 // 获取账号相关的商户列表
-func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*Merchant, error) {
+func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*Merchant, error) {
 	var ret []*Merchant
 
 	agency := modules.IsAgencyAdmin(ctx)
@@ -108,7 +108,7 @@ func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint, 
 	}
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -121,7 +121,7 @@ func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint, 
 	return total, ret, nil
 }
 
-func GetMerchantsById(ids []uint) ([]Merchant, error) {
+func GetMerchantsById(ids []uint64) ([]Merchant, error) {
 	var ret []Merchant
 
 	err := models.DB().Model(&Merchant{}).Where(ids).First(&ret).Error

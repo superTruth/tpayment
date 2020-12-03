@@ -11,11 +11,11 @@ import (
 type PaymentSettingInDevice struct {
 	models.BaseModel
 
-	MerchantDeviceId uint                `json:"merchant_device_id,omitempty" gorm:"column:merchant_device_id"`
+	MerchantDeviceId uint64              `json:"merchant_device_id,omitempty" gorm:"column:merchant_device_id"`
 	PaymentMethods   *models.StringArray `json:"payment_methods,omitempty" gorm:"column:payment_methods;type:JSON"`
 	EntryTypes       *models.StringArray `json:"entry_types,omitempty" gorm:"column:entry_types;type:JSON"`
 	PaymentTypes     *models.StringArray `json:"payment_types,omitempty" gorm:"column:payment_types"`
-	AcquirerId       uint                `json:"acquirer_id,omitempty" gorm:"column:acquirer_id"`
+	AcquirerId       uint64              `json:"acquirer_id,omitempty" gorm:"column:acquirer_id"`
 	Mid              string              `json:"mid,omitempty" gorm:"column:mid"`
 	Tid              string              `json:"tid,omitempty" gorm:"column:tid"`
 	Addition         string              `json:"addition,omitempty" gorm:"column:addition"`
@@ -25,7 +25,7 @@ func (PaymentSettingInDevice) TableName() string {
 	return "merchant_payment_setting_in_device"
 }
 
-func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint) (*PaymentSettingInDevice, error) {
+func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint64) (*PaymentSettingInDevice, error) {
 	ret := new(PaymentSettingInDevice)
 
 	err := db.Model(&PaymentSettingInDevice{}).Where("id=?", id).First(ret).Error
@@ -40,7 +40,7 @@ func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint) (
 	return ret, nil
 }
 
-func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantDeviceId, offset, limit uint, filters map[string]string) (uint, []*PaymentSettingInDevice, error) {
+func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantDeviceId, offset, limit uint64, filters map[string]string) (uint64, []*PaymentSettingInDevice, error) {
 	var ret []*PaymentSettingInDevice
 
 	equalData := make(map[string]string)
@@ -50,7 +50,7 @@ func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, mercha
 	tmpDB := db.Model(&PaymentSettingInDevice{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

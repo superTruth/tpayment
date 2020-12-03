@@ -21,7 +21,7 @@ func QueryPaymentTypesHandle(ctx *gin.Context) {
 	}
 
 	ret := &modules.BaseQueryResponse{
-		Total: uint(len(paymentTypes)),
+		Total: uint64(len(paymentTypes)),
 		Data:  paymentTypes,
 	}
 

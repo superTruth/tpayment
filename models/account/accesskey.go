@@ -13,7 +13,7 @@ import (
 type UserAccessKeyBean struct {
 	models.BaseModel
 
-	UserId uint   `gorm:"column:user_id" json:"user_id,omitempty"`
+	UserId uint64 `gorm:"column:user_id" json:"user_id,omitempty"`
 	Key    string `gorm:"column:key" json:"key,omitempty"`
 	Secret string `gorm:"column:secret" json:"secret,omitempty"`
 }
@@ -22,7 +22,7 @@ func (UserAccessKeyBean) TableName() string {
 	return "user_access_key"
 }
 
-func GetUserAccessKeyFromID(db *models.MyDB, ctx *gin.Context, id uint) (*UserAccessKeyBean, error) {
+func GetUserAccessKeyFromID(db *models.MyDB, ctx *gin.Context, id uint64) (*UserAccessKeyBean, error) {
 	ret := new(UserAccessKeyBean)
 
 	err := db.Model(&UserAccessKeyBean{}).Where("id=?", id).First(ret).Error
@@ -52,7 +52,7 @@ func GetUserAccessKeyFromKey(db *models.MyDB, ctx *gin.Context, key string) (*Us
 	return ret, nil
 }
 
-func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*UserAccessKeyBean, error) {
+func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UserAccessKeyBean, error) {
 	var ret []*UserAccessKeyBean
 
 	equalData := make(map[string]string)
@@ -71,7 +71,7 @@ func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	tmpDB := db.Model(&UserAccessKeyBean{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

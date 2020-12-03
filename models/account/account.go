@@ -11,7 +11,7 @@ import (
 
 type UserBean struct {
 	models.BaseModel
-	AgencyId uint `gorm:"column:agency_id" json:"agency_id,omitempty"`
+	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id,omitempty"`
 
 	Email  string `gorm:"column:email" json:"email,omitempty"`
 	Pwd    string `gorm:"column:pwd" json:"pwd,omitempty"`
@@ -40,7 +40,7 @@ func GetUserByEmail(db *models.MyDB, ctx *gin.Context, email string) (*UserBean,
 	return ret, nil
 }
 
-func GetUserById(db *models.MyDB, ctx *gin.Context, id uint) (*UserBean, error) {
+func GetUserById(db *models.MyDB, ctx *gin.Context, id uint64) (*UserBean, error) {
 	ret := new(UserBean)
 
 	err := db.Model(&UserBean{}).Where("id=?", id).First(ret).Error
@@ -55,7 +55,7 @@ func GetUserById(db *models.MyDB, ctx *gin.Context, id uint) (*UserBean, error) 
 	return ret, nil
 }
 
-func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId uint, filters map[string]string) (uint, []*UserBean, error) {
+func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId uint64, filters map[string]string) (uint64, []*UserBean, error) {
 	var ret []*UserBean
 
 	equalData := make(map[string]string)
@@ -67,7 +67,7 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 	tmpDB := db.Model(&UserBean{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -117,7 +117,7 @@ func GetAppIdByAppID(db *models.MyDB, ctx *gin.Context, appId string) (*AppIdBea
 	return ret, nil
 }
 
-func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppIdBean, error) {
+func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
 	err := db.Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
@@ -135,8 +135,8 @@ func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppIdBean, error
 type TokenBean struct {
 	models.BaseModel
 
-	UserId uint   `gorm:"column:user_id" json:"user_id,omitempty"`
-	AppId  uint   `gorm:"column:app_id" json:"app_id,omitempty"`
+	UserId uint64 `gorm:"column:user_id" json:"user_id,omitempty"`
+	AppId  uint64 `gorm:"column:app_id" json:"app_id,omitempty"`
 	Token  string `gorm:"column:token" json:"token,omitempty"`
 }
 
@@ -144,7 +144,7 @@ func (TokenBean) TableName() string {
 	return "user_token"
 }
 
-func GetTokenByUserId(db *models.MyDB, ctx *gin.Context, userId, appId uint) (*TokenBean, error) {
+func GetTokenByUserId(db *models.MyDB, ctx *gin.Context, userId, appId uint64) (*TokenBean, error) {
 	ret := new(TokenBean)
 
 	err := db.Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error

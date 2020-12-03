@@ -33,22 +33,22 @@ type BaseResponse struct {
 }
 
 type BaseIDRequest struct {
-	ID uint `json:"id"`
+	ID uint64 `json:"id"`
 }
 
 type BaseQueryRequest struct {
-	MerchantId uint              `json:"merchant_id,omitempty"`
-	AgencyId   uint              `json:"agency_id,omitempty"`
-	DeviceId   uint              `json:"device_id,omitempty"`
-	AppId      uint              `json:"app_id,omitempty"`
-	BatchId    uint              `json:"batch_id,omitempty"`
-	Offset     uint              `json:"offset"`
-	Limit      uint              `json:"limit"`
+	MerchantId uint64            `json:"merchant_id,omitempty"`
+	AgencyId   uint64            `json:"agency_id,omitempty"`
+	DeviceId   uint64            `json:"device_id,omitempty"`
+	AppId      uint64            `json:"app_id,omitempty"`
+	BatchId    uint64            `json:"batch_id,omitempty"`
+	Offset     uint64            `json:"offset"`
+	Limit      uint64            `json:"limit"`
 	Filters    map[string]string `json:"filters,omitempty"`
 }
 
 type BaseQueryResponse struct {
-	Total uint `json:"total"`
+	Total uint64 `json:"total"`
 
 	Data interface{} `json:"data"`
 }

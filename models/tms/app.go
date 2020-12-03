@@ -12,7 +12,7 @@ import (
 type App struct {
 	models.BaseModel
 
-	AgencyId    uint   `gorm:"column:agency_id" json:"agency_id"`
+	AgencyId    uint64 `gorm:"column:agency_id" json:"agency_id"`
 	Name        string `gorm:"column:name" json:"name"`
 	PackageId   string `gorm:"column:package_id" json:"package_id"`
 	Description string `gorm:"column:description" json:"description"`
@@ -23,7 +23,7 @@ func (App) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint) (*App, error) {
+func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint64) (*App, error) {
 
 	ret := new(App)
 
@@ -39,7 +39,7 @@ func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint) (*App, error) {
 	return ret, nil
 }
 
-func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*App, error) {
+func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*App, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -52,7 +52,7 @@ func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filte
 	tmpDb := db.Model(&App{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

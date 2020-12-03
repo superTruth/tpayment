@@ -13,7 +13,7 @@ import (
 type BatchUpdate struct {
 	models.BaseModel
 
-	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
+	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id"`
 
 	Description string `gorm:"column:description" json:"description"`
 	Status      string `gorm:"column:status" json:"status"`
@@ -34,7 +34,7 @@ func (BatchUpdate) TableName() string {
 	return "tms_batch_update"
 }
 
-func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint) (*BatchUpdate, error) {
+func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint64) (*BatchUpdate, error) {
 	ret := new(BatchUpdate)
 
 	err := db.Model(&BatchUpdate{}).Where("id=?", id).First(ret).Error
@@ -49,7 +49,7 @@ func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint) (*Batc
 	return ret, nil
 }
 
-func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*BatchUpdate, error) {
+func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*BatchUpdate, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -62,7 +62,7 @@ func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uin
 	tmpDb := db.Model(&BatchUpdate{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -79,7 +79,7 @@ func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uin
 //select * from tms_device where
 //id in (select device_id from tms_device_and_tag_mid where tag_id IN (1,2) and deleted_at IS NULL group by device_id)
 //and deleted_at is null;
-func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *BatchUpdate, offset uint, limit uint) ([]*DeviceInfo, error) {
+func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *BatchUpdate, offset uint64, limit uint64) ([]*DeviceInfo, error) {
 	tmpDb := db.Model(&DeviceInfo{})
 
 	agencyId, err := modules.GetAgencyId2(ctx)

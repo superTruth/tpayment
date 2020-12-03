@@ -6,6 +6,7 @@ const (
 	Success                 ResultCode = "00"
 	UnknownError            ResultCode = "99"
 	PanicError              ResultCode = "98"
+	ConfigError             ResultCode = "97"
 	ParameterError          ResultCode = "03"
 	TokenInvalid            ResultCode = "04"
 	DBError                 ResultCode = "05"
@@ -41,6 +42,7 @@ var ResultCodeText = map[ResultCode]string{
 	ParameterError:          "parameter error",
 	UnknownError:            "internal error 99",
 	PanicError:              "internal error 98",
+	ConfigError:             "internal error 97",
 	TokenInvalid:            "token invalid",
 	ValidateError:           "validate error",
 	DBError:                 "internal error 05",

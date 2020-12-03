@@ -29,7 +29,7 @@ func QueryHandle(ctx *gin.Context) {
 	}
 
 	// 机构管理员
-	agencyId := uint(0)
+	agencyId := uint64(0)
 	var userBean *account.UserBean
 	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
 	if ok {

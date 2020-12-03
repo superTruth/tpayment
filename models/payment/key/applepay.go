@@ -11,7 +11,7 @@ import (
 type ApplePayKey struct {
 	models.BaseModel
 
-	AgencyID      uint   `gorm:"column:agency_id"`
+	AgencyID      uint64 `gorm:"column:agency_id"`
 	PublicKeyHash string `gorm:"column:public_key_hash"`
 	Domain        string `gorm:"column:domain"`
 

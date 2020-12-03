@@ -301,9 +301,14 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 
 	// 查找merchant account
 	var err error
-	merchantBean := new(merchantaccount.MerchantAccount)
+	merchantBean := &merchantaccount.MerchantAccount{
+		BaseModel: models.BaseModel{
+			Db:  models.DB(),
+			Ctx: ctx,
+		},
+	}
 	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccountID)
+		merchantBean.Get(txn.PaymentProcessRule.MerchantAccountID)
 	if err != nil {
 		logger.Error("merchantBean.Get->", err.Error())
 		return conf.DBError
@@ -314,9 +319,13 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 	}
 
 	// 查找acquirer
-	acquirerBean := new(agency.Acquirer)
+	acquirerBean := &agency.Acquirer{
+		BaseModel: models.BaseModel{
+			Db: models.DB(),
+		},
+	}
 	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccount.AcquirerID)
+		acquirerBean.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
 	if err != nil {
 		logger.Error("acquirerBean.Get->", err.Error())
 		return conf.DBError
@@ -364,9 +373,14 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 	txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
 	// 查找merchant account
 	var err error
-	merchantBean := new(merchantaccount.MerchantAccount)
+	merchantBean := &merchantaccount.MerchantAccount{
+		BaseModel: models.BaseModel{
+			Db:  models.DB(),
+			Ctx: ctx,
+		},
+	}
 	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(models.DB(), ctx, txn.OrgRecord.MerchantAccountID)
+		merchantBean.Get(txn.OrgRecord.MerchantAccountID)
 	if err != nil {
 		logger.Error("merchantBean.Get->", err.Error())
 		return conf.DBError
@@ -377,9 +391,13 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 	}
 
 	// 查找acquirer
-	acquirerBean := new(agency.Acquirer)
+	acquirerBean := &agency.Acquirer{
+		BaseModel: models.BaseModel{
+			Db: models.DB(),
+		},
+	}
 	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(models.DB(), ctx, txn.PaymentProcessRule.MerchantAccount.AcquirerID)
+		acquirerBean.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
 	if err != nil {
 		logger.Error("acquirerBean.Get->", err.Error())
 		return conf.DBError
@@ -506,5 +524,27 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	}
 
 	txn.TxnRecord = ret
+
+	// 详细信息
+	txn.TxnRecordDetail = &record.TxnRecordDetail{
+		TxnExpAt:              nil,
+		CreditCardExp:         "",
+		CreditCardFallBack:    false,
+		CreditCardSN:          "",
+		CreditCardHolderName:  "",
+		CreditCardIsMsdCard:   false,
+		CreditCardIccRequest:  "",
+		CreditCardECI:         "",
+		CreditCardIccResponse: "",
+		ResponseCode:          "",
+		TokenType:             "",
+		Token:                 "",
+		TDSEnable:             false,
+		PayRedirectUrl:        "",
+		RedirectSuccessUrl:    "",
+		RedirectFailUrl:       "",
+		Addition:              "",
+	}
+
 	return conf.Success
 }

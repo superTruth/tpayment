@@ -29,9 +29,14 @@ func mergeRespAfterPreHandle(resp *api_define.TxnResp, req *api_define.TxnReq) {
 	resp.AcquirerType = req.RealPaymentMethod
 
 	// Terminal
-	if req.PaymentProcessRule.MerchantAccount.Terminal != nil &&
-		req.PaymentProcessRule.MerchantAccount.Terminal.TID != "" {
+	if req.PaymentProcessRule.MerchantAccount.Terminal != nil {
 		resp.AcquirerTerminalID = req.PaymentProcessRule.MerchantAccount.Terminal.TID
+
+		if resp.CreditCardBean == nil {
+			resp.CreditCardBean = new(api_define.CreditCardBean)
+		}
+		resp.CreditCardBean.BatchNum = req.CreditCardBean.BatchNum
+		resp.CreditCardBean.TraceNum = req.CreditCardBean.TraceNum
 	}
 }
 
@@ -46,8 +51,6 @@ func mergeAcquirerResponse(resp *api_define.TxnResp, acquirerResp *acquirer_impl
 			resp.CreditCardBean = new(api_define.CreditCardBean)
 		}
 
-		resp.CreditCardBean.BatchNum = acquirerResp.TxnResp.CreditCardBean.BatchNum
-		resp.CreditCardBean.TraceNum = acquirerResp.TxnResp.CreditCardBean.TraceNum
 		resp.CreditCardBean.AuthCode = acquirerResp.TxnResp.CreditCardBean.AuthCode
 		resp.CreditCardBean.IccResponse = acquirerResp.TxnResp.CreditCardBean.IccResponse
 		resp.CreditCardBean.ResponseCode = acquirerResp.TxnResp.CreditCardBean.ResponseCode
@@ -56,12 +59,11 @@ func mergeAcquirerResponse(resp *api_define.TxnResp, acquirerResp *acquirer_impl
 
 func mergeResponseToRecord(record *record.TxnRecord, resp *acquirer_impl.SaleResponse) {
 	record.AcquirerRRN = resp.TxnResp.AcquirerRRN
-	if resp.TxnResp.CreditCardBean != nil {
-		record.AcquirerAuthCode = resp.TxnResp.CreditCardBean.AuthCode
-		record.AcquirerBatchNum = resp.TxnResp.CreditCardBean.BatchNum
-	}
+
 	record.AcquirerReconID = resp.AcquirerReconID
 	t := time.Now()
 	record.CompleteAt = &t
 	record.Status = resp.TxnResp.TransactionState
+	record.ErrorCode = resp.TxnResp.ErrorCode
+	record.ErrorDes = resp.TxnResp.ErrorDesc
 }

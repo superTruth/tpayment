@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CheckPermission(ctx *gin.Context, merchantId uint) error {
+func CheckPermission(ctx *gin.Context, merchantId uint64) error {
 	// 1. 是否存在这2个账号
 	merchantBean, err := merchant.GetMerchantById(models.DB(), ctx, merchantId)
 	if err != nil {

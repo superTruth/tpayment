@@ -19,7 +19,7 @@ type AppFile struct {
 	Status            string `gorm:"column:decode_status" json:"status"`
 	DecodeFailMsg     string `gorm:"column:decode_fail_msg" json:"decode_fail_msg"`
 
-	AppId uint `gorm:"column:app_id" json:"app_id"`
+	AppId uint64 `gorm:"column:app_id" json:"app_id"`
 }
 
 func (AppFile) TableName() string {
@@ -27,7 +27,7 @@ func (AppFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppFile, error) {
+func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppFile, error) {
 
 	ret := new(AppFile)
 
@@ -43,7 +43,7 @@ func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppFile, error
 	return ret, nil
 }
 
-func QueryAppFileRecord(db *models.MyDB, ctx *gin.Context, appId, offset, limit uint, filters map[string]string) (uint, []*AppFile, error) {
+func QueryAppFileRecord(db *models.MyDB, ctx *gin.Context, appId, offset, limit uint64, filters map[string]string) (uint64, []*AppFile, error) {
 	equalData := make(map[string]string)
 	equalData["app_id"] = strconv.FormatUint(uint64(appId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
@@ -52,7 +52,7 @@ func QueryAppFileRecord(db *models.MyDB, ctx *gin.Context, appId, offset, limit 
 	tmpDb := db.Model(&AppFile{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

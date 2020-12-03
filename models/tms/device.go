@@ -13,11 +13,11 @@ import (
 
 type DeviceInfo struct {
 	models.BaseModel
-	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
+	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id"`
 
 	DeviceSn        string `gorm:"column:device_sn" json:"device_sn"`
 	DeviceCsn       string `gorm:"column:device_csn" json:"device_csn"`
-	DeviceModel     uint   `gorm:"column:device_model" json:"-"`
+	DeviceModel     uint64 `gorm:"column:device_model" json:"-"`
 	DeviceModelName string `gorm:"-" json:"device_model"`
 	Alias           string `gorm:"column:alias" json:"alias"`
 
@@ -66,7 +66,7 @@ func GetDeviceBySn(db *models.MyDB, ctx *gin.Context, deviceSn string) (*DeviceI
 }
 
 // 根据device ID获取设备信息
-func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceInfo, error) {
+func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInfo, error) {
 
 	ret := new(DeviceInfo)
 
@@ -82,7 +82,7 @@ func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceInfo, err
 	return ret, nil
 }
 
-func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint) error {
+func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint64) error {
 	err := db.Model(&DeviceInfo{}).Where("id=?", id).Update("agency_id", 0).Error
 
 	if err != nil {
@@ -92,7 +92,7 @@ func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint) error {
 	return nil
 }
 
-func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
+func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
 	equalData := make(map[string]string)
 	equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
@@ -101,7 +101,7 @@ func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, of
 	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -115,7 +115,7 @@ func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, of
 	return total, ret, nil
 }
 
-func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceInfo, error) {
+func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
 
 	agency := modules.IsAgencyAdmin(ctx)
 
@@ -129,7 +129,7 @@ func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, fi
 	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -169,14 +169,14 @@ func QueryTagsInDevice(db *models.MyDB, ctx *gin.Context, device *DeviceInfo) ([
 // devicetag
 type DeviceTagFull struct {
 	DeviceTag
-	MidId uint `json:"agency_id" gorm:"column:mid_id"`
+	MidId uint64 `json:"agency_id" gorm:"column:mid_id"`
 }
 
 type DeviceAndTagMid struct {
 	models.BaseModel
 
-	TagID    uint `gorm:"column:tag_id"`
-	DeviceId uint `gorm:"column:device_id"`
+	TagID    uint64 `gorm:"column:tag_id"`
+	DeviceId uint64 `gorm:"column:device_id"`
 }
 
 func (DeviceAndTagMid) TableName() string {

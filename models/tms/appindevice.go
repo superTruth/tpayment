@@ -11,7 +11,7 @@ import (
 type AppInDevice struct {
 	models.BaseModel
 
-	ExternalId     uint   `gorm:"column:external_id" json:"external_id"`           // 外键
+	ExternalId     uint64 `gorm:"column:external_id" json:"external_id"`           // 外键
 	ExternalIdType string `gorm:"column:external_id_type" json:"external_id_type"` // 外键
 
 	Name        string `gorm:"column:name" json:"name"`
@@ -20,8 +20,8 @@ type AppInDevice struct {
 	VersionCode int    `gorm:"column:version_code" json:"version_code"`
 	Status      string `gorm:"column:status" json:"status"`
 
-	AppID     uint `gorm:"column:app_id" json:"app_id"`
-	AppFileId uint `gorm:"column:app_file_id" json:"app_file_id"`
+	AppID     uint64 `gorm:"column:app_id" json:"app_id"`
+	AppFileId uint64 `gorm:"column:app_file_id" json:"app_file_id"`
 
 	App     *App     `gorm:"-" json:"app"`
 	AppFile *AppFile `gorm:"-" json:"app_file"`
@@ -36,7 +36,7 @@ const (
 	AppInDeviceExternalIdTypeBatchUpdate = "batch"
 )
 
-func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint, externalIdType string, offset uint, limit uint) (uint, []*AppInDevice, error) {
+func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint64, externalIdType string, offset uint64, limit uint64) (uint64, []*AppInDevice, error) {
 	var ret []*AppInDevice
 
 	equalData := make(map[string]string)
@@ -47,7 +47,7 @@ func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint, externa
 	tmpDb := db.Model(&AppInDevice{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -76,7 +76,7 @@ func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint, externa
 }
 
 // 根据device ID获取设备信息
-func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppInDevice, error) {
+func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppInDevice, error) {
 
 	ret := new(AppInDevice)
 
@@ -94,7 +94,7 @@ func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint) (*AppInDevic
 
 // 1. 只有package id这种非法安装的app
 // 2. 包含app id这种配置安装的app
-func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint, appInDevice *AppInDevice) (*AppInDevice, error) {
+func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint64, appInDevice *AppInDevice) (*AppInDevice, error) {
 	ret := new(AppInDevice)
 	//err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
 	//	appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("tms_app app ON app.id=? AND deleted_at is null", appInDevice.AppID).

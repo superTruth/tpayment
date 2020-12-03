@@ -32,17 +32,30 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 
 	// 锁定TID
 	if req.PaymentProcessRule.MerchantAccount.Terminal != nil { // 如果有TID的情况，需要锁定TID
+		logger.Info("lock tid->", req.PaymentProcessRule.MerchantAccount.Terminal.TID)
 		errorCode = req.PaymentProcessRule.MerchantAccount.Terminal.Lock(saleMaxExpTime)
 		if errorCode != conf.Success {
 			return resp, errorCode
 		}
 		defer func() {
+			logger.Info("unlock tid->", req.PaymentProcessRule.MerchantAccount.Terminal.TID)
 			req.PaymentProcessRule.MerchantAccount.Terminal.UnLock()
 		}()
+		req.CreditCardBean.TraceNum = req.PaymentProcessRule.MerchantAccount.Terminal.TraceNum
+		req.CreditCardBean.BatchNum = req.PaymentProcessRule.MerchantAccount.Terminal.BatchNum
+		req.TxnRecord.AcquirerTraceNum = req.CreditCardBean.TraceNum
+		req.TxnRecord.AcquirerBatchNum = req.CreditCardBean.BatchNum
+
+		// trace No自增
+		err = req.PaymentProcessRule.MerchantAccount.Terminal.IncTraceNum()
+		if err != nil {
+			logger.Error("req.PaymentProcessRule.MerchantAccount.Terminal.IncTraceNum fail->", err.Error())
+			return resp, conf.DBError
+		}
 	}
 
 	// 获取sale交易对象
-	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
+	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.ImplName]
 	if !ok {
 		logger.Warn("can't find acquirer impl->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError
@@ -53,7 +66,6 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, conf.UnknownError
 	}
 
-	logger.Info("save.....", (req.TxnRecord == nil))
 	// 保存交易记录
 	req.TxnRecord.BaseModel = models.BaseModel{
 		Db:  models.DB(),

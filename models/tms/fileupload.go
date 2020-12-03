@@ -11,7 +11,7 @@ import (
 
 type UploadFile struct {
 	models.BaseModel
-	AgencyId uint `gorm:"column:agency_id" json:"agency_id"`
+	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id"`
 
 	DeviceSn string `gorm:"column:device_sn" json:"device_sn"`
 	FileName string `gorm:"column:file_name" json:"file_name"`
@@ -23,7 +23,7 @@ func (UploadFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*UploadFile, error) {
+func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*UploadFile, error) {
 
 	ret := new(UploadFile)
 
@@ -39,7 +39,7 @@ func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint) (*UploadFile,
 	return ret, nil
 }
 
-func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*UploadFile, error) {
+func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UploadFile, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -52,7 +52,7 @@ func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	tmpDb := db.Model(&UploadFile{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

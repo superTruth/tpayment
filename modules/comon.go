@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAgencyId(ctx *gin.Context, reqAgencyId uint) (uint, error) {
-	var agencyId uint
+func GetAgencyId(ctx *gin.Context, reqAgencyId uint64) (uint64, error) {
+	var agencyId uint64
 	var userBean *account.UserBean
 	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
 	if ok {
@@ -39,8 +39,8 @@ func GetAgencyId(ctx *gin.Context, reqAgencyId uint) (uint, error) {
 	return agencyId, nil
 }
 
-func GetAgencyId2(ctx *gin.Context) (uint, error) {
-	var agencyId uint
+func GetAgencyId2(ctx *gin.Context) (uint64, error) {
+	var agencyId uint64
 	var userBean *account.UserBean
 	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
 	if ok {

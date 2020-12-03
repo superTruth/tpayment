@@ -79,7 +79,7 @@ func AddHandle(ctx *gin.Context) {
 	}, ctx)
 }
 
-func StartDecode(ctx *gin.Context, id uint) {
+func StartDecode(ctx *gin.Context, id uint64) {
 	logger := tlog.GetLogger(ctx)
 
 	logger.Info("start decode app file->", id)

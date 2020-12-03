@@ -10,7 +10,7 @@ import (
 )
 
 type BaseModel struct {
-	ID        uint       `gorm:"primary_key" json:"id,omitempty"`
+	ID        uint64     `gorm:"primary_key" json:"id,omitempty"`
 	CreatedAt time.Time  `gorm:"created_at" json:"created_at,omitempty"`
 	UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at,omitempty"`
 	DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at,omitempty"`
@@ -31,7 +31,7 @@ func UpdateBaseRecord(record interface{}) error {
 	return DB().Model(record).Update(record).Error
 }
 
-func QueryBaseRecord(orgModel interface{}, offset, limit uint, filters map[string]string) (uint, []map[string]interface{}, error) {
+func QueryBaseRecord(orgModel interface{}, offset, limit uint64, filters map[string]string) (uint64, []map[string]interface{}, error) {
 
 	filterTmp := make(map[string]interface{})
 
@@ -42,7 +42,7 @@ func QueryBaseRecord(orgModel interface{}, offset, limit uint, filters map[strin
 	fmt.Println("filterTmp->", filterTmp)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := DB().Model(orgModel).Where(filterTmp).Count(&total).Error
 	if err != nil {
 		return 0, nil, err

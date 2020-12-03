@@ -11,15 +11,15 @@ import (
 type DeviceInMerchant struct {
 	models.BaseModel
 
-	DeviceId   uint `json:"device_id" gorm:"column:device_id"`
-	MerchantId uint `json:"merchant_id" gorm:"column:merchant_id"`
+	DeviceId   uint64 `json:"device_id" gorm:"column:device_id"`
+	MerchantId uint64 `json:"merchant_id" gorm:"column:merchant_id"`
 }
 
 func (DeviceInMerchant) TableName() string {
 	return "merchant_device"
 }
 
-func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceInMerchant, error) {
+func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInMerchant, error) {
 	ret := new(DeviceInMerchant)
 
 	err := db.Model(&DeviceInMerchant{}).Where("id=?", id).First(ret).Error
@@ -36,17 +36,17 @@ func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint
 
 type DeviceInMerchantQueryBean struct {
 	models.BaseModel
-	DeviceId uint   `json:"device_id"`
+	DeviceId uint64 `json:"device_id"`
 	DeviceSn string `json:"device_sn"`
 }
 
-func QueryMerchantDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*DeviceInMerchantQueryBean, error) {
+func QueryMerchantDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInMerchantQueryBean, error) {
 	// conditions
 	tmpDb := db.Table(tms.DeviceInfo{}.TableName()).Model(&tms.DeviceInfo{})
 	tmpDb = tmpDb.Joins("JOIN merchant_device ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err

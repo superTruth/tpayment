@@ -1,14 +1,22 @@
 package standard
 
-import "tpayment/internal/acquirer_impl"
+import (
+	"strconv"
+	"strings"
+	"tpayment/models/agency"
+	"tpayment/models/payment/acquirer"
+	"tpayment/models/payment/merchantaccount"
+)
 
-func GetAccountTag(req *acquirer_impl.SaleRequest) string {
-	var mid, tid string
-	mid = req.TxqReq.PaymentProcessRule.MerchantAccount.MID
+func GetAccountTag(acq *agency.Acquirer, mid *merchantaccount.MerchantAccount, tid *acquirer.Terminal) string {
+	sb := strings.Builder{}
 
-	if req.TxqReq.PaymentProcessRule.MerchantAccount.Terminal != nil {
-		tid = req.TxqReq.PaymentProcessRule.MerchantAccount.Terminal.TID
+	sb.WriteString(strconv.Itoa(int(acq.ID)))
+	sb.WriteString("-")
+	sb.WriteString(strconv.Itoa(int(mid.ID)))
+	if tid != nil {
+
 	}
 
-	return mid + tid
+	return sb.String()
 }

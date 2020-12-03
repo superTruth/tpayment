@@ -23,7 +23,7 @@ func (Agency) TableName() string {
 	return "agency"
 }
 
-func (a *Agency) Get(id uint) (*Agency, error) {
+func (a *Agency) Get(id uint64) (*Agency, error) {
 	ret := new(Agency)
 	err := a.Db.Model(a).Where("id=?", id).First(ret).Error
 
@@ -37,7 +37,7 @@ func (a *Agency) Get(id uint) (*Agency, error) {
 	return ret, nil
 }
 
-func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*Agency, error) {
+func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*Agency, error) {
 	var ret []*Agency
 
 	equalData := make(map[string]string)
@@ -59,7 +59,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, fi
 	}
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -78,7 +78,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, fi
 	return total, ret, nil
 }
 
-func GetAgencyById(db *models.MyDB, ctx *gin.Context, id uint) (*Agency, error) {
+func GetAgencyById(db *models.MyDB, ctx *gin.Context, id uint64) (*Agency, error) {
 	ret := new(Agency)
 
 	err := db.Model(&Agency{}).Where("id=?", id).First(ret).Error

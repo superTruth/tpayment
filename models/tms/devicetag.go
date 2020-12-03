@@ -14,7 +14,7 @@ import (
 type DeviceTag struct {
 	models.BaseModel
 
-	AgencyId    uint   `json:"agency_id" gorm:"column:agency_id"`
+	AgencyId    uint64 `json:"agency_id" gorm:"column:agency_id"`
 	Name        string `json:"name" gorm:"column:name"` // 外键
 	Description string `json:"description" gorm:"column:description"`
 }
@@ -24,7 +24,7 @@ func (DeviceTag) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetDeviceTagByID(db *models.MyDB, ctx *gin.Context, id uint) (*DeviceTag, error) {
+func GetDeviceTagByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceTag, error) {
 
 	ret := new(DeviceTag)
 
@@ -53,7 +53,7 @@ func GetDeviceTagByIDs(db *models.MyDB, ctx *gin.Context, ids *models.IntArray) 
 	return ret, nil
 }
 
-func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint, filters map[string]string) (uint, []*DeviceTag, error) {
+func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceTag, error) {
 
 	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
@@ -69,7 +69,7 @@ func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint,
 	tmpDb := db.Model(&DeviceTag{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err = tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -83,7 +83,7 @@ func QueryDeviceTagRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint,
 	return total, ret, nil
 }
 
-func IsTagUsing(db *models.MyDB, ctx *gin.Context, tagId uint) (bool, error) {
+func IsTagUsing(db *models.MyDB, ctx *gin.Context, tagId uint64) (bool, error) {
 	ret := new(DeviceAndTagMid)
 	err := db.Model(&DeviceAndTagMid{}).Where("tag_id=?", tagId).First(ret).Error
 	if err != nil {

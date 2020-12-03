@@ -11,20 +11,22 @@ import (
 type Acquirer struct {
 	models.BaseModel
 
-	Name          string `json:"name" gorm:"column:name"`
-	Addition      string `json:"addition"  gorm:"column:addition"`
-	ConfigFileUrl string `json:"config_file_url" gorm:"column:config_file_url"`
-	AgencyId      uint   `json:"agency_id"  gorm:"column:agency_id"`
+	Name               string `json:"name" gorm:"column:name"`
+	ImplName           string `json:"impl_name" gorm:"column:impl_name"`
+	Addition           string `json:"addition"  gorm:"column:addition"`
+	ConfigFileUrl      string `json:"config_file_url" gorm:"column:config_file_url"`
+	AgencyId           uint64 `json:"agency_id"  gorm:"column:agency_id"`
+	AutoSettlementTime string `json:"auto_settlement_time" gorm:"column:auto_settlement_time"`
 }
 
 func (Acquirer) TableName() string {
 	return "agency_acquirer"
 }
 
-func (acq *Acquirer) Get(db *models.MyDB, ctx *gin.Context, id uint) (*Acquirer, error) {
+func (acq *Acquirer) Get(id uint64) (*Acquirer, error) {
 	ret := new(Acquirer)
 
-	err := db.Model(acq).Where("id=?", id).First(ret).Error
+	err := acq.Db.Model(acq).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -36,7 +38,7 @@ func (acq *Acquirer) Get(db *models.MyDB, ctx *gin.Context, id uint) (*Acquirer,
 	return ret, nil
 }
 
-func GetAcquirerById(id uint) (*Acquirer, error) {
+func GetAcquirerById(id uint64) (*Acquirer, error) {
 	ret := new(Acquirer)
 
 	err := models.DB().Model(&Acquirer{}).Where("id=?", id).First(ret).Error
@@ -51,7 +53,7 @@ func GetAcquirerById(id uint) (*Acquirer, error) {
 	return ret, nil
 }
 
-func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint, filters map[string]string) (uint, []*Acquirer, error) {
+func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint64, filters map[string]string) (uint64, []*Acquirer, error) {
 	equalData := make(map[string]string)
 	if agencyId != 0 {
 		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
@@ -62,7 +64,7 @@ func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, li
 	tmpDb := db.Model(&Acquirer{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
@@ -74,4 +76,17 @@ func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, li
 	}
 
 	return total, ret, nil
+}
+
+// 查找需要结算的收单
+func (acq *Acquirer) GetNeedSettlement(hour string) ([]*Acquirer, error) {
+	var ret []*Acquirer
+
+	err := acq.Db.Model(acq).Where("auto_settlement_time LIKE ?%", hour).Find(&ret).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }

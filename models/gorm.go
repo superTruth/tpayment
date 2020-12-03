@@ -32,7 +32,7 @@ func (c *StringArray) String() string {
 }
 
 // int类型
-type IntArray []uint
+type IntArray []uint64
 
 func (c IntArray) Value() (driver.Value, error) {
 	return gorm_json.Value(c)
@@ -41,8 +41,8 @@ func (c *IntArray) Scan(input interface{}) error {
 	return gorm_json.Scan(input, c)
 }
 
-func (c *IntArray) Change2UintArray() []uint {
-	tmp := make([]uint, len(*c))
+func (c *IntArray) Change2UintArray() []uint64 {
+	tmp := make([]uint64, len(*c))
 
 	for i := 0; i < len(tmp); i++ {
 		tmp[i] = (*c)[i]

@@ -80,7 +80,7 @@ func HearBeat(ctx *gin.Context) {
 	for i := 0; ; i++ {
 		logger.Info("查询一次记录->", i)
 		_, dbApps, err := tms.GetAppsInDevice(models.DB(), ctx, deviceInfo.ID,
-			tms.AppInDeviceExternalIdTypeDevice, uint(i*PageLen), PageLen) // 最多查出200条记录
+			tms.AppInDeviceExternalIdTypeDevice, uint64(i*PageLen), PageLen) // 最多查出200条记录
 		if err != nil {
 			logger.Error("GetAppsInDevice error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
@@ -414,7 +414,7 @@ func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 	return retApp
 }
 
-var deviceModels map[string]uint
+var deviceModels map[string]uint64
 
 func readDeviceModels(ctx *gin.Context) {
 	goroutine.Go(func() {
@@ -423,7 +423,7 @@ func readDeviceModels(ctx *gin.Context) {
 		for {
 			modelArray, err := tms.GetModels()
 			if err == nil {
-				deviceModelTmp := make(map[string]uint)
+				deviceModelTmp := make(map[string]uint64)
 				for _, v := range modelArray {
 					deviceModelTmp[v.Name] = v.ID
 				}

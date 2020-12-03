@@ -51,7 +51,7 @@ func AddHandle(ctx *gin.Context) {
 }
 
 // 单个添加设备
-func AddByID(ctx *gin.Context, agencyId, deviceId uint) conf.ResultCode {
+func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	device := tms.DeviceInfo{
 		BaseModel: models.BaseModel{
@@ -72,7 +72,7 @@ func AddByID(ctx *gin.Context, agencyId, deviceId uint) conf.ResultCode {
 // 批量文件添加设备
 const downloadDir = "./agencydevicefiles/"
 
-func AddByFile(ctx *gin.Context, agencyId uint, fileUrl string) conf.ResultCode {
+func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	// 先下载文件

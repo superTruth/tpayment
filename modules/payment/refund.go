@@ -42,7 +42,7 @@ func refundHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp
 	}
 
 	// 获取void交易对象
-	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.Name]
+	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.ImplName]
 	if !ok {
 		logger.Warn("can't find acquirer impl->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError

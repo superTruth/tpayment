@@ -12,8 +12,8 @@ import (
 type UserMerchantAssociate struct {
 	models.BaseModel
 
-	MerchantId uint   `json:"merchant_id" gorm:"column:merchant_id"`
-	UserId     uint   `json:"user_id" gorm:"column:user_id"`
+	MerchantId uint64 `json:"merchant_id" gorm:"column:merchant_id"`
+	UserId     uint64 `json:"user_id" gorm:"column:user_id"`
 	Role       string `json:"role" gorm:"column:role"`
 }
 
@@ -21,7 +21,7 @@ func (UserMerchantAssociate) TableName() string {
 	return "merchant_user_associate"
 }
 
-func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint64) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
 	err := db.Model(&UserMerchantAssociate{}).Where("id=?", id).First(ret).Error
@@ -36,7 +36,7 @@ func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint) (*
 	return ret, nil
 }
 
-func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Context, merchantId, userId uint) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Context, merchantId, userId uint64) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
 	err := db.Model(&UserMerchantAssociate{}).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
@@ -59,7 +59,7 @@ type AssociateMerchantUserBean struct {
 	Role  string `json:"role"`
 }
 
-func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint, filters map[string]string) (uint, []*AssociateMerchantUserBean, error) {
+func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint64, filters map[string]string) (uint64, []*AssociateMerchantUserBean, error) {
 	equalData := make(map[string]string)
 	equalData["merchant_id"] = strconv.FormatUint(uint64(merchantId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
@@ -69,7 +69,7 @@ func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offse
 	tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
-	var total uint = 0
+	var total uint64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
