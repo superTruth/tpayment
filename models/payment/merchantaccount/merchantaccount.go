@@ -4,6 +4,8 @@ import (
 	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/models/payment/acquirer"
+
+	"github.com/jinzhu/gorm"
 )
 
 type MerchantAccount struct {
@@ -27,6 +29,9 @@ func (m *MerchantAccount) Get(merchantID uint64) (*MerchantAccount, error) {
 	var ret = new(MerchantAccount)
 	err := m.Db.Model(m).Where("id=?", merchantID).Find(ret).Error
 	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
 		return nil, err
 	}
 

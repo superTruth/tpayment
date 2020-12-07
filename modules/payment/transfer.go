@@ -1,7 +1,6 @@
 package payment
 
 import (
-	"time"
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
@@ -9,6 +8,7 @@ import (
 	"tpayment/models"
 	"tpayment/models/payment/record"
 	"tpayment/modules"
+	"tpayment/pkg/id"
 	"tpayment/pkg/tlog"
 
 	"github.com/jinzhu/gorm"
@@ -16,11 +16,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const voidMaxExpTime = time.Minute * 5
-
-func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
+func transferHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 	var err error
+
+	err = api_define.Validate(ctx, req)
+	if err != nil {
+		logger.Warn("validate request body error->", err.Error())
+		return nil, conf.ParameterError
+	}
 
 	// 创建response数据
 	resp := preBuildResp(req)
@@ -32,33 +36,37 @@ func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, errorCode
 	}
 
-	// 判断是否可以void
-	if req.OrgRecord.AcquirerSettlementAt != nil { // 被结算过的交易不能void
-		logger.Warn("the record was settled->", req.OrgTxnID)
-		return resp, conf.Settled
-	}
-
-	if req.OrgRecord.VoidAt != nil { // 已经被void过
-		logger.Warn("the record was voided")
-		return resp, conf.Voided
-	}
-
 	// 锁定TID
 	if req.PaymentProcessRule.MerchantAccount.Terminal != nil { // 如果有TID的情况，需要锁定TID
-		errorCode = req.PaymentProcessRule.MerchantAccount.Terminal.Lock(voidMaxExpTime)
+		logger.Info("lock tid->", req.PaymentProcessRule.MerchantAccount.Terminal.TID)
+		errorCode = req.PaymentProcessRule.MerchantAccount.Terminal.Lock(saleMaxExpTime)
 		if errorCode != conf.Success {
 			return resp, errorCode
 		}
-		defer req.PaymentProcessRule.MerchantAccount.Terminal.UnLock()
+		defer func() {
+			logger.Info("unlock tid->", req.PaymentProcessRule.MerchantAccount.Terminal.TID)
+			req.PaymentProcessRule.MerchantAccount.Terminal.UnLock()
+		}()
+		req.CreditCardBean.TraceNum = req.PaymentProcessRule.MerchantAccount.Terminal.TraceNum
+		req.CreditCardBean.BatchNum = req.PaymentProcessRule.MerchantAccount.Terminal.BatchNum
+		req.TxnRecord.AcquirerTraceNum = req.CreditCardBean.TraceNum
+		req.TxnRecord.AcquirerBatchNum = req.CreditCardBean.BatchNum
+
+		// trace No自增
+		err = req.PaymentProcessRule.MerchantAccount.Terminal.IncTraceNum()
+		if err != nil {
+			logger.Error("req.PaymentProcessRule.MerchantAccount.Terminal.IncTraceNum fail->", err.Error())
+			return resp, conf.DBError
+		}
 	}
 
-	// 获取void交易对象
+	// 获取sale交易对象
 	acquirerImpl, ok := factory.AcquirerImpls[req.PaymentProcessRule.MerchantAccount.Acquirer.ImplName]
 	if !ok {
 		logger.Warn("can't find acquirer impl->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError
 	}
-	voidImp, ok := acquirerImpl.(acquirer_impl.IVoid)
+	saleImp, ok := acquirerImpl.(acquirer_impl.ISale)
 	if !ok {
 		logger.Warn("the acquirer not support sale->", req.PaymentProcessRule.MerchantAccount.Acquirer.Name)
 		return resp, conf.UnknownError
@@ -75,11 +83,17 @@ func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, conf.DBError
 	}
 
+	logger.Info("mergeRespAfterPreHandle.....")
+	// 再次合并数据到返回结果
+	mergeRespAfterPreHandle(resp, req)
+
+	logger.Info("执行交易.....")
 	// 执行交易
-	saleResp, errorCode := voidImp.Void(ctx, &acquirer_impl.SaleRequest{
+	saleResp, errorCode := saleImp.Sale(ctx, &acquirer_impl.SaleRequest{
 		TxqReq: req,
 	})
 
+	logger.Info("txn result->", errorCode)
 	switch errorCode {
 	case conf.Success: // success 逻辑写后面
 
@@ -100,47 +114,36 @@ func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 	mergeAcquirerResponse(resp, saleResp)
 	mergeResponseToRecord(req.TxnRecord, saleResp)
 
-	if req.TxnRecord.Status == record.Success {
-		t := time.Now()
-		req.OrgRecord.VoidAt = &t
-		err = models.DB().Transaction(func(tx *gorm.DB) error {
-			// 原始记录
-			req.OrgRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{DB: tx},
-				Ctx: ctx,
-			}
-
-			err = req.OrgRecord.UpdateVoidStatus()
-			if err != nil {
-				logger.Error("UpdateVoidStatus fail->", err.Error())
-				return err
-			}
-
-			// 新记录
-			req.TxnRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{DB: tx},
-				Ctx: ctx,
-			}
-
-			err = req.TxnRecord.UpdateTxnResult()
-			if err != nil {
-				logger.Error("UpdateTxnResult fail->", err.Error())
-				return err
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			logger.Error("update success result fail->", err.Error())
-			return resp, conf.DBError
-		}
-	} else {
+	// 修正交易
+	err = models.DB().Transaction(func(tx *gorm.DB) error {
+		req.TxnRecord.Db = &models.MyDB{DB: tx}
 		if err = req.TxnRecord.UpdateTxnResult(); err != nil {
 			logger.Error("UpdateTxnResult fail->", err.Error())
-			return resp, conf.DBError
+			return err
 		}
-	}
 
+		// 创建一条transfer记录
+		transferRecord := &record.TxnRecord{
+			BaseModel: models.BaseModel{
+				ID: id.New(),
+				Db: req.TxnRecord.Db,
+			},
+			MerchantID:  req.TxnRecord.MerchantID,
+			PaymentType: conf.Transfer,
+			OrgTxnID:    req.TxnRecord.ID,
+			Status:      record.Init,
+		}
+
+		if err = transferRecord.Create(transferRecord); err != nil {
+			logger.Error("Create fail->", err.Error())
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		logger.Error("UpdateTxnResult fail->", err.Error())
+		return resp, conf.DBError
+	}
 	return resp, conf.Success
 }

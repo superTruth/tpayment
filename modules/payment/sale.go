@@ -20,6 +20,12 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 	logger := tlog.GetLogger(ctx)
 	var err error
 
+	err = api_define.Validate(ctx, req)
+	if err != nil {
+		logger.Warn("validate request body error->", err.Error())
+		return nil, conf.ParameterError
+	}
+
 	// 创建response数据
 	resp := preBuildResp(req)
 

@@ -43,7 +43,7 @@ func (t *Terminal) Get(id uint64) (*Terminal, error) {
 //
 func (t *Terminal) GetByTID(mid uint64, tid string) (*Terminal, error) {
 	ret := new(Terminal)
-	err := t.Db.Model(t).Where("merchant_account_id=? and t=?", mid, tid).First(ret).Error
+	err := t.Db.Model(t).Where("merchant_account_id=? and device_id=?", mid, tid).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil

@@ -1,11 +1,16 @@
 package api_define
 
 import (
+	"errors"
 	"time"
+	"tpayment/conf"
 	"tpayment/models/agency"
 	"tpayment/models/merchant"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/models/payment/record"
+	"tpayment/pkg/paymentmethod/decodecardnum/creditcard"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 请求数据
@@ -21,13 +26,15 @@ type TxnReq struct {
 	Currency string `json:"currency,omitempty"`
 
 	// 用于offline
-	DateTime           *time.Time `json:"date_time,omitempty"`
-	AcquirerMerchantID string     `json:"acquirer_merchant_id"`
-	AcquirerTerminalID string     `json:"acquirer_terminal_id"`
-	AcquirerRRN        string     `json:"acquirer_rrn,omitempty"`
-	AcquirerName       string     `json:"acquirer_name,omitempty"`
-	AcquirerType       string     `json:"acquirer_type,omitempty"`
-	AcquirerReconID    string     `json:"acquirer_recon_id"`
+	DateTime              *time.Time `json:"date_time,omitempty"`
+	AcquirerMerchantID    string     `json:"acquirer_merchant_id"`
+	AcquirerTerminalID    string     `json:"acquirer_terminal_id"`
+	AcquirerRRN           string     `json:"acquirer_rrn,omitempty"`
+	AcquirerName          string     `json:"acquirer_name,omitempty"`
+	AcquirerType          string     `json:"acquirer_type,omitempty"`
+	AcquirerReconID       string     `json:"acquirer_recon_id"`
+	InvoiceNum            uint64     `json:"invoice_num"`
+	CustomerPaymentMethod string     `json:"customer_payment_method"`
 
 	CreditCardBean      *CreditCardBean      `json:"credit_card,omitempty"`
 	CreditCardTokenBean *CreditCardTokenBean `json:"credit_card_token_bean,omitempty"`
@@ -36,8 +43,10 @@ type TxnReq struct {
 	ConsumerPresentQR   *ConsumerPresentQR   `json:"consumer_present_qr,omitempty"`
 	AdditionData        string               `json:"addition_data,omitempty"`
 
+	TxnExpAt *time.Time `json:"txn_exp_at"`
+
 	// 用于void,refund，tips，等二次交易
-	OriginTxnID uint64 `json:"origin_txn_id,omitempty"`
+	OrgTxnID uint64 `json:"origin_txn_id,omitempty"`
 
 	// 后期处理填充
 	RealPaymentMethod  string                                 `json:"real_payment_method,omitempty"`
@@ -66,7 +75,6 @@ type CreditCardBean struct {
 	CardTrack3              string `json:"card_track3,omitempty"`
 	CardHolderName          string `json:"card_holder_name,omitempty"`
 	IsMsdCard               bool   `json:"is_msd_card,omitempty"`
-	IsOffline               bool   `json:"is_offline,omitempty"`
 	Cvv                     string `json:"cvv,omitempty"`
 	IccRequest              string `json:"icc_request,omitempty"`
 	PIN                     string `json:"pin,omitempty"`
@@ -99,6 +107,10 @@ type ConsumerPresentQR struct {
 	Content  string `json:"content,omitempty"`
 }
 
+type Transfer struct {
+	DestAccount string `json:"dest_account"`
+}
+
 // 回复数据
 type TxnResp struct {
 	Uuid          string `json:"uuid,omitempty"`
@@ -122,8 +134,93 @@ type TxnResp struct {
 	AcquirerRRN        string `json:"acquirer_rrn,omitempty"`
 	AcquirerName       string `json:"acquirer_name,omitempty"`
 	AcquirerType       string `json:"acquirer_type,omitempty"`
+	InvoiceNum         uint64 `json:"invoice_num"`
 
 	CreditCardBean *CreditCardBean `json:"credit_card,omitempty"`
 
 	AdditionData string `json:"addition_data,omitempty"`
+}
+
+// 验证请求参数是否正确
+func Validate(ctx *gin.Context, txn *TxnReq) error {
+	if txn.Uuid == "" {
+		return errors.New("uuid is empty")
+	}
+
+	if _, ok := conf.PaymentType[txn.TxnType]; !ok {
+		return errors.New("can't support txn type->" + txn.TxnType)
+	}
+
+	if txn.PaymentMethod != "" {
+		if _, ok := conf.RequestPaymentMethod[txn.PaymentMethod]; !ok {
+			return errors.New("can't support payment method->" + txn.PaymentMethod)
+		}
+	}
+
+	if txn.MerchantID == 0 {
+		return errors.New("merchant id is empty")
+	}
+
+	if txn.Amount != "" {
+		if txn.Currency == "" {
+			return errors.New("currency is empty")
+		}
+		if _, ok := conf.CurrencyCode[txn.Currency]; !ok {
+			return errors.New("can't support currency->" + txn.PaymentMethod)
+		}
+	}
+
+	switch txn.PaymentMethod {
+	case conf.RequestCreditCard:
+		if txn.CreditCardBean == nil {
+			return errors.New("credit card information empty")
+		}
+
+		if _, ok := conf.PaymentEntryType[txn.CreditCardBean.CardReaderMode]; !ok {
+			return errors.New("can't support card read mode->" + txn.CreditCardBean.CardReaderMode)
+		}
+
+		// 检查卡片有效期
+		ok, err := creditcard.CheckCardExp(txn.CreditCardBean.CardExpYear,
+			txn.CreditCardBean.CardExpMonth,
+			txn.CreditCardBean.CardExpDay)
+		if err != nil {
+			return errors.New("credit card exp format error")
+		}
+		if !ok {
+			return errors.New("card expired")
+		}
+		if txn.CreditCardBean.CardNumber == "" {
+			return errors.New("card number is empty")
+		}
+	case conf.Transfer:
+
+	case conf.RequestCreditCardToken:
+		if txn.CreditCardTokenBean == nil {
+			return errors.New("credit card token empty")
+		}
+		if txn.CreditCardTokenBean.Token == "" {
+			return errors.New("credit card token empty")
+		}
+	case conf.RequestConsumerPresentQR:
+		if txn.ConsumerPresentQR == nil {
+			return errors.New("consumer present qr empty")
+		}
+		if txn.ConsumerPresentQR.Content == "" {
+			return errors.New("consumer present qr empty")
+		}
+	case conf.RequestApplePay:
+		if txn.ApplePayBean == nil {
+			return errors.New("apple pay empty")
+		}
+		if txn.ApplePayBean.Token == "" {
+			return errors.New("apple pay empty")
+		}
+	case conf.RequestOther:
+		if txn.CustomerPaymentMethod == "" {
+			return errors.New("customer payment method is empty")
+		}
+	}
+
+	return nil
 }

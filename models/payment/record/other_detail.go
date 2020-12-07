@@ -34,3 +34,7 @@ type TxnRecordDetail struct {
 func (TxnRecordDetail) TableName() string {
 	return "payment_txn_record_detail"
 }
+
+func (t *TxnRecordDetail) Create(detail *TxnRecordDetail) error {
+	return t.Db.Model(t).Create(detail).Error
+}

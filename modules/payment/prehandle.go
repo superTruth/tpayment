@@ -43,7 +43,7 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 
 	// 匹配payment process rule
 	logger.Info("匹配payment process rule")
-	if txn.OriginTxnID == 0 { // 首次交易
+	if txn.OrgTxnID == 0 { // 首次交易
 		logger.Info("首次交易")
 		errCode = matchProcessRule2(ctx, txn)
 		if errCode != conf.Success {
@@ -445,13 +445,13 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			Ctx: ctx,
 		},
 	}
-	txn.OrgRecord, err = recordBean.GetByID(txn.OriginTxnID)
+	txn.OrgRecord, err = recordBean.GetByID(txn.OrgTxnID)
 	if err != nil {
-		logger.Warn("GetByID "+strconv.Itoa(int(txn.OriginTxnID))+" fail->", err.Error())
+		logger.Warn("GetByID "+strconv.Itoa(int(txn.OrgTxnID))+" fail->", err.Error())
 		return conf.DBError
 	}
 	if txn.OrgRecord == nil {
-		logger.Warn("can't find the record " + strconv.Itoa(int(txn.OriginTxnID)))
+		logger.Warn("can't find the record " + strconv.Itoa(int(txn.OrgTxnID)))
 		return conf.RecordNotFund
 	}
 	txn.OrgRecord.BaseModel = recordBean.BaseModel
@@ -477,7 +477,7 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 		}
 	} else {
 		if txn.OrgRecord == nil {
-			logger.Warn("can't get amount from org record->", txn.OriginTxnID)
+			logger.Warn("can't get amount from org record->", txn.OrgTxnID)
 			return conf.ParameterError
 		}
 		amount = txn.OrgRecord.Amount

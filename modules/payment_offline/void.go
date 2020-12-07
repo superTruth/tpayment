@@ -1,6 +1,7 @@
 package payment_offline
 
 import (
+	"time"
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/models"
@@ -11,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
+func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 	var err error
 
@@ -31,6 +32,23 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 		return resp, errorCode
 	}
 
+	// 没有原始交易
+	if req.OrgRecord == nil {
+		logger.Warn("can't find org record->", req.OrgTxnID)
+		return resp, conf.RecordNotFund
+	}
+
+	// 判断是否可以void
+	if req.OrgRecord.AcquirerSettlementAt != nil { // 被结算过的交易不能void
+		logger.Warn("the record was settled->", req.OrgTxnID)
+		return resp, conf.Success
+	}
+
+	if req.OrgRecord.VoidAt != nil { // 已经被void过
+		logger.Warn("the record was voided")
+		return resp, conf.Success
+	}
+
 	// 保存交易记录
 	err = models.DB().Transaction(func(tx *gorm.DB) error {
 		req.TxnRecord.BaseModel.Db = &models.MyDB{DB: tx}
@@ -46,6 +64,18 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 			logger.Warn("create detail record error->", err.Error())
 			return err
 		}
+
+		// 更新原始记录
+		req.OrgRecord.BaseModel.Db = &models.MyDB{DB: tx}
+
+		t := time.Now()
+		req.OrgRecord.VoidAt = &t
+		err = req.OrgRecord.UpdateVoidStatus()
+		if err != nil {
+			logger.Error("UpdateVoidStatus fail->", err.Error())
+			return err
+		}
+
 		return nil
 	})
 

@@ -1,6 +1,7 @@
 package payment_offline
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 	"tpayment/api/api_define"
@@ -11,6 +12,7 @@ import (
 	"tpayment/models/payment/merchantaccount"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/models/payment/record"
+	"tpayment/pkg/id"
 	"tpayment/pkg/paymentmethod/decodecardnum/creditcard"
 	"tpayment/pkg/tlog"
 
@@ -34,18 +36,20 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 
 	// 匹配payment process rule
 	logger.Info("匹配payment process rule")
-	if txn.OriginTxnID == 0 { // 首次交易
+	if txn.OrgTxnID == 0 { // 首次交易
 		logger.Info("首次交易")
-		errCode = matchProcessRule2(ctx, txn)
-		if errCode != conf.Success {
-			return errCode
-		}
+		if txn.PaymentMethod != conf.RequestOther { // 未知交易不需要匹配
+			errCode = matchProcessRule(ctx, txn)
+			if errCode != conf.Success {
+				return errCode
+			}
 
-		// 从payment process rule查找匹配merchant account和TID
-		logger.Info("fetchMerchantAccountFirstTime")
-		errCode = fetchMerchantAccountFirstTime(ctx, txn)
-		if errCode != conf.Success {
-			return errCode
+			// 从payment process rule查找匹配merchant account和TID
+			logger.Info("fetchMerchantAccountFirstTime")
+			errCode = fetchMerchantAccountFirstTime(ctx, txn)
+			if errCode != conf.Success {
+				return errCode
+			}
 		}
 	} else {
 		txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
@@ -74,10 +78,15 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 
 // 预处理Payment
 func decodePaymentData(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
+	logger := tlog.GetLogger(ctx)
 	var err error
 	// 分类支付方式
 	switch txn.PaymentMethod {
 	case conf.RequestCreditCard: // 常规信用卡
+		if txn.CreditCardBean == nil {
+			logger.Warn("credit card txn but without credit card data")
+			return conf.ParameterError
+		}
 		txn.RealEntryType = txn.CreditCardBean.CardReaderMode
 		if txn.AcquirerType == "" { // 没有收单行注明，则尝试解析
 			txn.RealPaymentMethod, err = creditcard.Decode(txn.CreditCardBean.CardNumber)
@@ -87,13 +96,15 @@ func decodePaymentData(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode
 		} else {
 			txn.RealPaymentMethod = txn.AcquirerType
 		}
+	case conf.RequestOther:
+		txn.RealPaymentMethod = conf.Other
 	}
 
 	return conf.Success
 }
 
 // 匹配payment process rule
-func matchProcessRule2(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
+func matchProcessRule(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	rule := new(paymentprocessrule.PaymentProcessRule)
@@ -186,21 +197,21 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 	}
 
 	// 分配TID
-	if txn.AcquirerTerminalID != "" {
+	if txn.DeviceID != "" {
 		tid := &acquirer.Terminal{
 			BaseModel: models.BaseModel{
 				Db:  models.DB(),
 				Ctx: ctx,
 			},
 		}
-		tid, err := tid.GetByTID(txn.PaymentProcessRule.MerchantAccountID, txn.AcquirerTerminalID)
+		tid, err := tid.GetByTID(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
 		if err != nil {
 			logger.Error("tid.GetByTID fail->", err.Error())
 			return conf.DBError
 		}
 
 		if tid == nil {
-			logger.Error("can't ->", err.Error())
+			logger.Error("can't get any tid")
 			return conf.RecordNotFund
 		}
 		txn.PaymentProcessRule.MerchantAccount.Terminal = tid
@@ -211,6 +222,10 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 
 func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
+
+	if txn.OrgRecord.PaymentMethod == conf.Other {
+		return conf.Success
+	}
 
 	txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
 	// 查找merchant account
@@ -287,16 +302,16 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			Ctx: ctx,
 		},
 	}
-	txn.OrgRecord, err = recordBean.GetByID(txn.OriginTxnID)
+	txn.OrgRecord, err = recordBean.GetByID(txn.OrgTxnID)
 	if err != nil {
-		logger.Warn("GetByID "+strconv.Itoa(int(txn.OriginTxnID))+" fail->", err.Error())
+		logger.Warn("GetByID "+strconv.Itoa(int(txn.OrgTxnID))+" fail->", err.Error())
 		return conf.DBError
 	}
 	if txn.OrgRecord == nil {
-		logger.Warn("can't find the record " + strconv.Itoa(int(txn.OriginTxnID)))
+		logger.Warn("can't find the record " + strconv.Itoa(int(txn.OrgTxnID)))
 		return conf.RecordNotFund
 	}
-	txn.OrgRecord.BaseModel = recordBean.BaseModel
+	txn.OrgRecord.BaseModel.Db = recordBean.BaseModel.Db
 
 	return conf.Success
 }
@@ -305,9 +320,9 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	var (
-		err    error
-		amount decimal.Decimal
-		ret    *record.TxnRecord
+		err      error
+		amount   decimal.Decimal
+		currency string
 	)
 
 	// 金额处理
@@ -317,52 +332,84 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			logger.Warn("can't parse amount->", txn.Amount, ",", err.Error())
 			return conf.ParameterError
 		}
+		currency = txn.Currency
 	} else {
 		if txn.OrgRecord == nil {
-			logger.Warn("can't get amount from org record->", txn.OriginTxnID)
+			logger.Warn("can't get amount from org record->", txn.OrgTxnID)
 			return conf.ParameterError
 		}
 		amount = txn.OrgRecord.Amount
+		currency = txn.OrgRecord.Currency
 	}
 
-	if txn.OrgRecord == nil {
-		ret = &record.TxnRecord{
-			MerchantID:        txn.MerchantID,
-			TotalAmount:       amount,
-			Amount:            amount,
-			Currency:          txn.Currency,
-			MerchantAccountID: txn.PaymentProcessRule.MerchantID,
-			PaymentMethod:     txn.RealPaymentMethod,
-			PaymentEntryType:  txn.RealEntryType,
-			ConsumerIdentify:  txn.CashierID,
-		}
-		if txn.CreditCardBean != nil && txn.CreditCardBean.CardNumber != "" {
-			ret.ConsumerIdentify = txn.CreditCardBean.CardNumber
-		}
-	} else {
-		ret = &record.TxnRecord{
-			MerchantID:        txn.OrgRecord.MerchantID,
-			TotalAmount:       txn.OrgRecord.Amount,
-			Amount:            txn.OrgRecord.Amount,
-			Currency:          txn.OrgRecord.Currency,
-			MerchantAccountID: txn.OrgRecord.MerchantAccountID,
-			PaymentMethod:     txn.OrgRecord.PaymentMethod,
-			PaymentEntryType:  conf.ManualInput,
-			ConsumerIdentify:  txn.OrgRecord.ConsumerIdentify,
-		}
-	}
+	txn.TxnRecord = new(record.TxnRecord)
+	txn.TxnRecordDetail = new(record.TxnRecordDetail)
 
+	// 直接从request提取数据
 	nowTime := time.Now()
-	ret.IsOffline = true
-	ret.PaymentFromName = txn.FromName
-	ret.PaymentFromIP = txn.FromIp
-	ret.PaymentFromDeviceID = txn.DeviceID
-	ret.CompleteAt = &nowTime
-	ret.AcquirerReconID = txn.AcquirerReconID
-	ret.Status = record.Success
-	ret.PartnerUUID = txn.Uuid
-	ret.PaymentType = txn.TxnType
+	txn.TxnRecord.ID = id.New()
+	txn.TxnRecord.Amount = amount
+	txn.TxnRecord.Currency = currency
+	txn.TxnRecord.TotalAmount = amount
+	txn.TxnRecord.PartnerUUID = txn.Uuid
+	txn.TxnRecord.PaymentType = txn.TxnType
+	txn.TxnRecord.CompleteAt = &nowTime
+	txn.TxnRecord.Status = record.Success
+	txn.TxnRecord.IsOffline = true
+	txn.TxnRecord.PaymentFromName = txn.FromName
+	txn.TxnRecord.PaymentFromIP = txn.FromIp
+	txn.TxnRecord.PaymentFromDeviceID = txn.DeviceID
+	txn.TxnRecord.AcquirerRRN = txn.AcquirerRRN
+	txn.TxnRecord.AcquirerReconID = txn.AcquirerReconID
+	txn.TxnRecord.AcquirerTxnDateTime = txn.DateTime
+	txn.TxnRecord.InvoiceNum = txn.InvoiceNum
+	txn.TxnRecord.CashierID = txn.CashierID
 
-	txn.TxnRecord = ret
+	txn.TxnRecordDetail.ID = txn.TxnRecord.ID
+	txn.TxnRecordDetail.Addition = txn.AdditionData
+
+	// 区分第一次交易和第二次交易
+	if txn.OrgRecord != nil {
+		logger.Info("第二次交易")
+		txn.TxnRecord.MerchantID = txn.OrgRecord.MerchantID
+		txn.TxnRecord.MerchantAccountID = txn.OrgRecord.MerchantAccountID
+		txn.TxnRecord.TerminalID = txn.OrgRecord.TerminalID
+		txn.TxnRecord.PaymentMethod = txn.OrgRecord.PaymentMethod
+		txn.TxnRecord.PaymentEntryType = conf.ManualInput
+		txn.TxnRecord.CustomerPaymentMethod = txn.OrgRecord.CustomerPaymentMethod
+		txn.TxnRecord.OrgTxnID = txn.OrgRecord.ID
+	} else {
+		logger.Info("第一次交易")
+		if txn.PaymentProcessRule != nil && txn.PaymentProcessRule.MerchantAccount != nil {
+			txn.TxnRecord.MerchantAccountID = txn.PaymentProcessRule.MerchantAccountID
+			if txn.PaymentProcessRule.MerchantAccount.Terminal != nil {
+				logger.Info("匹配terminal account")
+				txn.TxnRecord.TerminalID = txn.PaymentProcessRule.MerchantAccount.Terminal.ID
+			}
+		}
+		txn.TxnRecord.MerchantID = txn.MerchantID
+		txn.TxnRecord.PaymentMethod = txn.RealPaymentMethod
+		txn.TxnRecord.PaymentEntryType = txn.RealEntryType
+		txn.TxnRecord.CustomerPaymentMethod = txn.CustomerPaymentMethod
+	}
+
+	// 特殊类型交易
+	if txn.CreditCardBean != nil {
+		txn.TxnRecord.AcquirerAuthCode = txn.CreditCardBean.AuthCode
+		txn.TxnRecord.AcquirerBatchNum = txn.CreditCardBean.BatchNum
+		txn.TxnRecord.AcquirerTraceNum = txn.CreditCardBean.TraceNum
+		txn.TxnRecord.ConsumerIdentify = txn.CreditCardBean.CardNumber
+
+		txn.TxnRecordDetail.CreditCardExp = fmt.Sprintf("%02s%02s%02s",
+			txn.CreditCardBean.CardExpYear, txn.CreditCardBean.CardExpMonth, txn.CreditCardBean.CardExpDay)
+		txn.TxnRecordDetail.CreditCardFallBack = txn.CreditCardBean.CardFallback
+		txn.TxnRecordDetail.CreditCardSN = txn.CreditCardBean.CardSn
+		txn.TxnRecordDetail.CreditCardHolderName = txn.CreditCardBean.CardHolderName
+		txn.TxnRecordDetail.CreditCardIsMsdCard = txn.CreditCardBean.IsMsdCard
+		txn.TxnRecordDetail.CreditCardIccRequest = txn.CreditCardBean.IccRequest
+		txn.TxnRecordDetail.CreditCardIccResponse = txn.CreditCardBean.IccResponse
+		txn.TxnRecordDetail.ResponseCode = txn.CreditCardBean.ResponseCode
+	}
+
 	return conf.Success
 }

@@ -21,3 +21,9 @@ func GetCardNumFromTrack2(track2 string) (string, error) {
 
 	return ret, nil
 }
+
+func CheckCardExp(year, month, day string) (bool, error) {
+
+	// TODO
+	return true, nil
+}

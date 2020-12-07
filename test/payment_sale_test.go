@@ -66,7 +66,7 @@ func TestSaleVisaOffline(t *testing.T) {
 	reqBean := &api_define.TxnReq{
 		Uuid:          uuid.New().String(),
 		TxnType:       conf.Sale,
-		DeviceID:      "A920123456789",
+		DeviceID:      "A92012345678",
 		PaymentMethod: conf.RequestCreditCard,
 		MerchantID:    9,
 		Amount:        "0.2",
@@ -104,6 +104,62 @@ func TestSaleVisaOffline(t *testing.T) {
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlSaleOffline, time.Second*10)
 
 	fmt.Println("rep->", string(repByte))
+}
+
+func TestSaleOfflineCustomer(t *testing.T) {
+	TestLogin(t)
+
+	fmt.Println("TestSaleVisaOffline", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	nowTime := time.Now()
+	reqBean := &api_define.TxnReq{
+		Uuid:          uuid.New().String(),
+		TxnType:       conf.Sale,
+		DeviceID:      "A920123456789",
+		PaymentMethod: conf.RequestOther,
+		MerchantID:    9,
+		Amount:        "0.2",
+		Currency:      "USD",
+
+		DateTime:              &nowTime,
+		AcquirerRRN:           "123456789",
+		AcquirerReconID:       "123456",
+		CustomerPaymentMethod: "my payment",
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlSaleOffline, time.Second*10)
+
+	fmt.Println("rep->", string(repByte))
+}
+
+func TestVoidOffline(t *testing.T) {
+	TestLogin(t)
+
+	fmt.Println("TestVoidOffline", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &api_define.TxnReq{
+		Uuid:       uuid.New().String(),
+		TxnType:    conf.Void,
+		MerchantID: 9,
+		OrgTxnID:   1908925000841166848,
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlVoidOffline, time.Second*10)
+
+	fmt.Println("rep->", string(repByte))
+
 }
 
 func TestDB(t *testing.T) {

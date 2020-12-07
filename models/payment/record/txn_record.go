@@ -1,6 +1,7 @@
 package record
 
 import (
+	"errors"
 	"time"
 	"tpayment/conf"
 	"tpayment/models"
@@ -37,8 +38,7 @@ type TxnRecord struct {
 	PaymentType           string `gorm:"column:payment_type" json:"payment_type"`
 	CustomerPaymentMethod string `gorm:"column:customer_payment_method" json:"customer_payment_method"`
 
-	ReferenceID      string `gorm:"column:reference_id" json:"reference_id"`
-	OrgReferenceID   string `gorm:"column:org_reference_id" json:"org_reference_id"`
+	OrgTxnID         uint64 `gorm:"column:org_txn_id" json:"org_txn_id"`
 	PartnerUUID      string `gorm:"column:partner_uuid" json:"partner_uuid"`
 	AcquirerRRN      string `gorm:"column:acquirer_rrn" json:"acquirer_rrn"`
 	AcquirerAuthCode string `gorm:"column:acquirer_auth_code" json:"acquirer_auth_code"`
@@ -83,45 +83,69 @@ func (t *TxnRecord) Create(record *TxnRecord) error {
 }
 
 func (t *TxnRecord) UpdateStatus(status string) error {
-	err := t.Db.Model(t).Update(map[string]interface{}{"status": status}).Error
+	dbTmp := t.Db.Model(t).Update(map[string]interface{}{"status": status})
+
+	err := dbTmp.Error
 	if err != nil {
 		return err
 	}
+
+	if dbTmp.RowsAffected == 0 {
+		return errors.New("no record updated")
+	}
+
 	t.Status = status
 	return nil
 }
 
 // 更新sale交易结果
 func (t *TxnRecord) UpdateTxnResult() error {
-	err := t.Db.Model(t).Where("id=?", t.ID).Select(
+	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
 		[]string{"acquirer_rrn", "acquirer_auth_code",
 			"acquirer_recon_id", "complete_at", "acquirer_txn_date_time",
-			"status", "acquirer_batch_num", "consumer_identify", "error_code", "error_des"}).Updates(t).Error
+			"status", "acquirer_batch_num", "consumer_identify", "error_code", "error_des"}).Updates(t)
+	err := dbTmp.Error
 
 	if err != nil {
 		return err
 	}
+
+	if dbTmp.RowsAffected == 0 {
+		return errors.New("no record updated")
+	}
+
 	return nil
 }
 
 // 更新void状态
 func (t *TxnRecord) UpdateVoidStatus() error {
-	err := t.Db.Model(t).Where("id=?", t.ID).Select(
-		[]string{"void_at"}).Updates(t).Error
+	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
+		[]string{"void_at"}).Updates(t)
 
+	err := dbTmp.Error
 	if err != nil {
 		return err
 	}
+
+	if dbTmp.RowsAffected == 0 {
+		return errors.New("no record updated")
+	}
+
 	return nil
 }
 
 // 更新refund状态
 func (t *TxnRecord) UpdateRefundStatus() error {
-	err := t.Db.Model(t).Where("id=?", t.ID).Select(
-		[]string{"total_amount", "refund_times", "refund_at"}).Updates(t).Error
+	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
+		[]string{"total_amount", "refund_times", "refund_at"}).Updates(t)
+	err := dbTmp.Error
 
 	if err != nil {
 		return err
+	}
+
+	if dbTmp.RowsAffected == 0 {
+		return errors.New("no record updated")
 	}
 	return nil
 }
