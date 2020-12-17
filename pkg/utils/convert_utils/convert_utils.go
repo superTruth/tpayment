@@ -327,16 +327,16 @@ func ASCII2ECDIC(value *string) []byte {
 	return valueByte
 }
 
-func ECDIC2ASCII(value []byte) *string {
+func ECDIC2ASCII(value []byte) string {
 	if (value == nil) || (len(value) == 0) {
-		return String2PString("")
+		return ""
 	}
 
 	for i, v := range value {
 		value[i] = EBCDIC2ASCII_DATA[v]
 	}
 
-	return String2PString(string(value))
+	return string(value)
 }
 
 func JsonFormat(v interface{}) (*string, error) {

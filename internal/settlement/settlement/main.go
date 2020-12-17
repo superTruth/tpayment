@@ -32,7 +32,7 @@ const (
 	maxRetryTime      = 10
 )
 
-func settlement(maID uint) error {
+func settlement(maID uint64) error {
 	var (
 		err       error
 		errorCode conf.ResultCode

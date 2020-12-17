@@ -25,22 +25,19 @@ const (
 )
 
 const (
-	TimestampBits = 40                         // timestamp
-	Maxtimestamp  = -1 ^ (-1 << TimestampBits) // timestamp mask
-	RetainedBits  = 4
-	MaxRetain     = -1 ^ (-1 << RetainedBits)
-	CenterBits    = 5
-	MaxCenter     = -1 ^ (-1 << CenterBits) // center mask
-	WorkerBits    = 5
-	MaxWorker     = -1 ^ (-1 << WorkerBits)   // worker mask
-	SequenceBits  = 10                        // sequence
-	MaxSequence   = -1 ^ (-1 << SequenceBits) // sequence mask
+	RetainedBits = 4
+	CenterBits   = 5
+	MaxCenter    = -1 ^ (-1 << CenterBits) // center mask
+	WorkerBits   = 5
+	MaxWorker    = -1 ^ (-1 << WorkerBits)   // worker mask
+	SequenceBits = 10                        // sequence
+	MaxSequence  = -1 ^ (-1 << SequenceBits) // sequence mask
 )
 
 var (
-	Since  int64                 = time.Date(2017, 5, 1, 0, 0, 0, 0, time.Local).UnixNano() / nano
-	poolMu sync.RWMutex          = sync.RWMutex{}
-	pool   map[uint64]*SnowFlake = make(map[uint64]*SnowFlake)
+	Since = time.Date(2017, 5, 1, 0, 0, 0, 0, time.Local).UnixNano() / nano
+	//poolMu = sync.RWMutex{}
+	//pool   = make(map[uint64]*SnowFlake)
 )
 
 type SnowFlake struct {
@@ -58,8 +55,6 @@ func (sf *SnowFlake) uint64() uint64 {
 		(uint64(sf.center) << (WorkerBits + SequenceBits)) |
 		(uint64(sf.worker) << SequenceBits) |
 		uint64(sf.sequence)
-	// (uint64(sf.partnerId) << BusinessBits) |
-	// (uint64(sf.businessId))
 }
 
 func (sf *SnowFlake) Next() (uint64, error) {
@@ -106,28 +101,3 @@ func tilNextMillis(ts uint64) uint64 {
 	}
 	return i
 }
-
-// func GetSnowFlake(businessId uint32) (*SnowFlake, error) {
-// 	var key uint64 = uint64(businessId) << SequenceBits
-// 	var sf *SnowFlake
-// 	var exist bool
-// 	var err error
-// 	poolMu.RLock()
-// 	if sf, exist = pool[key]; !exist {
-// 		poolMu.RUnlock()
-// 		poolMu.Lock()
-// 		// double check
-// 		if sf, exist = pool[key]; !exist {
-// 			sf, err = NewSnowFlake(businessId)
-// 			if err != nil {
-// 				poolMu.Unlock()
-// 				return nil, err
-// 			}
-// 			pool[key] = sf
-// 		}
-// 		poolMu.Unlock()
-// 	} else {
-// 		poolMu.RUnlock()
-// 	}
-// 	return sf, err
-// }

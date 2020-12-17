@@ -82,8 +82,16 @@ func (t *TxnRecord) Create(record *TxnRecord) error {
 	return t.Db.Model(t).Create(record).Error
 }
 
-func (t *TxnRecord) UpdateStatus(status string) error {
-	dbTmp := t.Db.Model(t).Update(map[string]interface{}{"status": status})
+func (t *TxnRecord) UpdateAll() error {
+	return t.Db.Model(t).Save(t).Error
+}
+
+func (t *TxnRecord) UpdateStatus() error {
+	dbTmp := t.Db.Model(t).Update(map[string]interface{}{
+		"status":     t.Status,
+		"error_code": t.ErrorCode,
+		"error_des":  t.ErrorDes,
+	})
 
 	err := dbTmp.Error
 	if err != nil {
@@ -94,7 +102,19 @@ func (t *TxnRecord) UpdateStatus(status string) error {
 		return errors.New("no record updated")
 	}
 
-	t.Status = status
+	return nil
+}
+
+// 硬删除
+func (t *TxnRecord) HardDelete() error {
+	dbTmp := t.Db.Model(t).Unscoped().Delete(t)
+	err := dbTmp.Error
+	if err != nil {
+		return err
+	}
+	if dbTmp.RowsAffected == 0 {
+		return errors.New("no record updated")
+	}
 	return nil
 }
 
@@ -191,7 +211,7 @@ func (t *TxnRecord) GetSettlementTotal(mid, tid, batchNum uint64) ([]*Settlement
 		return nil, nil
 	}
 
-	for i, _ := range currencies {
+	for i := range currencies {
 		totalTmp := new(SettlementTotal)
 		err = t.Db.Table(t.TableName()).Select("sum(amount) as sale_amount, count(*) as sale_count").Where(
 			"merchant_account_id=? and terminal_id=? and acquirer_batch_num=? and payment_type=? "+

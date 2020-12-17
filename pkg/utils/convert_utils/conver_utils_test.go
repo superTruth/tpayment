@@ -10,7 +10,7 @@ func TestASCII2ECDIC(t *testing.T) {
 }
 
 func TestECDIC2ASCII(t *testing.T) {
-	fmt.Println("ECDIC2ASCII ", *ECDIC2ASCII(HexString2Bytes("F1F2F3F4F5F6")))
+	fmt.Println("ECDIC2ASCII ", ECDIC2ASCII(HexString2Bytes("F1F2F3F4F5F6")))
 }
 
 func TestLong2BytesEBCDIC(t *testing.T) {

@@ -59,9 +59,9 @@ func Xor(value1 []byte, value2 []byte) ([]byte, error) {
 	return ret, nil
 }
 
-func SubString(src *string, start int, end int) *string {
-	ret := string([]byte(*src)[start:end])
-	return &ret
+func SubString(src string, start int, end int) string {
+	ret := string([]byte(src)[start:end])
+	return ret
 }
 
 func SubStringStart(src *string, start int) *string {

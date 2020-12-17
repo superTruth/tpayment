@@ -5,7 +5,9 @@ import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
-	"tpayment/internal/bank_service/bank_common"
+	"tpayment/internal/bank_service/bank_common/api"
+	"tpayment/models"
+	"tpayment/models/payment/acquirer"
 	"tpayment/pkg/grpc_pool"
 	"tpayment/pkg/tlog"
 
@@ -13,42 +15,67 @@ import (
 )
 
 func (api *API) Sale(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquirer_impl.SaleResponse, conf.ResultCode) {
-	//logger := tlog.GetLogger(ctx)
+	logger := tlog.GetLogger(ctx)
+
+	var err error
+
 	resp := new(acquirer_impl.SaleResponse)
 	resp.TxnResp = new(api_define.TxnResp)
 
-	var (
-		errorCode conf.ResultCode
-	)
-
 	// 参数检查
-	errorCode = saleValidate(ctx, req)
+	var errorCode = saleValidate(ctx, req)
 	if errorCode != conf.Success {
 		return nil, errorCode
 	}
 
-	//// 在线交易
-	//bankResp, errorCode := saleOnline(ctx, req)
-	//if errorCode != conf.Success {
-	//	logger.Warn("online fail->", errorCode.String())
-	//	return resp, errorCode
-	//}
-	//
-	//resp.TxnResp.CreditCardBean = &api_define.CreditCardBean{
-	//	AuthCode:     bankResp.TxnResp.CreditCardBean.AuthCode,
-	//	ResponseCode: bankResp.TxnResp.CreditCardBean.ResponseCode,
-	//	IccResponse:  bankResp.TxnResp.CreditCardBean.IccResponse,
-	//}
-	//resp.TxnResp.AcquirerRRN = bankResp.TxnResp.AcquirerRRN
-	//resp.AcquirerReconID = bankResp.AcquirerReconID
-	//
-	//resp.TxnResp.TransactionState = record.Success
-	//resp.TxnResp.AdditionData = bankResp.TxnResp.AdditionData
-
-	resp.TxnResp.CreditCardBean = &api_define.CreditCardBean{
-		AuthCode:     "1234",
-		ResponseCode: "1234",
+	// 查找所有Key
+	keyBean := acquirer.Key{
+		BaseModel: models.BaseModel{
+			Db: models.DB(),
+		},
 	}
+	keyTag := generateKeyTag(req)
+	req.Keys, err = keyBean.Get(keyTag)
+	if err != nil {
+		logger.Error("keyBean.Get fail->", err.Error())
+		return nil, conf.DBError
+	}
+
+	// 在线交易
+	bankResp, errorCode := saleOnline(ctx, req)
+	logger.Info("services saleOnline result->", errorCode)
+	// 需要注入key
+	if bankResp != nil && len(bankResp.Keys) != 0 {
+		err := updateKey(ctx, req, bankResp)
+		if err != nil {
+			logger.Error("updateKey fail->", err.Error())
+			return nil, conf.DBError
+		}
+	}
+
+	if errorCode != conf.Success {
+		return resp, errorCode
+	}
+
+	if bankResp == nil || bankResp.TxnResp == nil {
+		logger.Error("TxnResp is null")
+		return resp, conf.UnknownError
+	}
+
+	if bankResp.TxnResp.CreditCardBean != nil {
+		resp.TxnResp.CreditCardBean = &api_define.CreditCardBean{
+			AuthCode:     bankResp.TxnResp.CreditCardBean.AuthCode,
+			ResponseCode: bankResp.TxnResp.CreditCardBean.ResponseCode,
+			IccResponse:  bankResp.TxnResp.CreditCardBean.IccResponse,
+		}
+	}
+	resp.TxnResp.AcquirerRRN = bankResp.TxnResp.AcquirerRRN
+	resp.AcquirerReconID = bankResp.AcquirerReconID
+
+	resp.TxnResp.TransactionState = bankResp.TxnResp.TransactionState
+	resp.TxnResp.ErrorCode = bankResp.TxnResp.ErrorCode
+	resp.TxnResp.ErrorDesc = bankResp.TxnResp.ErrorDesc
+	resp.TxnResp.AdditionData = bankResp.TxnResp.AdditionData
 
 	return resp, conf.Success
 }
@@ -91,31 +118,46 @@ func saleOnline(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquirer_imp
 	defer grpc_pool.PutConn(acquirerConfig.GRPCConnectInfo, conn)
 
 	// 序列化请求数据
-	reqByte, _ := json.Marshal(req)
-	bankReq := &bank_common.BaseRequest{
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		logger.Error("json.Marshal fail->", err.Error())
+		return nil, conf.ParameterError
+	}
+	bankReq := &api.BaseRequest{
 		ReqBody: string(reqByte),
 	}
 
-	c := bank_common.NewTxnClient(conn)
+	c := api.NewTxnClient(conn)
+
+	// 测试连接
+	_, err = c.EmptyCall(ctx, &api.EmptyMessage{})
+	if err != nil {
+		logger.Error("can't reach bank services->", acquirerConfig.GRPCConnectInfo)
+		return nil, conf.CantReachAcquirer
+	}
+
+	logger.Info("bankReq body->", bankReq.ReqBody)
 	bankResp, err := c.BaseTxn(ctx, bankReq)
 	if err != nil {
 		logger.Error("c.BaseTxn grpc fail->", err.Error())
 		return nil, conf.Reversal
 	}
+	logger.Info("bankResp code->", bankResp.ErrorCode, ", body->", bankResp.RespBody)
 
 	// 解析返回数据
-	if bankResp.ErrorCode != string(conf.Success) {
-		return nil, conf.ResultCode(bankResp.ErrorCode)
+	//if bankResp.ErrorCode != string(conf.Success) {
+	//	return nil, conf.ResultCode(bankResp.ErrorCode)
+	//}
+
+	var bankRespBody *acquirer_impl.SaleResponse
+	if len(bankResp.RespBody) != 0 {
+		bankRespBody = new(acquirer_impl.SaleResponse)
+		err = json.Unmarshal([]byte(bankResp.RespBody), bankRespBody)
+		if err != nil {
+			logger.Error("can't parse bank service response")
+			return nil, conf.Reversal
+		}
 	}
 
-	bankRespBody := new(acquirer_impl.SaleResponse)
-	err = json.Unmarshal([]byte(bankResp.RespBody), bankRespBody)
-	if err != nil {
-		logger.Error("can't parse bank service response")
-		return nil, conf.Reversal
-	}
-
-	//
-
-	return bankRespBody, conf.Success
+	return bankRespBody, conf.ResultCode(bankResp.ErrorCode)
 }

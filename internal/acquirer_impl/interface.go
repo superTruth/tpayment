@@ -16,11 +16,13 @@ import (
 type SaleRequest struct {
 	TxqReq          *api_define.TxnReq        `json:"txq_req"`
 	SettlementTotal []*record.SettlementTotal `json:"settlement_total"`
+	Keys            []*acquirer.Key           `json:"keys"`
 }
 
 type SaleResponse struct {
 	TxnResp         *api_define.TxnResp `json:"txn_resp"`
 	AcquirerReconID string              `json:"acquirer_recon_id"`
+	Keys            []*acquirer.Key     `json:"keys"`
 }
 
 type ISale interface {

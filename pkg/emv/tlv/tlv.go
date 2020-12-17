@@ -3,6 +3,7 @@ package tlv
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"tpayment/pkg/utils/convert_utils"
 )
 
@@ -98,4 +99,70 @@ func parseOneNode(orgData []byte, offset int, isPBOC bool) (*Node, int, error) {
 		Tag:   convert_utils.Bytes2HexString(tag),
 		Value: convert_utils.Bytes2HexString(valueByte),
 	}, index - offset, nil
+}
+
+func FormatFromMap(mapData map[string]string) string {
+	if len(mapData) == 0 {
+		return ""
+	}
+
+	sb := strings.Builder{}
+	for tag, value := range mapData {
+		if value == "" {
+			continue
+		}
+		sb.WriteString(tag) //Tag
+
+		valueLen := (len(value) + 1) / 2
+		// 计算长度
+		if valueLen < 0x80 { // 单字节长度
+			sb.WriteString(convert_utils.Bytes2HexString([]byte{byte(valueLen)}))
+		} else { // 多字节长度
+			lenSize := (valueLen / 256) + 1
+			sb.WriteString(convert_utils.Bytes2HexString([]byte{byte(lenSize | 0x80)}))
+			sb.WriteString(convert_utils.Bytes2HexString(convert_utils.Long2BytesHex(uint64(valueLen), lenSize)))
+		}
+
+		//Value
+		sb.WriteString(value)
+
+		if len(value)%2 != 0 {
+			sb.WriteByte('F')
+		}
+	}
+
+	return sb.String()
+}
+
+func Format(mapData map[string]string) string {
+	if len(mapData) == 0 {
+		return ""
+	}
+
+	sb := strings.Builder{}
+	for tag, value := range mapData {
+		if value == "" {
+			continue
+		}
+		sb.WriteString(tag) //Tag
+
+		valueLen := (len(value) + 1) / 2
+		// 计算长度
+		if valueLen < 0x80 { // 单字节长度
+			sb.WriteString(convert_utils.Bytes2HexString([]byte{byte(valueLen)}))
+		} else { // 多字节长度
+			lenSize := (valueLen / 256) + 1
+			sb.WriteString(convert_utils.Bytes2HexString([]byte{byte(lenSize | 0x80)}))
+			sb.WriteString(convert_utils.Bytes2HexString(convert_utils.Long2BytesHex(uint64(valueLen), lenSize)))
+		}
+
+		//Value
+		sb.WriteString(value)
+
+		if len(value)%2 != 0 {
+			sb.WriteByte('F')
+		}
+	}
+
+	return sb.String()
 }

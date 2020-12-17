@@ -63,7 +63,7 @@ func main() {
 	for _, acq := range acquirers {
 		logger.Info("loop acquirer->", acq.Name)
 
-		offset := uint(0)
+		offset := uint64(0)
 		retryTime := 0
 		for {
 			accounts, err := maBean.GetByAcquirerID(acq.ID, offset, MaxPage)

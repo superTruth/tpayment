@@ -17,7 +17,7 @@ type PaymentProcessRule struct {
 	PaymentEntryTypes *models.StringArray `gorm:"column:payment_entry_types;type:JSON"`
 	PaymentTypes      *models.StringArray `gorm:"column:payment_types;type:JSON"`
 
-	MerchantAccount *merchantaccount.MerchantAccount `json:"-"`
+	MerchantAccount *merchantaccount.MerchantAccount `gorm:"-" json:"merchant_account"`
 }
 
 func (PaymentProcessRule) TableName() string {

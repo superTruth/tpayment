@@ -6,7 +6,8 @@ const (
 	RequestCreditCardToken   = "credit_card_token"
 	RequestConsumerPresentQR = "consumer_present_qr"
 	RequestApplePay          = "apple_pay"
-	RequestOther             = "other"
+
+	RequestOther = "other"
 
 	// Real Payment Method
 	Visa       = "visa"
@@ -37,6 +38,7 @@ const (
 	Transfer        = "transfer"
 	PreAuth         = "pre_auth"
 	PreAuthComplete = "pre_auth_complete"
+	PayReversal     = "reversal"
 
 	// QR Code Type
 	BarCode = "barcode"
@@ -80,6 +82,7 @@ var (
 		Transfer:        true,
 		PreAuth:         true,
 		PreAuthComplete: true,
+		PayReversal:     true,
 	}
 	QRCodeType = map[string]bool{
 		BarCode: true,

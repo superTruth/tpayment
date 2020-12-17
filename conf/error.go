@@ -7,6 +7,8 @@ const (
 	UnknownError            ResultCode = "99"
 	PanicError              ResultCode = "98"
 	ConfigError             ResultCode = "97"
+	NeeContinue             ResultCode = "96"
+	Reversal                ResultCode = "95"
 	ParameterError          ResultCode = "03"
 	TokenInvalid            ResultCode = "04"
 	DBError                 ResultCode = "05"
@@ -29,7 +31,6 @@ const (
 	ProcessRuleSettingError ResultCode = "22"
 	TIDIsBusy               ResultCode = "23"
 	NoAvailableTID          ResultCode = "24"
-	Reversal                ResultCode = "25"
 	CantReachAcquirer       ResultCode = "26"
 	RejectByAcquirer        ResultCode = "27"
 	Settled                 ResultCode = "28"
@@ -43,6 +44,8 @@ var ResultCodeText = map[ResultCode]string{
 	UnknownError:            "internal error 99",
 	PanicError:              "internal error 98",
 	ConfigError:             "internal error 97",
+	NeeContinue:             "need continue",
+	Reversal:                "need reversal",
 	TokenInvalid:            "token invalid",
 	ValidateError:           "validate error",
 	DBError:                 "internal error 05",
@@ -64,7 +67,6 @@ var ResultCodeText = map[ResultCode]string{
 	ProcessRuleSettingError: "process rule setting error",
 	TIDIsBusy:               "Terminal is busy",
 	NoAvailableTID:          "no available Terminal",
-	Reversal:                "need reversal",
 	CantReachAcquirer:       "can't reach acquirer",
 	RejectByAcquirer:        "reject by acquirer",
 	Settled:                 "settled",

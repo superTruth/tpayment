@@ -128,17 +128,22 @@ type TxnResp struct {
 	ErrorCode        string `json:"error_code,omitempty"`
 	ErrorDesc        string `json:"error_desc,omitempty"`
 
-	DateTime           string `json:"date_time,omitempty"`
-	AcquirerMerchantID string `json:"acquirer_merchant_id,omitempty"`
-	AcquirerTerminalID string `json:"acquirer_terminal_id,omitempty"`
-	AcquirerRRN        string `json:"acquirer_rrn,omitempty"`
-	AcquirerName       string `json:"acquirer_name,omitempty"`
-	AcquirerType       string `json:"acquirer_type,omitempty"`
-	InvoiceNum         uint64 `json:"invoice_num"`
+	DateTime           *time.Time `json:"date_time,omitempty"`
+	AcquirerMerchantID string     `json:"acquirer_merchant_id,omitempty"`
+	AcquirerTerminalID string     `json:"acquirer_terminal_id,omitempty"`
+	AcquirerRRN        string     `json:"acquirer_rrn,omitempty"`
+	AcquirerName       string     `json:"acquirer_name,omitempty"`
+	AcquirerType       string     `json:"acquirer_type,omitempty"`
+	InvoiceNum         uint64     `json:"invoice_num"`
 
 	CreditCardBean *CreditCardBean `json:"credit_card,omitempty"`
 
-	AdditionData string `json:"addition_data,omitempty"`
+	AdditionData *AdditionData `json:"addition_data,omitempty"`
+}
+
+type AdditionData struct {
+	CupTraceNum string `json:"cup_trace_num"`
+	CupRrn      string `json:"cup_rrn"`
 }
 
 // 验证请求参数是否正确
