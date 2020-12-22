@@ -21,10 +21,13 @@ type DownloadTMK struct {
 	ExchangeKey string
 	PukModulus  string
 	PukExponent string
+	TMKEn       string
 }
 
 func (s *DownloadTMK) Handle() (*acquirer_impl.SaleResponse, conf.ResultCode) {
 	logger := tlog.GetGoroutineLogger()
+
+	s.ExchangeKey = generateKekPlainHexStr()
 
 	// 打包数据
 	sendBytes, err := s.packageMsg()
@@ -52,7 +55,26 @@ func (s *DownloadTMK) Handle() (*acquirer_impl.SaleResponse, conf.ResultCode) {
 		return resp, conf.RejectByAcquirer
 	}
 
+	if err = s.handle(resp); err != nil {
+		logger.Warn("decode fail->", err.Error())
+		return resp, conf.RejectByAcquirer
+	}
+
 	return resp, conf.Success
+}
+
+func (s *DownloadTMK) handle(resp *acquirer_impl.SaleResponse) error {
+	tmk, desErr := algorithmutils.DecryptDesECB(convert_utils.HexString2Bytes(s.TMKEn), convert_utils.HexString2Bytes(s.ExchangeKey))
+	if desErr != nil {
+		return desErr
+	}
+
+	resp.Keys = append(resp.Keys, &acquirer.Key{
+		Type:  bank_common.TMK,
+		Value: convert_utils.Bytes2HexString(tmk),
+	})
+
+	return nil
 }
 
 func (s *DownloadTMK) packageMsg() ([]byte, error) {
@@ -114,11 +136,18 @@ func (s *DownloadTMK) parseMsg(msgData []byte) (*acquirer_impl.SaleResponse, err
 	}
 
 	// TODO 测试数据 38A216013DC29D734F64FB7FFD624507
+	tmkEn, err := algorithmutils.EncryptDesECB(
+		convert_utils.HexString2Bytes("38A216013DC29D734F64FB7FFD624507"),
+		convert_utils.HexString2Bytes(s.ExchangeKey))
+	if err != nil {
+		return nil, err
+	}
 	resp.TxnResp.CreditCardBean.ResponseCode = "00"
-	resp.Keys = append(resp.Keys, &acquirer.Key{
-		Type:  bank_common.TMK,
-		Value: "38A216013DC29D734F64FB7FFD624507",
-	})
+	s.TMKEn = convert_utils.Bytes2HexString(tmkEn)
+	//resp.Keys = append(resp.Keys, &acquirer.Key{
+	//	Type:  bank_common.TMK,
+	//	Value: "38A216013DC29D734F64FB7FFD624507",
+	//})
 	return resp, nil
 
 	// field 39
@@ -149,10 +178,12 @@ func (s *DownloadTMK) parseMsg(msgData []byte) (*acquirer_impl.SaleResponse, err
 	if !ok {
 		return nil, errors.New("can't find tmk")
 	}
-	resp.Keys = append(resp.Keys, &acquirer.Key{
-		Type:  bank_common.TMK,
-		Value: tmk,
-	})
+
+	s.TMKEn = tmk
+	//resp.Keys = append(resp.Keys, &acquirer.Key{
+	//	Type:  bank_common.TMK,
+	//	Value: tmk,
+	//})
 
 	return resp, nil
 }

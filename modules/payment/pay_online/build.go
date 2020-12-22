@@ -1,6 +1,7 @@
 package pay_online
 
 import (
+	"fmt"
 	"time"
 	"tpayment/api/api_define"
 	"tpayment/internal/acquirer_impl"
@@ -57,13 +58,22 @@ func mergeAcquirerResponse(resp *api_define.TxnResp, acquirerResp *acquirer_impl
 	}
 }
 
-func mergeResponseToRecord(record *record.TxnRecord, resp *acquirer_impl.SaleResponse) {
-	record.AcquirerRRN = resp.TxnResp.AcquirerRRN
+func mergeResponseToRecord(req *api_define.TxnReq, resp *acquirer_impl.SaleResponse) {
+	req.TxnRecord.AcquirerRRN = resp.TxnResp.AcquirerRRN
 
-	record.AcquirerReconID = resp.AcquirerReconID
+	req.TxnRecord.AcquirerReconID = resp.AcquirerReconID
 	t := time.Now()
-	record.CompleteAt = &t
-	record.Status = resp.TxnResp.TransactionState
-	record.ErrorCode = resp.TxnResp.ErrorCode
-	record.ErrorDes = resp.TxnResp.ErrorDesc
+	req.TxnRecord.CompleteAt = &t
+	req.TxnRecord.AcquirerTxnDateTime = resp.TxnResp.DateTime
+	fmt.Println("UpdateTxnResult2->", req.TxnRecord.AcquirerTxnDateTime)
+	req.TxnRecord.Status = resp.TxnResp.TransactionState
+	req.TxnRecord.ErrorCode = resp.TxnResp.ErrorCode
+	req.TxnRecord.ErrorDes = resp.TxnResp.ErrorDesc
+
+	if resp.TxnResp.CreditCardBean != nil {
+		req.TxnRecordDetail.CreditCardIccResponse = resp.TxnResp.CreditCardBean.IccResponse
+		req.TxnRecordDetail.ResponseCode = resp.TxnResp.CreditCardBean.ResponseCode
+	}
+	req.TxnRecordDetail.PayRedirectUrl = resp.TxnResp.PayRedirectUrl
+	req.TxnRecordDetail.Addition = resp.TxnResp.AdditionData
 }

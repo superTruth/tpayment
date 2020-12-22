@@ -9,6 +9,7 @@ import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
+	"tpayment/models/payment/record"
 	"tpayment/pkg/iso8583"
 	"tpayment/pkg/iso8583/iso8583Define"
 	"tpayment/pkg/tlog"
@@ -275,7 +276,7 @@ func GetCommonDataFromMsg(srcData []byte, offset int) (*acquirer_impl.SaleRespon
 	// 银联专属UPI, 保存在RFU1里面
 	if len(resp.TxnResp.AcquirerRRN) > 6 {
 		// 取最后6位作为结果
-		resp.TxnResp.AdditionData = new(api_define.AdditionData)
+		resp.TxnResp.AdditionData = new(record.AdditionData)
 		resp.TxnResp.AdditionData.CupTraceNum = resp.TxnResp.AcquirerRRN[len(resp.TxnResp.AcquirerRRN)-6:]
 	}
 

@@ -391,8 +391,8 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 		txn.TxnRecord.AcquirerTraceNum = txn.CreditCardBean.TraceNum
 		txn.TxnRecord.ConsumerIdentify = txn.CreditCardBean.CardNumber
 
-		txn.TxnRecordDetail.CreditCardExp = fmt.Sprintf("%02s%02s%02s",
-			txn.CreditCardBean.CardExpYear, txn.CreditCardBean.CardExpMonth, txn.CreditCardBean.CardExpDay)
+		txn.TxnRecordDetail.CreditCardExp = fmt.Sprintf("%02s%02s",
+			txn.CreditCardBean.CardExpYear, txn.CreditCardBean.CardExpMonth)
 		txn.TxnRecordDetail.CreditCardFallBack = txn.CreditCardBean.CardFallback
 		txn.TxnRecordDetail.CreditCardSN = txn.CreditCardBean.CardSn
 		txn.TxnRecordDetail.CreditCardHolderName = txn.CreditCardBean.CardHolderName

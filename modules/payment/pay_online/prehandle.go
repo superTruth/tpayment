@@ -1,6 +1,7 @@
 package pay_online
 
 import (
+	"fmt"
 	"strconv"
 	"tpayment/api/api_define"
 	"tpayment/conf"
@@ -12,6 +13,7 @@ import (
 	"tpayment/models/payment/merchantaccount"
 	"tpayment/models/payment/paymentprocessrule"
 	"tpayment/models/payment/record"
+	"tpayment/pkg/id"
 	"tpayment/pkg/paymentmethod/decodecardnum/applepay"
 	"tpayment/pkg/paymentmethod/decodecardnum/creditcard"
 	"tpayment/pkg/paymentmethod/decodecardnum/qrcode"
@@ -66,7 +68,7 @@ func preHandleRequest(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode 
 	}
 
 	// 提前生成record
-	errCode = preBuildRecord(ctx, txn)
+	errCode = preBuildRecord2(ctx, txn)
 	if errCode != conf.Success {
 		return errCode
 	}
@@ -166,7 +168,6 @@ func decodePaymentData(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode
 			txn.CreditCardBean = &api_define.CreditCardBean{
 				CardExpMonth:            applePayBean.ApplicationExpirationDate[2:4],
 				CardExpYear:             applePayBean.ApplicationExpirationDate[:2],
-				CardExpDay:              applePayBean.ApplicationExpirationDate[4:],
 				CardNumber:              applePayBean.ApplicationPrimaryAccountNumber,
 				CardHolderName:          applePayBean.CardholderName,
 				IccRequest:              applePayBean.PaymentData.EmvData,
@@ -453,12 +454,102 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 }
 
 // 生成交易记录
-func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
+//func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
+//	logger := tlog.GetLogger(ctx)
+//	var (
+//		err    error
+//		amount decimal.Decimal
+//		ret    *record.TxnRecord
+//	)
+//
+//	// 金额处理
+//	if txn.Amount != "" { // 没有传入金额
+//		amount, err = decimal.NewFromString(txn.Amount)
+//		if err != nil {
+//			logger.Warn("can't parse amount->", txn.Amount, ",", err.Error())
+//			return conf.ParameterError
+//		}
+//	} else {
+//		if txn.OrgRecord == nil {
+//			logger.Warn("can't get amount from org record->", txn.OrgTxnID)
+//			return conf.ParameterError
+//		}
+//		amount = txn.OrgRecord.Amount
+//	}
+//
+//	if txn.OrgRecord == nil {
+//		ret = &record.TxnRecord{
+//			MerchantID:          txn.MerchantID,
+//			TotalAmount:         amount,
+//			Amount:              amount,
+//			Currency:            txn.Currency,
+//			MerchantAccountID:   txn.PaymentProcessRule.MerchantID,
+//			PaymentMethod:       txn.RealPaymentMethod,
+//			PaymentEntryType:    txn.RealEntryType,
+//			PaymentType:         txn.TxnType,
+//			PartnerUUID:         txn.Uuid,
+//			Status:              record.Init,
+//			PaymentFromName:     txn.FromName,
+//			PaymentFromIP:       txn.FromIp,
+//			PaymentFromDeviceID: txn.DeviceID,
+//			CashierID:           txn.CashierID,
+//		}
+//		if txn.CreditCardBean != nil && txn.CreditCardBean.CardNumber != "" {
+//			ret.ConsumerIdentify = txn.CreditCardBean.CardNumber
+//		}
+//	} else {
+//		ret = &record.TxnRecord{
+//			MerchantID:          txn.OrgRecord.MerchantID,
+//			TotalAmount:         txn.OrgRecord.Amount,
+//			Amount:              txn.OrgRecord.Amount,
+//			Currency:            txn.OrgRecord.Currency,
+//			MerchantAccountID:   txn.OrgRecord.MerchantAccountID,
+//			PaymentMethod:       txn.OrgRecord.PaymentMethod,
+//			PaymentEntryType:    conf.ManualInput,
+//			PaymentType:         txn.TxnType,
+//			PartnerUUID:         txn.Uuid,
+//			Status:              record.Init,
+//			PaymentFromName:     txn.FromName,
+//			PaymentFromIP:       txn.FromIp,
+//			PaymentFromDeviceID: txn.DeviceID,
+//			CashierID:           txn.CashierID,
+//			ConsumerIdentify:    txn.OrgRecord.ConsumerIdentify,
+//		}
+//	}
+//
+//	txn.TxnRecord = ret
+//
+//	// 详细信息
+//	txn.TxnRecordDetail = &record.TxnRecordDetail{
+//		TxnExpAt:              nil,
+//		CreditCardExp:         "",
+//		CreditCardFallBack:    false,
+//		CreditCardSN:          "",
+//		CreditCardHolderName:  "",
+//		CreditCardIsMsdCard:   false,
+//		CreditCardIccRequest:  "",
+//		CreditCardECI:         "",
+//		CreditCardIccResponse: "",
+//		ResponseCode:          "",
+//		TokenType:             "",
+//		Token:                 "",
+//		TDSEnable:             false,
+//		PayRedirectUrl:        "",
+//		RedirectSuccessUrl:    "",
+//		RedirectFailUrl:       "",
+//		Addition:              "",
+//	}
+//
+//	return conf.Success
+//}
+
+// 生成交易记录
+func preBuildRecord2(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	var (
-		err    error
-		amount decimal.Decimal
-		ret    *record.TxnRecord
+		err      error
+		amount   decimal.Decimal
+		currency string
 	)
 
 	// 金额处理
@@ -468,75 +559,99 @@ func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 			logger.Warn("can't parse amount->", txn.Amount, ",", err.Error())
 			return conf.ParameterError
 		}
+		currency = txn.Currency
 	} else {
 		if txn.OrgRecord == nil {
 			logger.Warn("can't get amount from org record->", txn.OrgTxnID)
 			return conf.ParameterError
 		}
 		amount = txn.OrgRecord.Amount
+		currency = txn.OrgRecord.Currency
 	}
 
-	if txn.OrgRecord == nil {
-		ret = &record.TxnRecord{
-			MerchantID:          txn.MerchantID,
-			TotalAmount:         amount,
-			Amount:              amount,
-			Currency:            txn.Currency,
-			MerchantAccountID:   txn.PaymentProcessRule.MerchantID,
-			PaymentMethod:       txn.RealPaymentMethod,
-			PaymentEntryType:    txn.RealEntryType,
-			PaymentType:         txn.TxnType,
-			PartnerUUID:         txn.Uuid,
-			Status:              record.Init,
-			PaymentFromName:     txn.FromName,
-			PaymentFromIP:       txn.FromIp,
-			PaymentFromDeviceID: txn.DeviceID,
-			CashierID:           txn.CashierID,
+	txn.TxnRecord = new(record.TxnRecord)
+	txn.TxnRecordDetail = new(record.TxnRecordDetail)
+
+	// 直接从request提取数据
+	txn.TxnRecord.ID = id.New()
+	txn.TxnRecord.Amount = amount
+	txn.TxnRecord.Currency = currency
+	txn.TxnRecord.TotalAmount = amount
+	txn.TxnRecord.PartnerUUID = txn.Uuid
+	txn.TxnRecord.PaymentType = txn.TxnType
+	txn.TxnRecord.Status = record.Init
+	txn.TxnRecord.IsOffline = false
+	txn.TxnRecord.PaymentFromName = txn.FromName
+	txn.TxnRecord.PaymentFromIP = txn.FromIp
+	txn.TxnRecord.PaymentFromDeviceID = txn.DeviceID
+	txn.TxnRecord.InvoiceNum = txn.InvoiceNum
+	txn.TxnRecord.CashierID = txn.CashierID
+
+	txn.TxnRecordDetail.ID = txn.TxnRecord.ID
+	txn.TxnRecordDetail.TxnExpAt = txn.TxnExpAt
+	txn.TxnRecordDetail.RedirectSuccessUrl = txn.RedirectSuccessUrl
+	txn.TxnRecordDetail.RedirectFailUrl = txn.RedirectFailUrl
+	txn.TxnRecordDetail.ResultNotifyUrl = txn.ResultNotifyUrl
+
+	// 区分第一次交易和第二次交易
+	if txn.OrgRecord != nil {
+		txn.TxnRecord.MerchantID = txn.OrgRecord.MerchantID
+		txn.TxnRecord.MerchantAccountID = txn.OrgRecord.MerchantAccountID
+		txn.TxnRecord.TerminalID = txn.OrgRecord.TerminalID
+		txn.TxnRecord.PaymentMethod = txn.OrgRecord.PaymentMethod
+		txn.TxnRecord.PaymentEntryType = conf.ManualInput
+		txn.TxnRecord.CustomerPaymentMethod = txn.OrgRecord.CustomerPaymentMethod
+		txn.TxnRecord.OrgTxnID = txn.OrgRecord.ID
+
+		if txn.OrgRecordDetail != nil {
+			txn.TxnRecordDetail.CreditCardExp = txn.OrgRecordDetail.CreditCardExp
+			txn.TxnRecordDetail.CreditCardHolderName = txn.OrgRecordDetail.CreditCardHolderName
 		}
-		if txn.CreditCardBean != nil && txn.CreditCardBean.CardNumber != "" {
-			ret.ConsumerIdentify = txn.CreditCardBean.CardNumber
-		}
+
 	} else {
-		ret = &record.TxnRecord{
-			MerchantID:          txn.OrgRecord.MerchantID,
-			TotalAmount:         txn.OrgRecord.Amount,
-			Amount:              txn.OrgRecord.Amount,
-			Currency:            txn.OrgRecord.Currency,
-			MerchantAccountID:   txn.OrgRecord.MerchantAccountID,
-			PaymentMethod:       txn.OrgRecord.PaymentMethod,
-			PaymentEntryType:    conf.ManualInput,
-			PaymentType:         txn.TxnType,
-			PartnerUUID:         txn.Uuid,
-			Status:              record.Init,
-			PaymentFromName:     txn.FromName,
-			PaymentFromIP:       txn.FromIp,
-			PaymentFromDeviceID: txn.DeviceID,
-			CashierID:           txn.CashierID,
-			ConsumerIdentify:    txn.OrgRecord.ConsumerIdentify,
+		if txn.PaymentProcessRule != nil && txn.PaymentProcessRule.MerchantAccount != nil {
+			txn.TxnRecord.MerchantAccountID = txn.PaymentProcessRule.MerchantAccountID
+			if txn.PaymentProcessRule.MerchantAccount.Terminal != nil {
+				txn.TxnRecord.TerminalID = txn.PaymentProcessRule.MerchantAccount.Terminal.ID
+			}
 		}
+		txn.TxnRecord.MerchantID = txn.MerchantID
+		txn.TxnRecord.PaymentMethod = txn.RealPaymentMethod
+		txn.TxnRecord.PaymentEntryType = txn.RealEntryType
+		txn.TxnRecord.CustomerPaymentMethod = txn.CustomerPaymentMethod
 	}
 
-	txn.TxnRecord = ret
+	// 特殊类型交易
+	if txn.CreditCardBean != nil {
+		txn.TxnRecord.AcquirerBatchNum = txn.CreditCardBean.BatchNum
+		txn.TxnRecord.AcquirerTraceNum = txn.CreditCardBean.TraceNum
+		txn.TxnRecord.ConsumerIdentify = txn.CreditCardBean.CardNumber
 
-	// 详细信息
-	txn.TxnRecordDetail = &record.TxnRecordDetail{
-		TxnExpAt:              nil,
-		CreditCardExp:         "",
-		CreditCardFallBack:    false,
-		CreditCardSN:          "",
-		CreditCardHolderName:  "",
-		CreditCardIsMsdCard:   false,
-		CreditCardIccRequest:  "",
-		CreditCardECI:         "",
-		CreditCardIccResponse: "",
-		ResponseCode:          "",
-		TokenType:             "",
-		Token:                 "",
-		TDSEnable:             false,
-		PayRedirectUrl:        "",
-		RedirectSuccessUrl:    "",
-		RedirectFailUrl:       "",
-		Addition:              "",
+		txn.TxnRecordDetail.CreditCardExp = fmt.Sprintf("%02s%02s",
+			txn.CreditCardBean.CardExpYear, txn.CreditCardBean.CardExpMonth)
+		txn.TxnRecordDetail.CreditCardFallBack = txn.CreditCardBean.CardFallback
+		txn.TxnRecordDetail.CreditCardSN = txn.CreditCardBean.CardSn
+		txn.TxnRecordDetail.CreditCardHolderName = txn.CreditCardBean.CardHolderName
+		txn.TxnRecordDetail.CreditCardIsMsdCard = txn.CreditCardBean.IsMsdCard
+		txn.TxnRecordDetail.CreditCardIccRequest = txn.CreditCardBean.IccRequest
+		txn.TxnRecordDetail.CreditCardIccResponse = txn.CreditCardBean.IccResponse
+		txn.TxnRecordDetail.ResponseCode = txn.CreditCardBean.ResponseCode
+	}
+
+	// ApplePayBean交易
+	if txn.CreditCardTokenBean != nil {
+		txn.TxnRecordDetail.Token = txn.CreditCardTokenBean.Token
+	}
+
+	// 3DS交易
+	if txn.CreditCard3DSBean != nil {
+		txn.TxnRecordDetail.TDSEnable = true
+	}
+
+	// 扫码交易
+	if txn.ConsumerPresentQR != nil {
+		txn.TxnRecordDetail.Token = txn.ConsumerPresentQR.Content
+		txn.TxnRecordDetail.TokenType = txn.ConsumerPresentQR.CodeType
 	}
 
 	return conf.Success

@@ -7,7 +7,7 @@ import (
 )
 
 // 产生随机数秘钥
-func generateKekPlainHexStr() *string {
+func generateKekPlainHexStr() string {
 	kekPlainKey := make([]byte, 16)
 
 	for i := 0; i < len(kekPlainKey); i++ {
@@ -18,7 +18,7 @@ func generateKekPlainHexStr() *string {
 		}
 	}
 
-	return convert_utils.String2PString(convert_utils.Bytes2HexString(kekPlainKey))
+	return convert_utils.Bytes2HexString(kekPlainKey)
 }
 
 func oddOnes(value byte) bool {

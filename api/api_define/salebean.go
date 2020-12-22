@@ -41,7 +41,11 @@ type TxnReq struct {
 	ApplePayBean        *ApplePayBean        `json:"apple_pay,omitempty"`
 	CreditCard3DSBean   *CreditCard3DSBean   `json:"credit_card_3ds,omitempty"`
 	ConsumerPresentQR   *ConsumerPresentQR   `json:"consumer_present_qr,omitempty"`
-	AdditionData        string               `json:"addition_data,omitempty"`
+	AdditionData        *record.AdditionData `json:"addition_data,omitempty"`
+
+	RedirectSuccessUrl string `json:"redirect_success_url,omitempty"`
+	RedirectFailUrl    string `json:"redirect_fail_url,omitempty"`
+	ResultNotifyUrl    string `json:"result_notify_url,omitempty"`
 
 	TxnExpAt *time.Time `json:"txn_exp_at"`
 
@@ -56,8 +60,9 @@ type TxnReq struct {
 	FromIp             string                                 `json:"from_ip,omitempty"`
 	CashierID          string                                 `json:"cashier_id,omitempty"`
 	TxnRecord          *record.TxnRecord                      `json:"txn_record,omitempty"`
-	TxnRecordDetail    *record.TxnRecordDetail                `json:"txn_record_detail"`
+	TxnRecordDetail    *record.TxnRecordDetail                `json:"txn_record_detail,omitempty"`
 	OrgRecord          *record.TxnRecord                      `json:"org_record,omitempty"`
+	OrgRecordDetail    *record.TxnRecordDetail                `json:"org_record_detail,omitempty"`
 	MerchantInfo       *merchant.Merchant                     `json:"merchant_info,omitempty"`
 	AgencyInfo         *agency.Agency                         `json:"agency_info,omitempty"`
 }
@@ -66,7 +71,6 @@ type CreditCardBean struct {
 	CardReaderMode          string `json:"card_reader_mode,omitempty"`
 	CardExpMonth            string `json:"card_exp_month,omitempty"`
 	CardExpYear             string `json:"card_exp_year,omitempty"`
-	CardExpDay              string `json:"card_exp_day,omitempty"`
 	CardFallback            bool   `json:"card_fallback,omitempty"`
 	CardNumber              string `json:"card_number,omitempty"`
 	CardSn                  string `json:"card_sn,omitempty"`
@@ -121,8 +125,9 @@ type TxnResp struct {
 
 	MerchantID uint64 `json:"merchant_id,omitempty"`
 
-	Amount   string `json:"amount,omitempty"`
-	Currency string `json:"currency,omitempty"`
+	TotalAmount string `json:"total_amount,omitempty"`
+	Amount      string `json:"amount,omitempty"`
+	Currency    string `json:"currency,omitempty"`
 
 	TransactionState string `json:"transaction_state,omitempty"`
 	ErrorCode        string `json:"error_code,omitempty"`
@@ -138,12 +143,9 @@ type TxnResp struct {
 
 	CreditCardBean *CreditCardBean `json:"credit_card,omitempty"`
 
-	AdditionData *AdditionData `json:"addition_data,omitempty"`
-}
+	PayRedirectUrl string `json:"pay_redirect_url,omitempty"`
 
-type AdditionData struct {
-	CupTraceNum string `json:"cup_trace_num"`
-	CupRrn      string `json:"cup_rrn"`
+	AdditionData *record.AdditionData `json:"addition_data,omitempty"`
 }
 
 // 验证请求参数是否正确
@@ -187,8 +189,7 @@ func Validate(ctx *gin.Context, txn *TxnReq) error {
 
 		// 检查卡片有效期
 		ok, err := creditcard.CheckCardExp(txn.CreditCardBean.CardExpYear,
-			txn.CreditCardBean.CardExpMonth,
-			txn.CreditCardBean.CardExpDay)
+			txn.CreditCardBean.CardExpMonth)
 		if err != nil {
 			return errors.New("credit card exp format error")
 		}

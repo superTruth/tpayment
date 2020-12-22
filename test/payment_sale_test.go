@@ -36,7 +36,6 @@ func TestSaleVisa(t *testing.T) {
 			CardReaderMode: conf.Contact,
 			CardExpMonth:   "12",
 			CardExpYear:    "24",
-			CardExpDay:     "25",
 			CardFallback:   false,
 			CardNumber:     "4384375620640049",
 			CardSn:         "1",
@@ -89,7 +88,7 @@ func TestSaleCUP(t *testing.T) {
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlSale, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 }
 
 func TestSaleVisaOffline(t *testing.T) {
@@ -122,7 +121,6 @@ func TestSaleVisaOffline(t *testing.T) {
 			CardReaderMode: conf.Contact,
 			CardExpMonth:   "12",
 			CardExpYear:    "24",
-			CardExpDay:     "25",
 			CardFallback:   false,
 			CardNumber:     "*********0049",
 			CardSn:         "1",
@@ -142,7 +140,7 @@ func TestSaleVisaOffline(t *testing.T) {
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlSaleOffline, time.Second*10)
 
-	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
 }
 
 func TestSaleOfflineCustomer(t *testing.T) {

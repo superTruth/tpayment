@@ -118,7 +118,7 @@ func transferWithOnlinePaymentHandle(ctx *gin.Context, req *api_define.TxnReq) (
 
 	// Success，合并response
 	mergeAcquirerResponse(resp, saleResp)
-	mergeResponseToRecord(req.TxnRecord, saleResp)
+	mergeResponseToRecord(req, saleResp)
 
 	// 修正交易
 	err = models.DB().Transaction(func(tx *gorm.DB) error {

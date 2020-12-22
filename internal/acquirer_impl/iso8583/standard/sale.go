@@ -71,6 +71,7 @@ func (api *API) Sale(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquire
 	}
 	resp.TxnResp.AcquirerRRN = bankResp.TxnResp.AcquirerRRN
 	resp.AcquirerReconID = bankResp.AcquirerReconID
+	resp.TxnResp.DateTime = bankResp.TxnResp.DateTime
 
 	resp.TxnResp.TransactionState = bankResp.TxnResp.TransactionState
 	resp.TxnResp.ErrorCode = bankResp.TxnResp.ErrorCode

@@ -1,8 +1,10 @@
 package record
 
 import (
+	"database/sql/driver"
 	"time"
 	"tpayment/models"
+	"tpayment/pkg/gorm_json"
 )
 
 type TxnRecordDetail struct {
@@ -27,8 +29,9 @@ type TxnRecordDetail struct {
 	PayRedirectUrl     string `gorm:"column:pay_redirect_url"`
 	RedirectSuccessUrl string `gorm:"column:redirect_success_url"`
 	RedirectFailUrl    string `gorm:"column:redirect_fail_url"`
+	ResultNotifyUrl    string `gorm:"column:result_notify_url"`
 
-	Addition string `gorm:"column:addition"`
+	Addition *AdditionData `gorm:"column:addition;type:JSON"`
 }
 
 func (TxnRecordDetail) TableName() string {
@@ -37,4 +40,21 @@ func (TxnRecordDetail) TableName() string {
 
 func (t *TxnRecordDetail) Create(detail *TxnRecordDetail) error {
 	return t.Db.Model(t).Create(detail).Error
+}
+
+func (t *TxnRecordDetail) Update() error {
+	return t.Db.Model(t).Save(t).Error
+}
+
+type AdditionData struct {
+	CupTraceNum string `json:"cup_trace_num" gorm:"column:cup_trace_num"`
+	CupRrn      string `json:"cup_rrn" gorm:"column:cup_rrn"`
+}
+
+//
+func (c AdditionData) Value() (driver.Value, error) {
+	return gorm_json.Value(c)
+}
+func (c *AdditionData) Scan(input interface{}) error {
+	return gorm_json.Scan(input, c)
 }

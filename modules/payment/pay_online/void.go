@@ -104,7 +104,7 @@ func voidHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp, 
 
 	// Success，合并response
 	mergeAcquirerResponse(resp, saleResp)
-	mergeResponseToRecord(req.TxnRecord, saleResp)
+	mergeResponseToRecord(req, saleResp)
 
 	if req.TxnRecord.Status == record.Success {
 		t := time.Now()
