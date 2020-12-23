@@ -6,7 +6,6 @@ import (
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
 	"tpayment/internal/bank_service/bank_common/api"
-	"tpayment/models"
 	"tpayment/models/payment/acquirer"
 	"tpayment/pkg/grpc_pool"
 	"tpayment/pkg/tlog"
@@ -29,13 +28,8 @@ func (api *API) Sale(ctx *gin.Context, req *acquirer_impl.SaleRequest) (*acquire
 	}
 
 	// 查找所有Key
-	keyBean := acquirer.Key{
-		BaseModel: models.BaseModel{
-			Db: models.DB(),
-		},
-	}
 	keyTag := generateKeyTag(req)
-	req.Keys, err = keyBean.Get(keyTag)
+	req.Keys, err = acquirer.KeyDao.Get(keyTag)
 	if err != nil {
 		logger.Error("keyBean.Get fail->", err.Error())
 		return nil, conf.DBError

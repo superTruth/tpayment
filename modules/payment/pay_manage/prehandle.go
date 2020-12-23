@@ -1,4 +1,4 @@
-package pay_offline
+package pay_manage
 
 import (
 	"fmt"
@@ -173,7 +173,6 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 
 	// 查找merchant account
 	var err error
-
 	txn.PaymentProcessRule.MerchantAccount, err =
 		merchantaccount.Dao.Get(txn.PaymentProcessRule.MerchantAccountID)
 	if err != nil {

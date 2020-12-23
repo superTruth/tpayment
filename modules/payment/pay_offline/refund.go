@@ -1,13 +1,9 @@
 package pay_offline
 
 import (
-	"time"
 	"tpayment/api/api_define"
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/pkg/tlog"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,42 +39,42 @@ func refundHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp
 		return resp, conf.Success
 	}
 
-	// 保存交易记录
-	err = models.DB().Transaction(func(tx *gorm.DB) error {
-		req.TxnRecord.BaseModel.Db = &models.MyDB{DB: tx}
-		err = req.TxnRecord.Create(req.TxnRecord)
-		if err != nil {
-			logger.Warn("create record error->", err.Error())
-			return err
-		}
-
-		req.TxnRecordDetail.BaseModel.Db = &models.MyDB{DB: tx}
-		err = req.TxnRecordDetail.Create(req.TxnRecordDetail)
-		if err != nil {
-			logger.Warn("create detail record error->", err.Error())
-			return err
-		}
-
-		// 更新原始交易
-		req.OrgRecord.BaseModel.Db = &models.MyDB{DB: tx}
-
-		t := time.Now()
-		req.OrgRecord.RefundAt = &t
-		req.OrgRecord.RefundTimes++
-		req.OrgRecord.TotalAmount = req.OrgRecord.TotalAmount.Sub(req.TxnRecord.Amount)
-		err = req.OrgRecord.UpdateRefundStatus()
-		if err != nil {
-			logger.Error("UpdateRefundStatus fail->", err.Error())
-			return err
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		logger.Error(" models.DB().Transaction error->", err.Error())
-		return resp, conf.DBError
-	}
+	//// 保存交易记录
+	//err = models.DB().Transaction(func(tx *gorm.DB) error {
+	//	req.TxnRecord.BaseModel.Db = &models.MyDB{DB: tx}
+	//	err = req.TxnRecord.Create(req.TxnRecord)
+	//	if err != nil {
+	//		logger.Warn("create record error->", err.Error())
+	//		return err
+	//	}
+	//
+	//	req.TxnRecordDetail.BaseModel.Db = &models.MyDB{DB: tx}
+	//	err = req.TxnRecordDetail.Create(req.TxnRecordDetail)
+	//	if err != nil {
+	//		logger.Warn("create detail record error->", err.Error())
+	//		return err
+	//	}
+	//
+	//	// 更新原始交易
+	//	req.OrgRecord.BaseModel.Db = &models.MyDB{DB: tx}
+	//
+	//	t := time.Now()
+	//	req.OrgRecord.RefundAt = &t
+	//	req.OrgRecord.RefundTimes++
+	//	req.OrgRecord.TotalAmount = req.OrgRecord.TotalAmount.Sub(req.TxnRecord.Amount)
+	//	err = req.OrgRecord.UpdateRefundStatus()
+	//	if err != nil {
+	//		logger.Error("UpdateRefundStatus fail->", err.Error())
+	//		return err
+	//	}
+	//
+	//	return nil
+	//})
+	//
+	//if err != nil {
+	//	logger.Error(" models.DB().Transaction error->", err.Error())
+	//	return resp, conf.DBError
+	//}
 
 	logger.Info("mergeRespAfterPreHandle.....")
 	// 再次合并数据到返回结果

@@ -2,6 +2,8 @@ package acquirer
 
 import "tpayment/models"
 
+var KeyDao = &Key{}
+
 type Key struct {
 	models.BaseModel
 	Tag   string `gorm:"column:tag"`
@@ -14,7 +16,7 @@ func (Key) TableName() string {
 }
 
 func (k *Key) Create(key *Key) error {
-	return k.Db.Model(k).Create(key).Error
+	return models.DB().Model(k).Create(key).Error
 }
 
 func (k *Key) Get(tag string) ([]*Key, error) {
@@ -23,7 +25,7 @@ func (k *Key) Get(tag string) ([]*Key, error) {
 		err  error
 	)
 
-	err = k.Db.Model(k).Where("tag=?",
+	err = models.DB().Model(k).Where("tag=?",
 		tag).Find(&keys).Error
 	if err != nil {
 		return nil, err
@@ -33,5 +35,5 @@ func (k *Key) Get(tag string) ([]*Key, error) {
 }
 
 func (k *Key) Delete() error {
-	return k.Db.Model(k).Delete(k).Error
+	return models.DB().Model(k).Delete(k).Error
 }

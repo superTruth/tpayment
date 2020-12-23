@@ -20,6 +20,8 @@ const (
 	Pending      = "pending"       // 等待完成
 )
 
+var TxnRecordDao = &TxnRecord{}
+
 type TxnRecord struct {
 	models.BaseModel
 
@@ -79,15 +81,15 @@ func (TxnRecord) TableName() string {
 }
 
 func (t *TxnRecord) Create(record *TxnRecord) error {
-	return t.Db.Model(t).Create(record).Error
+	return models.DB().Model(t).Create(record).Error
 }
 
 func (t *TxnRecord) UpdateAll() error {
-	return t.Db.Model(t).Save(t).Error
+	return models.DB().Model(t).Save(t).Error
 }
 
 func (t *TxnRecord) UpdateStatus() error {
-	dbTmp := t.Db.Model(t).Update(map[string]interface{}{
+	dbTmp := models.DB().Model(t).Update(map[string]interface{}{
 		"status":     t.Status,
 		"error_code": t.ErrorCode,
 		"error_des":  t.ErrorDes,
@@ -105,22 +107,13 @@ func (t *TxnRecord) UpdateStatus() error {
 	return nil
 }
 
-// 硬删除
-func (t *TxnRecord) HardDelete() error {
-	dbTmp := t.Db.Model(t).Unscoped().Delete(t)
-	err := dbTmp.Error
-	if err != nil {
-		return err
-	}
-	if dbTmp.RowsAffected == 0 {
-		return errors.New("no record updated")
-	}
-	return nil
-}
-
 // 更新sale交易结果
-func (t *TxnRecord) UpdateTxnResult() error {
-	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
+func (t *TxnRecord) UpdateTxnResult(db *gorm.DB) error {
+	tmpDB := models.DB().DB
+	if db != nil {
+		tmpDB = db
+	}
+	dbTmp := tmpDB.Model(t).Where("id=?", t.ID).Select(
 		[]string{"acquirer_rrn", "acquirer_auth_code",
 			"acquirer_recon_id", "complete_at", "acquirer_txn_date_time",
 			"status", "acquirer_batch_num", "consumer_identify", "error_code", "error_des"}).Updates(t)
@@ -139,7 +132,7 @@ func (t *TxnRecord) UpdateTxnResult() error {
 
 // 更新void状态
 func (t *TxnRecord) UpdateVoidStatus() error {
-	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
+	dbTmp := models.DB().Model(t).Where("id=?", t.ID).Select(
 		[]string{"void_at"}).Updates(t)
 
 	err := dbTmp.Error
@@ -156,7 +149,7 @@ func (t *TxnRecord) UpdateVoidStatus() error {
 
 // 更新refund状态
 func (t *TxnRecord) UpdateRefundStatus() error {
-	dbTmp := t.Db.Model(t).Where("id=?", t.ID).Select(
+	dbTmp := models.DB().Model(t).Where("id=?", t.ID).Select(
 		[]string{"total_amount", "refund_times", "refund_at"}).Updates(t)
 	err := dbTmp.Error
 
@@ -173,7 +166,26 @@ func (t *TxnRecord) UpdateRefundStatus() error {
 // 查询一条记录
 func (t *TxnRecord) GetByID(id uint64) (*TxnRecord, error) {
 	ret := new(TxnRecord)
-	err := t.Db.Model(t).Where("id=?", id).First(ret).Error
+	err := models.DB().Model(t).Where("id=?", id).First(ret).Error
+	if gorm.ErrRecordNotFound == err { // 没有记录, 就创建一条记录
+		if err != nil {
+			return nil, err
+		}
+		return t, err
+	}
+	return ret, err
+}
+
+// 通过ID或者Partner uuid查询一条交易记录
+func (t *TxnRecord) GetByIDOrUuid(merchantID uint64, id uint64, partnerUuid string) (*TxnRecord, error) {
+	ret := new(TxnRecord)
+	var err error
+	if id != 0 {
+		err = models.DB().Model(t).Where("id=? AND merchant_id=?", id, merchantID).First(ret).Error
+	} else {
+		err = models.DB().Model(t).Where("partner_uuid=? AND merchant_id=?", partnerUuid, merchantID).First(ret).Error
+	}
+
 	if gorm.ErrRecordNotFound == err { // 没有记录, 就创建一条记录
 		if err != nil {
 			return nil, err
@@ -200,7 +212,7 @@ func (t *TxnRecord) GetSettlementTotal(mid, tid, batchNum uint64) ([]*Settlement
 
 	// 先查看有多少种货币代码
 	var currencies []*TxnRecord
-	err = t.Db.Model(t).Where(
+	err = models.DB().Model(t).Where(
 		"merchant_account_id=? and terminal_id=? and acquirer_batch_num=? and payment_type=? "+
 			"and void_at is null and status=?",
 		mid, tid, batchNum, conf.Sale, Success).Group("currency").Select("currency").Find(&currencies).Error
@@ -213,7 +225,7 @@ func (t *TxnRecord) GetSettlementTotal(mid, tid, batchNum uint64) ([]*Settlement
 
 	for i := range currencies {
 		totalTmp := new(SettlementTotal)
-		err = t.Db.Table(t.TableName()).Select("sum(amount) as sale_amount, count(*) as sale_count").Where(
+		err = models.DB().Table(t.TableName()).Select("sum(amount) as sale_amount, count(*) as sale_count").Where(
 			"merchant_account_id=? and terminal_id=? and acquirer_batch_num=? and payment_type=? "+
 				"and void_at is null and status=? and currency=? and deleted_at is null",
 			mid, tid, batchNum, conf.Sale, Success, currencies[i].Currency).Find(totalTmp).Error
@@ -232,7 +244,7 @@ func (t *TxnRecord) GetSettlementTotal(mid, tid, batchNum uint64) ([]*Settlement
 // 获取批上送记录
 func (t *TxnRecord) GetBatchUploadRecords(mid, tid, batchNum, offset, limit uint64) ([]*TxnRecord, error) {
 	var ret []*TxnRecord
-	err := t.Db.Model(t).Where(
+	err := models.DB().Model(t).Where(
 		"merchant_account_id=? and terminal_id=? and acquirer_batch_num=? and payment_type in (?) and void_at=0 and status=?",
 		mid, tid, batchNum, []string{conf.Sale, conf.Refund, conf.PreAuthComplete}, Success).
 		Offset(offset).Limit(limit).Find(&ret).Error

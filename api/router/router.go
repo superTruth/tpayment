@@ -14,6 +14,7 @@ import (
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
 	"tpayment/modules/merchant/merchantdevicepayment"
+	"tpayment/modules/payment/pay_manage"
 	"tpayment/modules/payment/pay_offline"
 	"tpayment/modules/payment/pay_online"
 	"tpayment/modules/tms/app"
@@ -162,6 +163,8 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlSaleOffline, pay_offline.SaleHandle)
 	e.POST(conf.UrlVoidOffline, pay_offline.VoidHandle)
 	e.POST(conf.UrlRefundOffline, pay_offline.RefundHandle)
+
+	e.POST(conf.UrlCheck, pay_manage.Check)
 
 	return e, nil
 }

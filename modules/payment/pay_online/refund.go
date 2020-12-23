@@ -6,12 +6,9 @@ import (
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
 	"tpayment/internal/acquirer_impl/factory"
-	"tpayment/models"
 	"tpayment/models/payment/record"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,10 +51,6 @@ func refundHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp
 	}
 
 	// 保存交易记录
-	req.TxnRecord.BaseModel = models.BaseModel{
-		Db:  models.DB(),
-		Ctx: ctx,
-	}
 	err = req.TxnRecord.Create(req.TxnRecord)
 	if err != nil {
 		logger.Warn("create record error->", err.Error())
@@ -95,49 +88,49 @@ func refundHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnResp
 	mergeAcquirerResponse(resp, saleResp)
 	mergeResponseToRecord(req, saleResp)
 
-	if req.TxnRecord.Status == record.Success {
-		t := time.Now()
-		req.OrgRecord.RefundAt = &t
-		req.OrgRecord.RefundTimes++
-		req.OrgRecord.TotalAmount = req.OrgRecord.TotalAmount.Sub(req.TxnRecord.Amount)
-		err = models.DB().Transaction(func(tx *gorm.DB) error {
-			// 原始记录
-			req.OrgRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{DB: tx},
-				Ctx: ctx,
-			}
-
-			err = req.OrgRecord.UpdateRefundStatus()
-			if err != nil {
-				logger.Error("UpdateRefundStatus fail->", err.Error())
-				return err
-			}
-
-			// 新记录
-			req.TxnRecord.BaseModel = models.BaseModel{
-				Db:  &models.MyDB{DB: tx},
-				Ctx: ctx,
-			}
-
-			err = req.TxnRecord.UpdateTxnResult()
-			if err != nil {
-				logger.Error("UpdateTxnResult fail->", err.Error())
-				return err
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			logger.Error("update success result fail->", err.Error())
-			return resp, conf.DBError
-		}
-	} else {
-		if err = req.TxnRecord.UpdateTxnResult(); err != nil {
-			logger.Error("UpdateTxnResult fail->", err.Error())
-			return resp, conf.DBError
-		}
-	}
+	//if req.TxnRecord.Status == record.Success {
+	//	t := time.Now()
+	//	req.OrgRecord.RefundAt = &t
+	//	req.OrgRecord.RefundTimes++
+	//	req.OrgRecord.TotalAmount = req.OrgRecord.TotalAmount.Sub(req.TxnRecord.Amount)
+	//	err = models.DB().Transaction(func(tx *gorm.DB) error {
+	//		// 原始记录
+	//		req.OrgRecord.BaseModel = models.BaseModel{
+	//			Db:  &models.MyDB{DB: tx},
+	//			Ctx: ctx,
+	//		}
+	//
+	//		err = req.OrgRecord.UpdateRefundStatus()
+	//		if err != nil {
+	//			logger.Error("UpdateRefundStatus fail->", err.Error())
+	//			return err
+	//		}
+	//
+	//		// 新记录
+	//		req.TxnRecord.BaseModel = models.BaseModel{
+	//			Db:  &models.MyDB{DB: tx},
+	//			Ctx: ctx,
+	//		}
+	//
+	//		err = req.TxnRecord.UpdateTxnResult()
+	//		if err != nil {
+	//			logger.Error("UpdateTxnResult fail->", err.Error())
+	//			return err
+	//		}
+	//
+	//		return nil
+	//	})
+	//
+	//	if err != nil {
+	//		logger.Error("update success result fail->", err.Error())
+	//		return resp, conf.DBError
+	//	}
+	//} else {
+	//	if err = req.TxnRecord.UpdateTxnResult(); err != nil {
+	//		logger.Error("UpdateTxnResult fail->", err.Error())
+	//		return resp, conf.DBError
+	//	}
+	//}
 
 	return resp, conf.Success
 }

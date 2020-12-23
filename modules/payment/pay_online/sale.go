@@ -6,12 +6,11 @@ import (
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
 	"tpayment/internal/acquirer_impl/factory"
-	"tpayment/models"
 	"tpayment/models/payment/record"
+	"tpayment/models/txn"
 	"tpayment/modules"
+	"tpayment/modules/payment/common"
 	"tpayment/pkg/tlog"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -83,40 +82,11 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq, repeat bool) (*api_def
 
 	// 保存交易记录
 	if !repeat { // 第一次交易
-		err = models.DB().Transaction(func(tx *gorm.DB) error {
-			recordBean := &record.TxnRecord{
-				BaseModel: models.BaseModel{
-					Db:  &models.MyDB{DB: tx},
-					Ctx: ctx,
-				},
-			}
-
-			err = recordBean.Create(req.TxnRecord)
-			if err != nil {
-				return err
-			}
-
-			detailBean := &record.TxnRecordDetail{
-				BaseModel: models.BaseModel{
-					Db:  &models.MyDB{DB: tx},
-					Ctx: ctx,
-				},
-			}
-
-			err = detailBean.Create(req.TxnRecordDetail)
-			if err != nil {
-				return err
-			}
-
-			return nil
-		})
-
+		err = txn.CreateTransactionAndDetail(req.TxnRecord, req.TxnRecordDetail)
 		if err != nil {
 			logger.Warn("create record error->", err.Error())
 			return resp, conf.DBError
 		}
-		req.TxnRecord.BaseModel.Db = models.DB()
-		req.TxnRecordDetail.Db = models.DB()
 	} else { // 交易回放
 		err = req.TxnRecord.UpdateAll()
 		if err != nil {
@@ -164,28 +134,13 @@ func saleHandle(ctx *gin.Context, req *api_define.TxnReq, repeat bool) (*api_def
 	// Success，合并response
 	mergeAcquirerResponse(resp, saleResp)
 	mergeResponseToRecord(req, saleResp)
-
-	err = models.DB().Transaction(func(tx *gorm.DB) error {
-		req.TxnRecord.BaseModel.Db = &models.MyDB{DB: tx}
-		req.TxnRecordDetail.Db = &models.MyDB{DB: tx}
-
-		if err = req.TxnRecord.UpdateTxnResult(); err != nil {
-			return err
-		}
-
-		if err = req.TxnRecordDetail.Update(); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	err = txn.UpdateSaleResult(req.TxnRecord, req.TxnRecordDetail)
 	if err != nil {
 		logger.Warn("UpdateTxnResult fail->", err.Error())
 		return resp, conf.DBError
 	}
 
-	ret := PickupResponse(req)
+	ret := common.PickupResponse(req)
 
 	return ret, conf.Success
 }

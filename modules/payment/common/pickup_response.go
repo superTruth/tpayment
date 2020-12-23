@@ -1,4 +1,4 @@
-package pay_online
+package common
 
 import (
 	"tpayment/api/api_define"

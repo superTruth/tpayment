@@ -17,7 +17,7 @@ func (WarningRecord) TableName() string {
 }
 
 func (t *WarningRecord) Create(record *WarningRecord) error {
-	return t.Db.Model(t).Create(record).Error
+	return models.DB().Model(t).Create(record).Error
 }
 
 //// 生成异常交易

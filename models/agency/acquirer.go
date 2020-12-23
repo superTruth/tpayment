@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var AcquirerDao = &Acquirer{}
+
 type Acquirer struct {
 	models.BaseModel
 
@@ -26,7 +28,7 @@ func (Acquirer) TableName() string {
 func (acq *Acquirer) Get(id uint64) (*Acquirer, error) {
 	ret := new(Acquirer)
 
-	err := acq.Db.Model(acq).Where("id=?", id).First(ret).Error
+	err := models.DB().Model(acq).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -82,7 +84,7 @@ func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, li
 func (acq *Acquirer) GetNeedSettlement(hour string) ([]*Acquirer, error) {
 	var ret []*Acquirer
 
-	err := acq.Db.Model(acq).Where("auto_settlement_time LIKE ?%", hour).Find(&ret).Error
+	err := models.DB().Model(acq).Where("auto_settlement_time LIKE ?%", hour).Find(&ret).Error
 
 	if err != nil {
 		return nil, err

@@ -81,13 +81,7 @@ func fetchMerchantAgencyInfo2(ctx *gin.Context, txn *api_define.TxnReq) conf.Res
 	logger := tlog.GetLogger(ctx)
 	var err error
 
-	merchantBean := &merchant.Merchant{
-		BaseModel: models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		},
-	}
-	merchantBean, err = merchantBean.Get(txn.MerchantID)
+	merchantBean, err := merchant.Dao.Get(txn.MerchantID)
 	if err != nil {
 		logger.Warn("merchant fetch fail->", err.Error())
 		return conf.DBError
@@ -100,14 +94,7 @@ func fetchMerchantAgencyInfo2(ctx *gin.Context, txn *api_define.TxnReq) conf.Res
 	txn.MerchantInfo = merchantBean
 
 	// Agency
-	agencyBean := &agency.Agency{
-		BaseModel: models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		},
-	}
-
-	agencyBean, err = agencyBean.Get(merchantBean.AgencyId)
+	agencyBean, err := agency.Dao.Get(merchantBean.AgencyId)
 	if err != nil {
 		logger.Warn("agency fetch fail->", err.Error())
 		return conf.DBError
@@ -291,18 +278,10 @@ func matchProcessRule2(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode
 // 查找merchant account
 func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
-	var errorCode conf.ResultCode
-
 	// 查找merchant account
 	var err error
-	merchantBean := &merchantaccount.MerchantAccount{
-		BaseModel: models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		},
-	}
 	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(txn.PaymentProcessRule.MerchantAccountID)
+		merchantaccount.Dao.Get(txn.PaymentProcessRule.MerchantAccountID)
 	if err != nil {
 		logger.Error("merchantBean.Get->", err.Error())
 		return conf.DBError
@@ -313,13 +292,8 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 	}
 
 	// 查找acquirer
-	acquirerBean := &agency.Acquirer{
-		BaseModel: models.BaseModel{
-			Db: models.DB(),
-		},
-	}
 	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
+		agency.AcquirerDao.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
 	if err != nil {
 		logger.Error("acquirerBean.Get->", err.Error())
 		return conf.DBError
@@ -331,30 +305,19 @@ func fetchMerchantAccountFirstTime(ctx *gin.Context, txn *api_define.TxnReq) con
 
 	// 分配TID
 	if txn.DeviceID != "" {
-		tid := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db:  models.DB(),
-				Ctx: ctx,
-			},
-		}
-
-		count, err := tid.GetTotal(txn.PaymentProcessRule.MerchantAccountID)
+		count, err := acquirer.TerminalDao.GetTotal(txn.PaymentProcessRule.MerchantAccountID)
 		if err != nil {
 			logger.Warn("get total error->", err.Error())
 			return conf.DBError
 		}
 		if count > 0 { // 没有tid，则认为是不需要绑定TID
-			tid, errorCode =
-				tid.GetOneAvailable(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
+			tid, errorCode :=
+				acquirer.TerminalDao.GetOneAvailable(txn.PaymentProcessRule.MerchantAccountID, txn.DeviceID)
 			if errorCode != conf.Success {
 				logger.Warn("can't get available tid->", txn.DeviceID)
 				return errorCode
 			}
 			txn.PaymentProcessRule.MerchantAccount.Terminal = tid // 可能会没有
-			if txn.PaymentProcessRule.MerchantAccount.Terminal != nil {
-				txn.PaymentProcessRule.MerchantAccount.Terminal.BaseModel.Db = models.DB()
-				txn.PaymentProcessRule.MerchantAccount.Terminal.BaseModel.Ctx = ctx
-			}
 		}
 	}
 
@@ -367,14 +330,8 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 	txn.PaymentProcessRule = new(paymentprocessrule.PaymentProcessRule)
 	// 查找merchant account
 	var err error
-	merchantBean := &merchantaccount.MerchantAccount{
-		BaseModel: models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		},
-	}
 	txn.PaymentProcessRule.MerchantAccount, err =
-		merchantBean.Get(txn.OrgRecord.MerchantAccountID)
+		merchantaccount.Dao.Get(txn.OrgRecord.MerchantAccountID)
 	if err != nil {
 		logger.Error("merchantBean.Get->", err.Error())
 		return conf.DBError
@@ -385,13 +342,8 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 	}
 
 	// 查找acquirer
-	acquirerBean := &agency.Acquirer{
-		BaseModel: models.BaseModel{
-			Db: models.DB(),
-		},
-	}
 	txn.PaymentProcessRule.MerchantAccount.Acquirer, err =
-		acquirerBean.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
+		agency.AcquirerDao.Get(txn.PaymentProcessRule.MerchantAccount.AcquirerID)
 	if err != nil {
 		logger.Error("acquirerBean.Get->", err.Error())
 		return conf.DBError
@@ -403,13 +355,7 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 
 	// 查找TID
 	if txn.OrgRecord.TerminalID != 0 {
-		terminalID := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db:  models.DB(),
-				Ctx: ctx,
-			},
-		}
-		terminalID, err = terminalID.Get(txn.OrgRecord.TerminalID)
+		terminalID, err := acquirer.TerminalDao.Get(txn.OrgRecord.TerminalID)
 		if err != nil {
 			logger.Error("terminalID.Get ", txn.OrgRecord.TerminalID, "->", err.Error())
 			return conf.DBError
@@ -417,10 +363,6 @@ func fetchMerchantAccountFromOrg(ctx *gin.Context, txn *api_define.TxnReq) conf.
 		if terminalID == nil {
 			logger.Error("can't find the terminal ", txn.OrgRecord.TerminalID)
 			return conf.RecordNotFund
-		}
-		terminalID.BaseModel = models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
 		}
 		txn.PaymentProcessRule.MerchantAccount.Terminal = terminalID
 	}
@@ -433,13 +375,7 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 	var err error
 
-	recordBean := record.TxnRecord{
-		BaseModel: models.BaseModel{
-			Db:  models.DB(),
-			Ctx: ctx,
-		},
-	}
-	txn.OrgRecord, err = recordBean.GetByID(txn.OrgTxnID)
+	txn.OrgRecord, err = record.TxnRecordDao.GetByID(txn.OrgTxnID)
 	if err != nil {
 		logger.Warn("GetByID "+strconv.Itoa(int(txn.OrgTxnID))+" fail->", err.Error())
 		return conf.DBError
@@ -448,100 +384,9 @@ func fetchOrgRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
 		logger.Warn("can't find the record " + strconv.Itoa(int(txn.OrgTxnID)))
 		return conf.RecordNotFund
 	}
-	txn.OrgRecord.BaseModel = recordBean.BaseModel
 
 	return conf.Success
 }
-
-// 生成交易记录
-//func preBuildRecord(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {
-//	logger := tlog.GetLogger(ctx)
-//	var (
-//		err    error
-//		amount decimal.Decimal
-//		ret    *record.TxnRecord
-//	)
-//
-//	// 金额处理
-//	if txn.Amount != "" { // 没有传入金额
-//		amount, err = decimal.NewFromString(txn.Amount)
-//		if err != nil {
-//			logger.Warn("can't parse amount->", txn.Amount, ",", err.Error())
-//			return conf.ParameterError
-//		}
-//	} else {
-//		if txn.OrgRecord == nil {
-//			logger.Warn("can't get amount from org record->", txn.OrgTxnID)
-//			return conf.ParameterError
-//		}
-//		amount = txn.OrgRecord.Amount
-//	}
-//
-//	if txn.OrgRecord == nil {
-//		ret = &record.TxnRecord{
-//			MerchantID:          txn.MerchantID,
-//			TotalAmount:         amount,
-//			Amount:              amount,
-//			Currency:            txn.Currency,
-//			MerchantAccountID:   txn.PaymentProcessRule.MerchantID,
-//			PaymentMethod:       txn.RealPaymentMethod,
-//			PaymentEntryType:    txn.RealEntryType,
-//			PaymentType:         txn.TxnType,
-//			PartnerUUID:         txn.Uuid,
-//			Status:              record.Init,
-//			PaymentFromName:     txn.FromName,
-//			PaymentFromIP:       txn.FromIp,
-//			PaymentFromDeviceID: txn.DeviceID,
-//			CashierID:           txn.CashierID,
-//		}
-//		if txn.CreditCardBean != nil && txn.CreditCardBean.CardNumber != "" {
-//			ret.ConsumerIdentify = txn.CreditCardBean.CardNumber
-//		}
-//	} else {
-//		ret = &record.TxnRecord{
-//			MerchantID:          txn.OrgRecord.MerchantID,
-//			TotalAmount:         txn.OrgRecord.Amount,
-//			Amount:              txn.OrgRecord.Amount,
-//			Currency:            txn.OrgRecord.Currency,
-//			MerchantAccountID:   txn.OrgRecord.MerchantAccountID,
-//			PaymentMethod:       txn.OrgRecord.PaymentMethod,
-//			PaymentEntryType:    conf.ManualInput,
-//			PaymentType:         txn.TxnType,
-//			PartnerUUID:         txn.Uuid,
-//			Status:              record.Init,
-//			PaymentFromName:     txn.FromName,
-//			PaymentFromIP:       txn.FromIp,
-//			PaymentFromDeviceID: txn.DeviceID,
-//			CashierID:           txn.CashierID,
-//			ConsumerIdentify:    txn.OrgRecord.ConsumerIdentify,
-//		}
-//	}
-//
-//	txn.TxnRecord = ret
-//
-//	// 详细信息
-//	txn.TxnRecordDetail = &record.TxnRecordDetail{
-//		TxnExpAt:              nil,
-//		CreditCardExp:         "",
-//		CreditCardFallBack:    false,
-//		CreditCardSN:          "",
-//		CreditCardHolderName:  "",
-//		CreditCardIsMsdCard:   false,
-//		CreditCardIccRequest:  "",
-//		CreditCardECI:         "",
-//		CreditCardIccResponse: "",
-//		ResponseCode:          "",
-//		TokenType:             "",
-//		Token:                 "",
-//		TDSEnable:             false,
-//		PayRedirectUrl:        "",
-//		RedirectSuccessUrl:    "",
-//		RedirectFailUrl:       "",
-//		Addition:              "",
-//	}
-//
-//	return conf.Success
-//}
 
 // 生成交易记录
 func preBuildRecord2(ctx *gin.Context, txn *api_define.TxnReq) conf.ResultCode {

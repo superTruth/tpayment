@@ -12,6 +12,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var Dao = &Merchant{}
+
 type Merchant struct {
 	models.BaseModel
 
@@ -43,7 +45,7 @@ func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint64) (*Merchant, e
 
 func (m *Merchant) Get(id uint64) (*Merchant, error) {
 	ret := new(Merchant)
-	err := m.Db.Model(m).Where("id=?", id).First(ret).Error
+	err := models.DB().Model(m).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

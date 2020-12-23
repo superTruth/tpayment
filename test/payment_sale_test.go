@@ -8,9 +8,7 @@ import (
 	"time"
 	"tpayment/api/api_define"
 	"tpayment/conf"
-	"tpayment/internal/basekey"
-	"tpayment/models"
-	"tpayment/models/payment/record"
+	"tpayment/modules/payment/pay_manage"
 
 	"github.com/google/uuid"
 )
@@ -223,30 +221,24 @@ func TestRefundOffline(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
-func TestDB(t *testing.T) {
-	conf.InitConfigData()
+func TestCheck(t *testing.T) {
+	TestLogin(t)
 
-	models.InitDB()
+	fmt.Println("Test Check", line)
 
-	basekey.Init() // 初始化基础秘钥
-
-	recordBean := &record.TxnRecord{
-		BaseModel: models.BaseModel{
-			Db: models.DB(),
-		},
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
 	}
 
-	total, err := recordBean.GetSettlementTotal(9, 0, 1)
-
-	if err != nil {
-		t.Error(err.Error())
-		return
+	reqBean := &pay_manage.CheckRequest{
+		MerchantId:  9,
+		TxnID:       1924522619676131328,
+		PartnerUUID: "",
 	}
 
-	fmt.Println("total len->", len(total))
+	reqByte, _ := json.Marshal(reqBean)
 
-	for i, totalTmp := range total {
-		fmt.Println(i, "->", *totalTmp)
-	}
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlCheck, time.Second*10)
 
+	formatJson(repByte)
 }

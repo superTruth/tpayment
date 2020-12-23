@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var Dao = &MerchantAccount{}
+
 type MerchantAccount struct {
 	models.BaseModel
 	Name       string              `gorm:"column:name"`
@@ -27,7 +29,7 @@ func (MerchantAccount) TableName() string {
 
 func (m *MerchantAccount) Get(merchantID uint64) (*MerchantAccount, error) {
 	var ret = new(MerchantAccount)
-	err := m.Db.Model(m).Where("id=?", merchantID).Find(ret).Error
+	err := models.DB().Model(m).Where("id=?", merchantID).Find(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -40,7 +42,7 @@ func (m *MerchantAccount) Get(merchantID uint64) (*MerchantAccount, error) {
 
 func (m *MerchantAccount) GetByAcquirerID(acqID, offset, limit uint64) ([]*MerchantAccount, error) {
 	var ret []*MerchantAccount
-	err := m.Db.Model(m).Where("acquirer_id=?", acqID).Offset(offset).Limit(limit).Find(ret).Error
+	err := models.DB().Model(m).Where("acquirer_id=?", acqID).Offset(offset).Limit(limit).Find(ret).Error
 	if err != nil {
 		return nil, err
 	}

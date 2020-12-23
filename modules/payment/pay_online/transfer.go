@@ -5,13 +5,9 @@ import (
 	"tpayment/conf"
 	"tpayment/internal/acquirer_impl"
 	"tpayment/internal/acquirer_impl/factory"
-	"tpayment/models"
 	"tpayment/models/payment/record"
 	"tpayment/modules"
-	"tpayment/pkg/id"
 	"tpayment/pkg/tlog"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -73,10 +69,6 @@ func transferWithOnlinePaymentHandle(ctx *gin.Context, req *api_define.TxnReq) (
 	}
 
 	// 保存交易记录
-	req.TxnRecord.BaseModel = models.BaseModel{
-		Db:  models.DB(),
-		Ctx: ctx,
-	}
 	err = req.TxnRecord.Create(req.TxnRecord)
 	if err != nil {
 		logger.Warn("create record error->", err.Error())
@@ -120,36 +112,36 @@ func transferWithOnlinePaymentHandle(ctx *gin.Context, req *api_define.TxnReq) (
 	mergeAcquirerResponse(resp, saleResp)
 	mergeResponseToRecord(req, saleResp)
 
-	// 修正交易
-	err = models.DB().Transaction(func(tx *gorm.DB) error {
-		req.TxnRecord.Db = &models.MyDB{DB: tx}
-		if err = req.TxnRecord.UpdateTxnResult(); err != nil {
-			logger.Error("UpdateTxnResult fail->", err.Error())
-			return err
-		}
-
-		// 创建一条transfer记录
-		transferRecord := &record.TxnRecord{
-			BaseModel: models.BaseModel{
-				ID: id.New(),
-				Db: req.TxnRecord.Db,
-			},
-			MerchantID:  req.TxnRecord.MerchantID,
-			PaymentType: conf.Transfer,
-			OrgTxnID:    req.TxnRecord.ID,
-			Status:      record.Init,
-		}
-
-		if err = transferRecord.Create(transferRecord); err != nil {
-			logger.Error("Create fail->", err.Error())
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
-		logger.Error("UpdateTxnResult fail->", err.Error())
-		return resp, conf.DBError
-	}
+	//// 修正交易
+	//err = models.DB().Transaction(func(tx *gorm.DB) error {
+	//	req.TxnRecord.Db = &models.MyDB{DB: tx}
+	//	if err = req.TxnRecord.UpdateTxnResult(); err != nil {
+	//		logger.Error("UpdateTxnResult fail->", err.Error())
+	//		return err
+	//	}
+	//
+	//	// 创建一条transfer记录
+	//	transferRecord := &record.TxnRecord{
+	//		BaseModel: models.BaseModel{
+	//			ID: id.New(),
+	//			Db: req.TxnRecord.Db,
+	//		},
+	//		MerchantID:  req.TxnRecord.MerchantID,
+	//		PaymentType: conf.Transfer,
+	//		OrgTxnID:    req.TxnRecord.ID,
+	//		Status:      record.Init,
+	//	}
+	//
+	//	if err = transferRecord.Create(transferRecord); err != nil {
+	//		logger.Error("Create fail->", err.Error())
+	//		return err
+	//	}
+	//
+	//	return nil
+	//})
+	//if err != nil {
+	//	logger.Error("UpdateTxnResult fail->", err.Error())
+	//	return resp, conf.DBError
+	//}
 	return resp, conf.Success
 }

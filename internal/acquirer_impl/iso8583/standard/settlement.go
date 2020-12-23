@@ -2,7 +2,6 @@ package standard
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/models/payment/acquirer"
 	"tpayment/models/payment/merchantaccount"
@@ -24,13 +23,7 @@ func (api *API) SettlementInTID(acq *agency.Acquirer, mid *merchantaccount.Merch
 	defer logger.Destroy()
 
 	// 获取统计信息
-	recordBean := &record.TxnRecord{
-		BaseModel: models.BaseModel{
-			Db: models.DB(),
-		},
-	}
-
-	total, err := recordBean.GetSettlementTotal(mid.ID, tid.ID, tid.BatchNum)
+	total, err := record.TxnRecordDao.GetSettlementTotal(mid.ID, tid.ID, tid.BatchNum)
 	if err != nil {
 		logger.Error("recordBean.GetSettlementTotal fail->", err)
 		return conf.DBError

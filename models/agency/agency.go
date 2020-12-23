@@ -10,6 +10,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var Dao = &Agency{}
+
 type Agency struct {
 	models.BaseModel
 
@@ -25,7 +27,7 @@ func (Agency) TableName() string {
 
 func (a *Agency) Get(id uint64) (*Agency, error) {
 	ret := new(Agency)
-	err := a.Db.Model(a).Where("id=?", id).First(ret).Error
+	err := models.DB().Model(a).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

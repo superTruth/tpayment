@@ -3,10 +3,8 @@ package pay_offline
 import (
 	"tpayment/api/api_define"
 	"tpayment/conf"
-	"tpayment/models"
+	"tpayment/models/txn"
 	"tpayment/pkg/tlog"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,23 +30,7 @@ func transferHandle(ctx *gin.Context, req *api_define.TxnReq) (*api_define.TxnRe
 	}
 
 	// 保存交易记录
-	err = models.DB().Transaction(func(tx *gorm.DB) error {
-		req.TxnRecord.BaseModel.Db = &models.MyDB{DB: tx}
-		err = req.TxnRecord.Create(req.TxnRecord)
-		if err != nil {
-			logger.Warn("create record error->", err.Error())
-			return err
-		}
-
-		req.TxnRecordDetail.BaseModel.Db = &models.MyDB{DB: tx}
-		err = req.TxnRecordDetail.Create(req.TxnRecordDetail)
-		if err != nil {
-			logger.Warn("create detail record error->", err.Error())
-			return err
-		}
-		return nil
-	})
-
+	err = txn.CreateTransactionAndDetail(req.TxnRecord, req.TxnRecordDetail)
 	if err != nil {
 		logger.Error(" models.DB().Transaction error->", err.Error())
 		return resp, conf.DBError

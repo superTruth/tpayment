@@ -5,7 +5,11 @@ import (
 	"time"
 	"tpayment/models"
 	"tpayment/pkg/gorm_json"
+
+	"github.com/jinzhu/gorm"
 )
+
+var TxnRecordDetailDao = &TxnRecordDetail{}
 
 type TxnRecordDetail struct {
 	models.BaseModel
@@ -39,11 +43,28 @@ func (TxnRecordDetail) TableName() string {
 }
 
 func (t *TxnRecordDetail) Create(detail *TxnRecordDetail) error {
-	return t.Db.Model(t).Create(detail).Error
+	return models.DB().Model(t).Create(detail).Error
 }
 
-func (t *TxnRecordDetail) Update() error {
-	return t.Db.Model(t).Save(t).Error
+func (t *TxnRecordDetail) Get(id uint64) (*TxnRecordDetail, error) {
+	ret := new(TxnRecordDetail)
+	err := models.DB().Model(t).Where("id=?", id).First(ret).Error
+	if gorm.ErrRecordNotFound == err { // 没有记录, 就创建一条记录
+		if err != nil {
+			return nil, err
+		}
+		return t, err
+	}
+	return ret, err
+}
+
+func (t *TxnRecordDetail) Update(db *gorm.DB) error {
+	tmpDB := models.DB().DB
+	if db != nil {
+		tmpDB = db
+	}
+
+	return tmpDB.Model(t).Save(t).Error
 }
 
 type AdditionData struct {

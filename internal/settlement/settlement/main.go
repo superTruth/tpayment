@@ -109,12 +109,7 @@ func settlement(maID uint64) error {
 		logger.Info("acquirer ", acqBean.Name, " settlement by tid")
 
 		// 查询TID
-		tid := &acquirer.Terminal{
-			BaseModel: models.BaseModel{
-				Db: models.DB(),
-			},
-		}
-		tids, err := tid.GetByMID(maID)
+		tids, err := acquirer.TerminalDao.GetByMID(maID)
 		if err != nil {
 			logger.Error("tid.GetByMID fail->", maID)
 			return err

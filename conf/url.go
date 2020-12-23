@@ -118,4 +118,6 @@ const (
 	UrlRefundOffline          = "/payment/refund/offline"
 	UrlPreAuthOffline         = "/payment/pre_auth/offline"
 	UrlPreAuthCompleteOffline = "/payment/pre_auth_complete/offline"
+
+	UrlCheck = "/payment/check"
 )
