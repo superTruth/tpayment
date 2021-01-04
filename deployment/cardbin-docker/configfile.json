@@ -1,0 +1,17 @@
+{
+  "domain": "https://www.paymentstg.horizonpay.cn/",
+  "email_host": "smtp.mxhichina.com",
+  "email_host_port": 587,
+  "email_user_account": "no_reply@horizonpay.cn",
+  "email_user_pwd": "VpTgt6AS",
+  "email_user_name": "HorizonPay",
+
+  "db_account": "root:UHXMewnGayDL1DoZ@tcp(tpayment.cagwmkremeyb.rds.cn-northwest-1.amazonaws.com.cn)/tpayment?charset=utf8&parseTime=True&loc=Local",
+
+  "s3_domain": "amazonaws.com.cn",
+  "s3_region": "cn-northwest-1",
+  "s3_key": "AKIA3ZNT5ZAH42V6B3EF",
+  "s3_secret": "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",
+  "s3_bucket": "tpayment"
+}
+

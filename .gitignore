@@ -1,3 +1,4 @@
 /.idea
 /deployment/docker/tpayment
 /deployment/docker-prod/tpayment
+/deployment/cardbin-docker/cardbin

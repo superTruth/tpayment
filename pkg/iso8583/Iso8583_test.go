@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreateConfigFactoryFromFile(t *testing.T) {
-	factory, err := CreateConfigFactory("/Users/truth/project/go/src/PaymentApp/payment-sic/iso8583config/sic_iso8583.xml")
+	factory, err := CreateConfigFactory("/Users/truth/project/go/src/PaymentApp/payment-boc/iso8583config/boc_iso8583.xml")
 	if err != nil {
 		t.Error("CreateConfigFactory fail->", err.Error())
 		return

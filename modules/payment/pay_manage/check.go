@@ -1,6 +1,7 @@
 package pay_manage
 
 import (
+	"errors"
 	"tpayment/api/api_define"
 	"tpayment/conf"
 	"tpayment/models/payment/acquirer"
@@ -28,6 +29,12 @@ func Check(ctx *gin.Context) {
 		return
 	}
 
+	if err = checkParametersValidation(req); err != nil {
+		logger.Warn("checkParametersValidation fail->", err.Error())
+		modules.BaseError(ctx, conf.ParameterError)
+		return
+	}
+
 	// 查询所有数据
 	recordInDb, errorCode := fetchRecord(ctx, req)
 	if errorCode != conf.Success {
@@ -38,6 +45,13 @@ func Check(ctx *gin.Context) {
 	resp := common.PickupResponse(recordInDb)
 
 	modules.BaseSuccess(ctx, resp)
+}
+
+func checkParametersValidation(req *CheckRequest) error {
+	if req.MerchantId <= 0 || (req.TxnID <= 0 && req.PartnerUUID == "") {
+		return errors.New("parameters error")
+	}
+	return nil
 }
 
 func fetchRecord(ctx *gin.Context, req *CheckRequest) (*api_define.TxnReq, conf.ResultCode) {

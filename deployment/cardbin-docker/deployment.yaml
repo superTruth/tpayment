@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cardbin-deploy
+  namespace: services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cardbin-deploy
+  template:
+    metadata:
+      labels:
+        app: cardbin-deploy
+    spec:
+      containers:
+        - name: cardbin-deploy-containers
+          image: bindo123/cardbin:56768bf155a5a38979307a504cbfc6f5a4646d9f

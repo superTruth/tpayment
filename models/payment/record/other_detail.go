@@ -16,15 +16,17 @@ type TxnRecordDetail struct {
 
 	TxnExpAt *time.Time `gorm:"column:txn_exp_at"`
 
-	CreditCardExp         string `gorm:"column:credit_card_exp"`
-	CreditCardFallBack    bool   `gorm:"column:credit_card_fall_back"`
-	CreditCardSN          string `gorm:"column:credit_card_sn"`
-	CreditCardHolderName  string `gorm:"column:credit_card_holder_name"`
-	CreditCardIsMsdCard   bool   `gorm:"column:credit_card_is_msd_card"`
-	CreditCardIccRequest  string `gorm:"column:credit_card_icc_request"`
-	CreditCardECI         string `gorm:"column:credit_card_eci"`
-	CreditCardIccResponse string `gorm:"column:credit_card_icc_response"`
-	ResponseCode          string `gorm:"column:response_code"`
+	CreditCardExp             string `gorm:"column:credit_card_exp"`
+	CreditCardFallBack        bool   `gorm:"column:credit_card_fall_back"`
+	CreditCardSN              string `gorm:"column:credit_card_sn"`
+	CreditCardHolderName      string `gorm:"column:credit_card_holder_name"`
+	CreditCardIsMsdCard       bool   `gorm:"column:credit_card_is_msd_card"`
+	CreditCardIccRequest      string `gorm:"column:credit_card_icc_request"`
+	CreditCardIccResponse     string `gorm:"column:credit_card_icc_response"`
+	CreditCardIccScriptUpload string `gorm:"column:credit_card_icc_script_upload"`
+	CreditCardECI             string `gorm:"column:credit_card_eci"`
+
+	ResponseCode string `gorm:"column:response_code"`
 
 	TokenType string `gorm:"column:token_type"`
 	Token     string `gorm:"column:token"`
@@ -34,6 +36,7 @@ type TxnRecordDetail struct {
 	RedirectSuccessUrl string `gorm:"column:redirect_success_url"`
 	RedirectFailUrl    string `gorm:"column:redirect_fail_url"`
 	ResultNotifyUrl    string `gorm:"column:result_notify_url"`
+	Signature          string `gorm:"column:signature"`
 
 	Addition *AdditionData `gorm:"column:addition;type:JSON"`
 }
