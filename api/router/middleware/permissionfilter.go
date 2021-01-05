@@ -42,8 +42,10 @@ func PermissionFilter(ctx *gin.Context) {
 	if ctx.Request.RequestURI == conf.UrlAgencyAdd || // 所有的机构操作只能管理员
 		ctx.Request.RequestURI == conf.UrlAgencyUpdate ||
 		ctx.Request.RequestURI == conf.UrlAgencyDelete ||
-		strings.Contains(ctx.Request.RequestURI, "/payment/agency_device") ||
-		strings.Contains(ctx.Request.RequestURI, "/payment/tms/model") {
+		ctx.Request.RequestURI == conf.UrlTmsModelAdd ||
+		ctx.Request.RequestURI == conf.UrlTmsModelDelete ||
+		ctx.Request.RequestURI == conf.UrlTmsModelUpdate ||
+		strings.Contains(ctx.Request.RequestURI, "/payment/agency_device") {
 		logger.Warn("no agency permission")
 		modules.BaseError(ctx, conf.NoPermission)
 		ctx.Abort()
