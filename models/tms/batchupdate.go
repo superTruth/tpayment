@@ -110,7 +110,7 @@ func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *Batch
 
 	// model id
 	if batchUpdate.DeviceModels != nil && len(*batchUpdate.DeviceModels) != 0 {
-		if midSqlSb.Len() != 0 {
+		if retSqlSb.Len() != 0 {
 			retSqlSb.WriteString(" AND ")
 		}
 		retSqlSb.WriteString("device_model in (" + batchUpdate.DeviceModels.String() + ") ")
@@ -118,7 +118,7 @@ func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *Batch
 
 	// agency filter
 	if agencyId != 0 {
-		if midSqlSb.Len() != 0 {
+		if retSqlSb.Len() != 0 {
 			retSqlSb.WriteString(" AND ")
 		}
 		retSqlSb.WriteString("agency_id=")
