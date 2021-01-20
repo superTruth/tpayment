@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var DeviceInMerchantDao = &DeviceInMerchant{}
+
 type DeviceInMerchant struct {
 	models.BaseModel
 
@@ -17,6 +19,20 @@ type DeviceInMerchant struct {
 
 func (DeviceInMerchant) TableName() string {
 	return "merchant_device"
+}
+
+func (d *DeviceInMerchant) GetByMerchantIdAndDeviceID(merchantID, deviceID uint64) (*DeviceInMerchant, error) {
+	ret := new(DeviceInMerchant)
+
+	err := models.DB().Model(d).Where("device_id=? and merchant_id=?", deviceID, merchantID).First(ret).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
 }
 
 func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInMerchant, error) {

@@ -1533,3 +1533,42 @@ Response Example:
 ```
 
 
+## 支付模块
+### 查询设备支付参数
+***POST***
+```https://{base_url}/payment/config```
+Request Example:
+```json
+{
+	"merchant_id": 9,
+	"device_sn": "555555"
+}
+```
+Response Example:
+```json
+{
+    "total": 1,   
+    "data": [
+      {
+        "acquirer_id": 1,
+        "addition": "http://test.com",
+        "created_at": "2020-08-02T23:29:32.367686+08:00",
+        "entry_types": [
+            "Swipe",
+            "Contact"
+        ],
+        "id": 1,
+        "merchant_device_id": 2,
+        "mid": "123456789012345",
+        "payment_methods": [],
+        "payment_types": [
+            "Sale",
+            "Refund"
+        ],
+        "tid": "12345678",
+        "updated_at": "2020-08-06T18:10:43.875195+08:00"
+      }
+    ]
+}
+```
+

@@ -165,6 +165,7 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlRefundOffline, pay_offline.RefundHandle)
 
 	e.POST(conf.UrlCheck, pay_manage.Check)
+	e.POST(conf.UrlPaymentConfig, pay_manage.GetPaymentConfig)
 
 	return e, nil
 }

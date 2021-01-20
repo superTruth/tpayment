@@ -37,4 +37,3 @@ func ParseCerFromPem(publicKeyData string) (*x509.Certificate, error) {
 	}
 	return cer, nil
 }
-

@@ -11,6 +11,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var DeviceInfoDao = &DeviceInfo{}
+
 type DeviceInfo struct {
 	models.BaseModel
 	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id"`
@@ -54,6 +56,21 @@ func GetDeviceBySn(db *models.MyDB, ctx *gin.Context, deviceSn string) (*DeviceI
 	deviceInfo := new(DeviceInfo)
 
 	err := db.Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return deviceInfo, nil
+}
+
+func (d *DeviceInfo) GetBySn(deviceSn string) (*DeviceInfo, error) {
+	deviceInfo := new(DeviceInfo)
+
+	err := models.DB().Model(d).Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil

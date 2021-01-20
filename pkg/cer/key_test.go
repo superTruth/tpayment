@@ -19,7 +19,6 @@ func TestParsePrivateKeyFromPem(t *testing.T) {
 		return
 	}
 
-
 	// ecc
 	const eccPukFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/apple_pay_ecc.crt"
 	const eccPrivateFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/ecc.key"
@@ -30,7 +29,7 @@ func TestParsePrivateKeyFromPem(t *testing.T) {
 	eccPriKeyFile, _ := os.Open(eccPrivateFilePath)
 	eccPriKeyBytes, _ := ioutil.ReadAll(eccPriKeyFile)
 
-	_, err = ParsePrivateKeyFromPem(string(eccPriKeyBytes) + "\n" + string(eccPukBytes), "")
+	_, err = ParsePrivateKeyFromPem(string(eccPriKeyBytes)+"\n"+string(eccPukBytes), "")
 	if err != nil {
 		t.Error("ecc fail->", err.Error())
 		return
@@ -63,7 +62,6 @@ func TestParsePublicKeyFromPem(t *testing.T) {
 		t.Error("rsa fail->", err.Error())
 		return
 	}
-
 
 	// ecc
 	const eccPukFilePath = "/Users/truth/project/tpayment/pkg/paymentmethod/decodecardnum/applepay/cer/apple_pay_ecc.crt"

@@ -8,6 +8,7 @@ import (
 	"time"
 	"tpayment/api/api_define"
 	"tpayment/conf"
+	"tpayment/modules"
 	"tpayment/modules/payment/pay_manage"
 
 	"github.com/google/uuid"
@@ -239,6 +240,25 @@ func TestCheck(t *testing.T) {
 	reqByte, _ := json.Marshal(reqBean)
 
 	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlCheck, time.Second*10)
+
+	formatJson(repByte)
+}
+
+func TestPaymentConfig(t *testing.T) {
+	TestLogin(t)
+	fmt.Println("TestPaymentConfig", line)
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &modules.BaseQueryRequest{
+		MerchantId: 9,
+		DeviceSN:   "555555",
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlPaymentConfig, time.Second*10)
 
 	formatJson(repByte)
 }

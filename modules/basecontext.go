@@ -40,6 +40,7 @@ type BaseQueryRequest struct {
 	MerchantId uint64            `json:"merchant_id,omitempty"`
 	AgencyId   uint64            `json:"agency_id,omitempty"`
 	DeviceId   uint64            `json:"device_id,omitempty"`
+	DeviceSN   string            `json:"device_sn,omitempty"`
 	AppId      uint64            `json:"app_id,omitempty"`
 	BatchId    uint64            `json:"batch_id,omitempty"`
 	Offset     uint64            `json:"offset"`

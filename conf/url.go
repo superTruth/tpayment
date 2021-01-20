@@ -119,5 +119,6 @@ const (
 	UrlPreAuthOffline         = "/payment/pre_auth/offline"
 	UrlPreAuthCompleteOffline = "/payment/pre_auth_complete/offline"
 
-	UrlCheck = "/payment/check"
+	UrlCheck         = "/payment/check"
+	UrlPaymentConfig = "/payment/config"
 )

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,44 +18,23 @@ func main() {
 	conf.InitConfigData()
 	models.InitDB()
 
-	for {
-		cardBrand := rand.Int() % len(creditcard.Rules)
-		cardNumberRange := rand.Int() % len(creditcard.Rules[cardBrand].CardNumPreFix)
-		cardRange := creditcard.Rules[cardBrand].CardNumPreFix[cardNumberRange]
-		cardBin := rand.Int()%(cardRange.End-cardRange.Start) + cardRange.Start
-		ok, err := cardbin.Dao.IsExist(fmt.Sprintf("%06d", cardBin))
-		if err != nil || ok {
-			continue
+	for i := 0; i < len(creditcard.Rules); i++ {
+		fmt.Println("===========", creditcard.Rules[i].CardBrand, "===========")
+		for j := 0; j < len(creditcard.Rules[i].CardNumPreFix); j++ {
+			for k := creditcard.Rules[i].CardNumPreFix[j].Start; k < creditcard.Rules[i].CardNumPreFix[j].End; k++ {
+				ok, err := cardbin.Dao.IsExist(fmt.Sprintf("%06d", k))
+				if err != nil || ok {
+					continue
+				}
+
+				err = exe(k)
+				if err != nil {
+					fmt.Println(err.Error())
+				}
+				time.Sleep(time.Second * 6)
+			}
 		}
-		err = exe(cardBin)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		time.Sleep(time.Second * 6)
 	}
-	//
-	//for i := 1; ; {
-	//	fmt.Println("===========", creditcard.Rules[i].CardBrand, "===========")
-	//	for j := 0; j < len(creditcard.Rules[i].CardNumPreFix); j++ {
-	//		for k := creditcard.Rules[i].CardNumPreFix[j].Start; k < creditcard.Rules[i].CardNumPreFix[j].End; k++ {
-	//			ok, err := cardbin.Dao.IsExist(fmt.Sprintf("%06d", k))
-	//			if err != nil || ok {
-	//				continue
-	//			}
-	//
-	//			err = exe(k)
-	//			if err != nil {
-	//				fmt.Println(err.Error())
-	//			}
-	//			time.Sleep(time.Second * 6)
-	//		}
-	//	}
-	//
-	//	i = (i + 1) % len(creditcard.Rules)
-	//	if i == len(creditcard.Rules) {
-	//		i = 1
-	//	}
-	//}
 }
 
 type BinBean struct {

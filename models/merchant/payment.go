@@ -44,7 +44,7 @@ func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, mercha
 	var ret []*PaymentSettingInDevice
 
 	equalData := make(map[string]string)
-	equalData["merchant_device_id"] = strconv.FormatUint(uint64(merchantDeviceId), 10)
+	equalData["merchant_device_id"] = strconv.FormatUint(merchantDeviceId, 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	tmpDB := db.Model(&PaymentSettingInDevice{}).Where(sqlCondition)
