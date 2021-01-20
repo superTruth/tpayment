@@ -98,6 +98,6 @@ func StartUpdate(ctx *gin.Context, id uint) {
 	}
 
 	updateRecord.Status = "Done"
-	updateRecord.UpdateFailMsg = ""
+	updateRecord.UpdateFailMsg = " "
 	_ = models.UpdateBaseRecord(updateRecord)
 }
