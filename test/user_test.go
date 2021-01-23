@@ -58,7 +58,7 @@ func ParseResponse(resp []byte, data interface{}) error {
 func TestLogin(t *testing.T) {
 	fmt.Println("logon", line)
 	reqBean := &user.LoginRequest{
-		Email:     "agencytest@163.com",
+		Email:     "fang.qiang@bindo.com",
 		Pwd:       "123456",
 		AppId:     "123456",
 		AppSecret: "123456",

@@ -52,8 +52,9 @@ func GetDeviceInMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint
 
 type DeviceInMerchantQueryBean struct {
 	models.BaseModel
-	DeviceId uint64 `json:"device_id"`
-	DeviceSn string `json:"device_sn"`
+	DeviceId  uint64 `json:"device_id"`
+	DeviceSn  string `json:"device_sn"`
+	DeviceCsn string `json:"device_csn"`
 }
 
 func QueryMerchantDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInMerchantQueryBean, error) {
@@ -70,7 +71,7 @@ func QueryMerchantDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantId, of
 
 	var ret []*DeviceInMerchantQueryBean
 	if err = tmpDb.Offset(offset).Limit(limit).
-		Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, tms_device.id as device_id, tms_device.device_sn as device_sn").
+		Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, tms_device.id as device_id, tms_device.device_sn as device_sn, tms_device.device_csn as device_csn").
 		Find(&ret).Error; err != nil {
 		return total, ret, err
 	}

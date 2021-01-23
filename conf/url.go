@@ -1,7 +1,7 @@
 package conf
 
 const (
-	UrlAccountLogin        = "/payment/account/logon"
+	UrlAccountLogin        = "/payment/account/login"
 	UrlAccountLogout       = "/payment/account/logout"
 	UrlAccountValidate     = "/payment/account/validate"
 	UrlAccountAdd          = "/payment/account/add"
