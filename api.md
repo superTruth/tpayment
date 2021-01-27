@@ -1547,28 +1547,92 @@ Request Example:
 Response Example:
 ```json
 {
-    "total": 1,   
-    "data": [
-      {
-        "acquirer_id": 1,
-        "addition": "http://test.com",
-        "created_at": "2020-08-02T23:29:32.367686+08:00",
-        "entry_types": [
-            "Swipe",
-            "Contact"
-        ],
-        "id": 1,
-        "merchant_device_id": 2,
-        "mid": "123456789012345",
-        "payment_methods": [],
-        "payment_types": [
-            "Sale",
-            "Refund"
-        ],
-        "tid": "12345678",
-        "updated_at": "2020-08-06T18:10:43.875195+08:00"
-      }
-    ]
+	"code": "00",
+	"data": {
+		"data": [
+			{
+				"acquirer_config": {
+					"addition": "{\n    \"grpc_connect_info\":\"localhost:50002\",\n    \"TPDU\":\"6000170000\",\n    \"NII\":\"017\",\n    \"URL\":\"202.127.169.216:6868\"\n}",
+					"agency_id": 0,
+					"auto_settlement_time": "",
+					"config_file_url": "",
+					"created_at": "2020-12-23T11:30:29+08:00",
+					"id": 10,
+					"impl_name": "with_tid_default",
+					"name": "boc",
+					"updated_at": "2020-12-23T11:30:31+08:00"
+				},
+				"acquirer_id": 10,
+				"addition": "12312wefaf",
+				"created_at": "2021-01-15T11:39:19.648504+08:00",
+				"entry_types": [
+					"Swipe",
+					"Contact"
+				],
+				"id": 15,
+				"merchant_device_id": 13,
+				"mid": "123445",
+				"payment_methods": [
+					"Visa",
+					"MasterCard"
+				],
+				"payment_types": [
+					"Sale"
+				],
+				"tid": "123123",
+				"updated_at": "2021-01-15T11:43:46.684804+08:00"
+			},
+			{
+				"acquirer_config": {
+					"addition": "{\n    \"grpc_connect_info\":\"localhost:50002\",\n    \"TPDU\":\"6000170000\",\n    \"NII\":\"017\",\n    \"URL\":\"202.127.169.216:6868\"\n}",
+					"agency_id": 0,
+					"auto_settlement_time": "",
+					"config_file_url": "",
+					"created_at": "2020-12-23T11:30:29+08:00",
+					"id": 10,
+					"impl_name": "with_tid_default",
+					"name": "boc",
+					"updated_at": "2020-12-23T11:30:31+08:00"
+				},
+				"acquirer_id": 10,
+				"addition": "asdfawefwf",
+				"created_at": "2021-01-15T11:34:19.010968+08:00",
+				"entry_types": [
+					"Swipe"
+				],
+				"id": 13,
+				"merchant_device_id": 13,
+				"mid": "123456789",
+				"payment_methods": [
+					"Visa",
+					"MasterCard"
+				],
+				"payment_types": [
+					"Sale"
+				],
+				"tid": "12345678",
+				"updated_at": "2021-01-15T11:34:19.010968+08:00"
+			},
+			{
+				"created_at": "2021-01-13T14:08:07.707773+08:00",
+				"entry_types": [
+					"Swipe"
+				],
+				"id": 11,
+				"merchant_device_id": 13,
+				"mid": "123456789012345",
+				"payment_methods": [
+					"Visa"
+				],
+				"payment_types": [
+					"Sale"
+				],
+				"tid": "12345678",
+				"updated_at": "2021-01-13T14:08:07.707773+08:00"
+			}
+		],
+		"total": 3
+	}
 }
 ```
 

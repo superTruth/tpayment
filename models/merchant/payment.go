@@ -3,6 +3,7 @@ package merchant
 import (
 	"strconv"
 	"tpayment/models"
+	"tpayment/models/agency"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -19,6 +20,7 @@ type PaymentSettingInDevice struct {
 	Mid              string              `json:"mid,omitempty" gorm:"column:mid"`
 	Tid              string              `json:"tid,omitempty" gorm:"column:tid"`
 	Addition         string              `json:"addition,omitempty" gorm:"column:addition"`
+	AcquirerConfig   *agency.Acquirer    `json:"acquirer_config,omitempty" gorm:"-"`
 }
 
 func (PaymentSettingInDevice) TableName() string {

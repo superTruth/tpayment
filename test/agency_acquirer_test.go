@@ -64,12 +64,15 @@ func TestQueryAgencyAcquirer(t *testing.T) {
 	TestLogin(t)
 	fmt.Println("query agency", line)
 	header := http.Header{
-		conf.HeaderTagToken: []string{"631afd00-1133-43a5-a916-72487e19c271"}, //token},
+		conf.HeaderTagToken: []string{token},
 	}
 
 	reqBean := &modules.BaseQueryRequest{
 		Offset: 0,
 		Limit:  100,
+		Filters: map[string]string{
+			"id": "10",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

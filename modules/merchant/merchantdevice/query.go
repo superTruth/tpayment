@@ -29,7 +29,7 @@ func QueryHandle(ctx *gin.Context) {
 	}
 
 	// 判断权限
-	err = merchantModule.CheckPermission(ctx, req.MerchantId)
+	err = merchantModule.CheckPermission(ctx, req.MerchantId, false)
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)

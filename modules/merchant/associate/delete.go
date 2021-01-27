@@ -38,7 +38,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	// 判断权限
-	err = merchantModule.CheckPermission(ctx, associateBean.MerchantId)
+	err = merchantModule.CheckPermission(ctx, associateBean.MerchantId, true)
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)

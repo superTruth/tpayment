@@ -3,6 +3,7 @@ package pay_manage
 import (
 	"tpayment/conf"
 	"tpayment/models"
+	"tpayment/models/agency"
 	"tpayment/models/merchant"
 	"tpayment/models/tms"
 	"tpayment/modules"
@@ -60,6 +61,16 @@ func GetPaymentConfig(ctx *gin.Context) {
 		logger.Error("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return
+	}
+
+	// 查找所有的acquirer config
+	for i := 0; i < len(dataRet); i++ {
+		dataRet[i].AcquirerConfig, err = agency.AcquirerDao.Get(dataRet[i].AcquirerId)
+		if err != nil {
+			logger.Error("agency.AcquirerDao.Get sql error->", err.Error())
+			modules.BaseError(ctx, conf.DBError)
+			return
+		}
 	}
 
 	ret := &modules.BaseQueryResponse{

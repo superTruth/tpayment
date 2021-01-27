@@ -38,7 +38,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 判断权限
-	err = merchantModule.CheckPermission(ctx, associateBean.MerchantId)
+	err = merchantModule.CheckPermission(ctx, associateBean.MerchantId, false)
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)

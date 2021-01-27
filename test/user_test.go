@@ -22,6 +22,7 @@ const BaseUrl = "http://localhost:80"
 //const BaseUrl = "https://www.payment.horizonpay.cn"
 
 func post(reqBody []byte, header http.Header, destUrl string, timeOut time.Duration) (respBody []byte, err error) {
+	fmt.Println("POST url->", destUrl)
 	formatJson(reqBody)
 	req, err := http.NewRequest("POST", destUrl, bytes.NewBuffer(reqBody))
 	req.Header = header

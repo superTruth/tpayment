@@ -28,7 +28,7 @@ func QueryHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	err = merchantModule.CheckPermission(ctx, req.MerchantId)
+	err = merchantModule.CheckPermission(ctx, req.MerchantId, false)
 	if err != nil {
 		logger.Warn(err.Error())
 		modules.BaseError(ctx, conf.NoPermission)

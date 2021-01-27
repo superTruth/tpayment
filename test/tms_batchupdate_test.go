@@ -151,7 +151,7 @@ func TestStartHandleBatchUpdate(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 21}
+	reqBean := &modules.BaseIDRequest{ID: 23}
 
 	reqByte, _ := json.Marshal(reqBean)
 

@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CheckPermission(ctx *gin.Context, merchantId uint64) error {
+func CheckPermission(ctx *gin.Context, merchantId uint64, needMerchantManager bool) error {
 	// 1. 是否存在这2个账号
 	merchantBean, err := merchant.GetMerchantById(models.DB(), ctx, merchantId)
 	if err != nil {
@@ -45,8 +45,12 @@ func CheckPermission(ctx *gin.Context, merchantId uint64) error {
 	if err != nil {
 		return err
 	}
-	if associateBean == nil || associateBean.Role != string(conf.MerchantManager) {
-		return errors.New("no permission for the merchant")
+	if associateBean == nil {
+		return errors.New("no permission for the merchant 1")
+	}
+
+	if needMerchantManager && associateBean.Role != string(conf.MerchantManager) {
+		return errors.New("no permission for the merchant 2")
 	}
 
 	return nil
