@@ -72,7 +72,7 @@ func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
 // 批量文件添加设备
 const downloadDir = "./agencydevicefiles/"
 
-func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
+func AddByFile2(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
 	logger := tlog.GetLogger(ctx)
 
 	// 先下载文件
@@ -151,6 +151,171 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 			logger.Error("Create fail->", err.Error())
 			return conf.DBError
 		}
+	}
+
+	return conf.Success
+}
+
+func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
+	logger := tlog.GetLogger(ctx)
+
+	// 先下载文件
+	_, fileName, _ := fileutils.SeparateFilePath(fileUrl)
+	localFilePath := downloadDir + fileName
+	err := download.Download(fileUrl, localFilePath)
+	if err != nil {
+		logger.Warn("download fail->", err.Error())
+		return conf.UnknownError
+	}
+
+	// nolint
+	defer fileutils.DeleteFile(localFilePath)
+
+	// 读取里面的数据
+	f, err := os.Open(localFilePath)
+	// nolint
+	defer f.Close()
+	if err != nil {
+		logger.Warn("open file err->", err.Error())
+		return conf.UnknownError
+	}
+	buf := bufio.NewReader(f)
+	r := csv.NewReader(buf)
+	_, err = r.Read() // 跳过抬头
+	if err != nil {
+		logger.Warn("skip first row error->", err.Error())
+		return conf.UnknownError
+	}
+
+	// 提前读取出所有tag，防止后面一直读取
+	tagArray, err := tms.DeviceTagDao.GetInAgency(agencyId)
+	if err != nil {
+		logger.Warn("get in agency err->", err.Error())
+		return conf.DBError
+	}
+	tagMap := make(map[string]*tms.DeviceTag, len(tagArray)) // 转换成map，后面好做匹配
+	for i := 0; i < len(tagArray); i++ {
+		tagMap[tagArray[i].Name] = tagArray[i]
+	}
+
+	for i := 0; ; i++ {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			logger.Warn("read file err->", err.Error())
+			return conf.UnknownError
+		}
+
+		// 跳过空值
+		if len(record) == 0 || len(record[0]) < 5 {
+			continue
+		}
+
+		// 处理device
+		device, handleRet := handleDevice(ctx, record[0], agencyId)
+		if handleRet != conf.Success {
+			return handleRet
+		}
+
+		// 处理tag
+		if len(record) < 2 || len(record[1]) < 2 {
+			logger.Info("device ", device.DeviceSn, " no tag, skip it")
+			continue
+		}
+
+		handleRet = handleTag(ctx, record[1], device, agencyId, &tagMap)
+		if handleRet != conf.Success {
+			return handleRet
+		}
+	}
+
+	return conf.Success
+}
+
+func handleDevice(ctx *gin.Context, deviceSn string, agencyId uint64) (*tms.DeviceInfo, conf.ResultCode) {
+	logger := tlog.GetLogger(ctx)
+
+	// 查询一下是否已经存在这个device id
+	device, err := tms.GetDeviceBySn(models.DB(), ctx, deviceSn)
+	if err != nil {
+		logger.Error("GetDeviceBySn fail->", err.Error())
+		return nil, conf.DBError
+	}
+	// 已经存在的情况
+	if device != nil {
+		logger.Info("device exist->", device.DeviceSn)
+		// 先判断agency id是否相同，如果相同直接跳过
+		if device.AgencyId == agencyId {
+			return device, conf.Success
+		}
+
+		err = models.UpdateBaseRecord(&tms.DeviceInfo{
+			BaseModel: models.BaseModel{
+				ID: device.ID,
+			},
+			AgencyId: agencyId,
+		})
+
+		if err != nil {
+			logger.Error("Updates fail->", err.Error())
+			return nil, conf.DBError
+		}
+		return device, conf.Success
+	}
+	logger.Info("device not exist->", deviceSn)
+	// 如果不存在的情况，需要新建数据
+	newDevice := tms.GenerateDeviceInfo()
+	newDevice.AgencyId = agencyId
+	newDevice.DeviceSn = deviceSn
+	err = models.CreateBaseRecord(newDevice)
+
+	if err != nil {
+		logger.Error("Create fail->", err.Error())
+		return nil, conf.DBError
+	}
+
+	return newDevice, conf.Success
+}
+
+func handleTag(ctx *gin.Context, tag string, device *tms.DeviceInfo, agencyId uint64, tags *map[string]*tms.DeviceTag) conf.ResultCode {
+	logger := tlog.GetLogger(ctx)
+
+	destTag, ok := (*tags)[tag]
+	if !ok { // 如果不存在的tag，则添加一下
+		destTag = &tms.DeviceTag{
+			AgencyId: agencyId,
+			Name:     tag,
+		}
+
+		err := tms.DeviceTagDao.Create(destTag)
+		if err != nil {
+			logger.Error("DeviceTagDao.Create error->", err.Error())
+			return conf.DBError
+		}
+		(*tags)[destTag.Name] = destTag
+	}
+
+	// 先检查一下是否已经存在这个tag关联
+	mid, err := tms.DeviceAndTagMidDao.Get(device.ID, destTag.ID)
+	if err != nil {
+		logger.Error("DeviceAndTagMidDao.Get device ID:", device.ID, "tag ID:", destTag.ID, "->", err.Error())
+		return conf.DBError
+	}
+
+	if mid != nil { // 关联已经存在
+		return conf.Success
+	}
+
+	err = tms.DeviceAndTagMidDao.Create(&tms.DeviceAndTagMid{
+		TagID:    destTag.ID,
+		DeviceId: device.ID,
+	})
+
+	if err != nil {
+		logger.Error("create tag mid err ->", err.Error())
+		return conf.DBError
 	}
 
 	return conf.Success

@@ -11,6 +11,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var DeviceTagDao = &DeviceTag{}
+
 type DeviceTag struct {
 	models.BaseModel
 
@@ -94,4 +96,20 @@ func IsTagUsing(db *models.MyDB, ctx *gin.Context, tagId uint64) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (d *DeviceTag) GetInAgency(agencyID uint64) ([]*DeviceTag, error) {
+	var ret []*DeviceTag
+
+	err := models.DB().Model(d).Where("agency_id = ?", agencyID).Find(&ret).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func (d *DeviceTag) Create(tag *DeviceTag) error {
+	return models.DB().Create(tag).Error
 }

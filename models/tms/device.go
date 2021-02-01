@@ -189,6 +189,8 @@ type DeviceTagFull struct {
 	MidId uint64 `json:"agency_id" gorm:"column:mid_id"`
 }
 
+var DeviceAndTagMidDao = &DeviceAndTagMid{}
+
 type DeviceAndTagMid struct {
 	models.BaseModel
 
@@ -198,4 +200,23 @@ type DeviceAndTagMid struct {
 
 func (DeviceAndTagMid) TableName() string {
 	return "tms_device_and_tag_mid"
+}
+
+func (d *DeviceAndTagMid) Get(deviceID, tagID uint64) (*DeviceAndTagMid, error) {
+	ret := new(DeviceAndTagMid)
+
+	err := models.DB().Model(d).Where("device_id=? AND tag_id=?", deviceID, tagID).First(&ret).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func (d *DeviceAndTagMid) Create(mid *DeviceAndTagMid) error {
+	return models.DB().Create(mid).Error
 }

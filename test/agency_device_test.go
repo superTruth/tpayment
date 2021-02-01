@@ -21,8 +21,8 @@ func TestAddDeviceAcquirerByFile(t *testing.T) {
 	}
 
 	reqBean := &agencydevice.DeviceBindRequest{
-		AgencyId: 1,
-		FileUrl:  "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/test.csv",
+		AgencyId: 6,
+		FileUrl:  "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/import_devices_template.csv",
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
@@ -63,7 +63,7 @@ func TestQueryDeviceAcquirer(t *testing.T) {
 	reqBean := &modules.BaseQueryRequest{
 		Offset:   0,
 		Limit:    100,
-		AgencyId: 4,
+		AgencyId: 6,
 		Filters: map[string]string{
 			"device_sn": "PAX-",
 		},
