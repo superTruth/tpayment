@@ -76,7 +76,7 @@ func QueryMerchantInAgency(db *models.MyDB, ctx *gin.Context, agencyId, offset, 
 	}
 
 	var ret []*Merchant
-	if err = tmpDb.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
 
@@ -116,7 +116,7 @@ func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint64
 		return 0, nil, err
 	}
 
-	if err = tmpDb.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
 

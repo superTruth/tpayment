@@ -47,7 +47,7 @@ func QueryBaseRecord(orgModel interface{}, offset, limit uint64, filters map[str
 	// 查询记录
 	var ret []map[string]interface{}
 
-	err = DB().Model(orgModel).Where(filterTmp).Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = DB().Model(orgModel).Where(filterTmp).Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

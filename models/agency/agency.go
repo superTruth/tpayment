@@ -68,7 +68,7 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, 
 	}
 
 	// 查询记录
-	err = tmpDB.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

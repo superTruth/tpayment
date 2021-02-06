@@ -73,7 +73,7 @@ func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, li
 	}
 
 	var ret []*Acquirer
-	if err = tmpDb.Order("updated_at desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
 		return total, ret, err
 	}
 

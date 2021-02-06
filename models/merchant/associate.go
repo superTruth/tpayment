@@ -65,7 +65,7 @@ func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offse
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table(account.UserBean{}.TableName()).Model(&account.UserBean{}).Where(sqlCondition).Order("updated_at desc")
+	tmpDb := db.Table(account.UserBean{}.TableName()).Model(&account.UserBean{}).Where(sqlCondition).Order("id desc")
 	tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数

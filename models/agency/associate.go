@@ -69,7 +69,7 @@ func QueryUsersByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, l
 	}
 
 	var ret []*AssociateAgencyUserBean
-	if err = tmpDb.Order("updated_at desc").Offset(offset).Limit(limit).Select(
+	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Select(
 		"ass.id as id, ass.created_at as created_at, " +
 			"ass.updated_at as updated_at, user.name as name, " +
 			"user.email as email").Find(&ret).Error; err != nil {
