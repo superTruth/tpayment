@@ -1,6 +1,7 @@
 package account
 
 import (
+	"errors"
 	"strconv"
 	"tpayment/models"
 
@@ -8,6 +9,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 )
+
+var UserBeanDao = &UserBean{}
 
 type UserBean struct {
 	models.BaseModel
@@ -90,6 +93,19 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 	return total, ret, nil
 }
 
+func (u *UserBean) UpdatePwd() error {
+	tmpDB := models.DB().Model(u).Select("pwd").Updates(u)
+	err := tmpDB.Error
+	if err != nil {
+		return err
+	}
+	if tmpDB.RowsAffected == 0 {
+		return errors.New("no record update")
+	}
+
+	return nil
+}
+
 type AppIdBean struct {
 	models.BaseModel
 
@@ -132,6 +148,8 @@ func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppIdBean, err
 	return ret, nil
 }
 
+var TokenBeanDao = &TokenBean{}
+
 type TokenBean struct {
 	models.BaseModel
 
@@ -172,6 +190,21 @@ func GetTokenBeanByToken(db *models.MyDB, ctx *gin.Context, token string) (*Toke
 	}
 
 	return ret, nil
+}
+
+func (t *TokenBean) IsUserLogined(userId uint64) (bool, error) {
+	ret := new(TokenBean)
+
+	err := models.DB().Model(t).Where("user_id=?", userId).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
 }
 
 type RoleBean struct {

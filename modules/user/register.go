@@ -67,7 +67,33 @@ func RegisterHandle(ctx *gin.Context) {
 		}
 
 	} else {
-		if user.Active || user.Role == string(conf.RoleMachine) {
+		if user.Role == string(conf.RoleMachine) { // 如果是机器人，查看是否登录过，如果未登录过，允许再次注册
+			flag, err := account.TokenBeanDao.IsUserLogined(user.ID)
+			if err != nil {
+				logger.Info("IsUserLogined error->", err.Error())
+				modules.BaseError(ctx, conf.DBError)
+				return
+			}
+			if flag { // 如果已经登录过，则直接不允许重复注册
+				logger.Warn(conf.RecordAlreadyExist.String())
+				modules.BaseError(ctx, conf.RecordAlreadyExist)
+				return
+			}
+
+			//
+			logger.Warn("user multiple register->", user.ID)
+			user.Pwd = req.Pwd
+			if err = user.UpdatePwd(); err != nil {
+				logger.Error("UpdatePwd fail->", err.Error())
+				modules.BaseError(ctx, conf.RecordAlreadyExist)
+				return
+			}
+
+			modules.BaseSuccess(ctx, nil)
+			return
+		}
+
+		if user.Active {
 			logger.Warn(conf.RecordAlreadyExist.String())
 			modules.BaseError(ctx, conf.RecordAlreadyExist)
 			return
