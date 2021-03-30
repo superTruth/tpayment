@@ -10,8 +10,7 @@
 
   "s3_domain": "amazonaws.com",
   "s3_region": "eu-west-3",
-  "s3_key": "AKIAQG3YEEGI7GMJPZGG",
-  "s3_secret": "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",
+  "s3_key": "AKIAQG3YEEGI2V77IZQF",
+  "s3_secret": "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",
   "s3_bucket": "tpayment"
 }
-
