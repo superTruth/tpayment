@@ -3,6 +3,7 @@ package account
 import (
 	"errors"
 	"strconv"
+	"time"
 	"tpayment/models"
 
 	"github.com/gin-gonic/gin"
@@ -91,6 +92,13 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 	}
 
 	return total, ret, nil
+}
+
+func DeleteUser(db *models.MyDB, ctx *gin.Context, user *UserBean) error {
+	// 只是增加一下后缀，不实际删除
+	data := time.Now().Unix()
+	user.Email = user.Email + "-" + strconv.FormatInt(data, 10)
+	return db.Model(user).Select("email").Updates(user).Error
 }
 
 func (u *UserBean) UpdatePwd() error {

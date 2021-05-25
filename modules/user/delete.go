@@ -36,7 +36,8 @@ func DeleteHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = models.DeleteBaseRecord(user)
+	//err = models.DeleteBaseRecord(user)
+	err = account.DeleteUser(models.DB(), ctx, user)
 
 	if err != nil {
 		logger.Info("DeleteBaseRecord sql error->", err.Error())
