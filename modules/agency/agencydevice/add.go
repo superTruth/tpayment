@@ -9,6 +9,7 @@ import (
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
+	"tpayment/modules/tms/clientapi"
 	"tpayment/pkg/download"
 	"tpayment/pkg/fileutils"
 	"tpayment/pkg/tlog"
@@ -213,8 +214,11 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 			continue
 		}
 
+		// 处理设备类型
+		modelID, _ := handleDeviceModel(ctx, record[2])
+
 		// 处理device
-		device, handleRet := handleDevice(ctx, record[0], agencyId)
+		device, handleRet := handleDevice(ctx, record[0], agencyId, modelID)
 		if handleRet != conf.Success {
 			return handleRet
 		}
@@ -234,7 +238,22 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 	return conf.Success
 }
 
-func handleDevice(ctx *gin.Context, deviceSn string, agencyId uint64) (*tms.DeviceInfo, conf.ResultCode) {
+func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
+	modelID, ok := clientapi.DeviceModels[deviceModel]
+	if ok {
+		return modelID, nil
+	}
+
+	// 如果不存在，就需要创建
+	newModel := &tms.DeviceModel{
+		Name: deviceModel,
+	}
+	_ = models.CreateBaseRecord(newModel)
+
+	return newModel.ID, nil
+}
+
+func handleDevice(ctx *gin.Context, deviceSn string, agencyId, modelID uint64) (*tms.DeviceInfo, conf.ResultCode) {
 	logger := tlog.GetLogger(ctx)
 
 	// 查询一下是否已经存在这个device id
@@ -269,6 +288,7 @@ func handleDevice(ctx *gin.Context, deviceSn string, agencyId uint64) (*tms.Devi
 	newDevice := tms.GenerateDeviceInfo()
 	newDevice.AgencyId = agencyId
 	newDevice.DeviceSn = deviceSn
+	newDevice.DeviceModel = modelID
 	err = models.CreateBaseRecord(newDevice)
 
 	if err != nil {

@@ -358,8 +358,8 @@ func compareApps(ctx *gin.Context, requestApps []*AppInfo, dbApps []*tms.AppInDe
 func copyRequestInfo2DeviceInfo(requestDevice *RequestBean, deviceInfo *tms.DeviceInfo) {
 	deviceInfo.DeviceSn = requestDevice.DeviceSn
 
-	if requestDevice.DeviceModel != "" && deviceModels != nil {
-		deviceInfo.DeviceModel = deviceModels[requestDevice.DeviceModel]
+	if requestDevice.DeviceModel != "" && DeviceModels != nil {
+		deviceInfo.DeviceModel = DeviceModels[requestDevice.DeviceModel]
 	}
 
 	if requestDevice.LocationLat != "" {
@@ -414,7 +414,7 @@ func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 	return retApp
 }
 
-var deviceModels map[string]uint64
+var DeviceModels map[string]uint64
 
 func readDeviceModels(ctx *gin.Context) {
 	goroutine.Go(func() {
@@ -427,7 +427,7 @@ func readDeviceModels(ctx *gin.Context) {
 				for _, v := range modelArray {
 					deviceModelTmp[v.Name] = v.ID
 				}
-				deviceModels = deviceModelTmp
+				DeviceModels = deviceModelTmp
 			}
 			logger.Info("读取一次models->", len(modelArray))
 			time.Sleep(time.Minute * 10) // 10分钟同步一次
