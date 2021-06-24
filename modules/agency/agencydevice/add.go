@@ -9,7 +9,6 @@ import (
 	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
-	"tpayment/modules/tms/clientapi"
 	"tpayment/pkg/download"
 	"tpayment/pkg/fileutils"
 	"tpayment/pkg/tlog"
@@ -239,16 +238,23 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 }
 
 func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
-	modelID, ok := clientapi.DeviceModels[deviceModel]
-	if ok {
-		return modelID, nil
+	//
+	model, err := tms.GetModelByName(models.DB(), ctx, deviceModel)
+	if err != nil {
+		return 0, err
+	}
+	if model != nil {
+		return model.ID, nil
 	}
 
 	// 如果不存在，就需要创建
 	newModel := &tms.DeviceModel{
 		Name: deviceModel,
 	}
-	_ = models.CreateBaseRecord(newModel)
+	err = models.CreateBaseRecord(newModel)
+	if err != nil {
+		return 0, err
+	}
 
 	return newModel.ID, nil
 }

@@ -79,3 +79,18 @@ func QueryModelRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, f
 
 	return total, ret, nil
 }
+
+func GetModelByName(db *models.MyDB, ctx *gin.Context, name string) (*DeviceModel, error) {
+	ret := new(DeviceModel)
+
+	err := db.Model(&DeviceModel{}).Where("name=?", name).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}

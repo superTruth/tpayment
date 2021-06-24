@@ -56,6 +56,9 @@ func QueryHandle(ctx *gin.Context) {
 			modules.BaseError(ctx, conf.DBError)
 			return
 		}
+		if deviceModel == nil {
+			continue
+		}
 		dataRet[i].DeviceModelName = deviceModel.Name
 	}
 
