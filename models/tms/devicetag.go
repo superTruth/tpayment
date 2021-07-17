@@ -113,3 +113,25 @@ func (d *DeviceTag) GetInAgency(agencyID uint64) ([]*DeviceTag, error) {
 func (d *DeviceTag) Create(tag *DeviceTag) error {
 	return models.DB().Create(tag).Error
 }
+
+func (d *DeviceTag) QueryDeviceInTag(tagID, offset, limit uint64) (uint64, []*DeviceInfo, error) {
+	var ret []*DeviceInfo
+
+	tmpDb := models.DB().Model(&DeviceInfo{}).
+		Joins("join tms_device_and_tag_mid mid on tms_device.id = mid.device_id and mid.tag_id =? and mid.deleted_at is null", tagID)
+
+	// 统计总数
+	var total uint64 = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	//
+	err = tmpDb.Select("tms_device.*").Offset(offset).Limit(limit).Order("id desc").Find(&ret).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return total, ret, nil
+}

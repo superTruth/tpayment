@@ -125,10 +125,11 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlTmsAppFileUpdate, appfile.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsAppFileQuery, appfile.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsTagAdd, devicetag.AddHandle)       // 添加device tag
-	e.POST(conf.UrlTmsTagDelete, devicetag.DeleteHandle) // 删除
-	e.POST(conf.UrlTmsTagUpdate, devicetag.UpdateHandle) // 更新
-	e.POST(conf.UrlTmsTagQuery, devicetag.QueryHandle)   // 查询
+	e.POST(conf.UrlTmsTagAdd, devicetag.AddHandle)                   // 添加device tag
+	e.POST(conf.UrlTmsTagDelete, devicetag.DeleteHandle)             // 删除
+	e.POST(conf.UrlTmsTagUpdate, devicetag.UpdateHandle)             // 更新
+	e.POST(conf.UrlTmsTagQuery, devicetag.QueryHandle)               // 查询
+	e.POST(conf.UrlTmsDeviceInTagQuery, devicetag.DeviceInTagHandle) // 查询tag下的设备列表
 
 	e.POST(conf.UrlTmsModelAdd, devicemodel.AddHandle)       // 添加device model
 	e.POST(conf.UrlTmsModelDelete, devicemodel.DeleteHandle) // 删除

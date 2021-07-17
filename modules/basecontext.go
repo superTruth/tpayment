@@ -43,6 +43,7 @@ type BaseQueryRequest struct {
 	DeviceSN   string            `json:"device_sn,omitempty"`
 	AppId      uint64            `json:"app_id,omitempty"`
 	BatchId    uint64            `json:"batch_id,omitempty"`
+	TagId      uint64            `json:"tag_id,omitempty"`
 	Offset     uint64            `json:"offset"`
 	Limit      uint64            `json:"limit"`
 	Filters    map[string]string `json:"filters,omitempty"`
