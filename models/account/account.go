@@ -113,6 +113,20 @@ func (u *UserBean) UpdatePwd() error {
 
 	return nil
 }
+func (u *UserBean) GetByEmail(agencyID uint64, email string) (*UserBean, error) {
+	ret := new(UserBean)
+
+	err := models.DB().Model(ret).Where("email=? and agency_id=?", email, agencyID).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
 
 type AppIdBean struct {
 	models.BaseModel

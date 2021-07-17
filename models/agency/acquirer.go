@@ -92,3 +92,19 @@ func (acq *Acquirer) GetNeedSettlement(hour string) ([]*Acquirer, error) {
 
 	return ret, nil
 }
+
+func (acq *Acquirer) GetByName(agencyID uint64, name string) (*Acquirer, error) {
+	ret := &Acquirer{}
+	err := models.DB().Model(ret).
+		Where("agency_id = ? and name = ?", agencyID, name).
+		First(&ret).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}

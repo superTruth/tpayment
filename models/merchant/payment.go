@@ -9,6 +9,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var PaymentSettingDao = &PaymentSettingInDevice{}
+
 type PaymentSettingInDevice struct {
 	models.BaseModel
 
@@ -65,4 +67,18 @@ func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, mercha
 	}
 
 	return total, ret, nil
+}
+
+func (p *PaymentSettingInDevice) GetByMidTid(deviceID uint64, mid, tid string) (*PaymentSettingInDevice, error) {
+	ret := &PaymentSettingInDevice{}
+	err := models.DB().Model(ret).
+		Where("merchant_device_id=? and mid=? and tid=?", deviceID, mid, tid).
+		First(ret).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return ret, nil
 }
