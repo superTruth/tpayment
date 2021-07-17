@@ -123,6 +123,42 @@ func QueryMerchantInUser(db *models.MyDB, ctx *gin.Context, offset, limit uint64
 	return total, ret, nil
 }
 
+func QueryMerchantByDeviceID(ctx *gin.Context, deviceSn string, offset, limit uint64) (uint64, []*Merchant, error) {
+	var ret []*Merchant
+
+	agency := modules.IsAgencyAdmin(ctx)
+
+	equalData := make(map[string]string)
+	if agency != nil { // 是机构管理员的话，就需要添加机构排查
+		equalData["agency_id"] = strconv.FormatUint(agency.ID, 10)
+	}
+
+	var tmpDb *gorm.DB
+	if agency != nil { // 如果是agency还需要增加一个判断
+		tmpDb = models.DB().Model(&Merchant{}).
+			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.agency_id=? and d.deleted_at is null and "+
+				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id", deviceSn+"%", agency.ID)
+		tmpDb = tmpDb.Where("agency_id = ?", agency.ID)
+	} else {
+		tmpDb = models.DB().Model(&Merchant{}).
+			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.deleted_at is null and "+
+				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id", deviceSn+"%")
+	}
+
+	// 统计总数
+	var total uint64 = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+		return total, ret, err
+	}
+
+	return total, ret, nil
+}
+
 func GetMerchantsById(ids []uint64) ([]Merchant, error) {
 	var ret []Merchant
 

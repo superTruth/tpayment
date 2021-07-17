@@ -34,6 +34,15 @@ func QueryHandle(ctx *gin.Context) {
 		return
 	}
 
+	if total == 0 { // 如果找不到，则用device id再试试
+		total, dataRet, err = merchant.QueryMerchantByDeviceID(ctx, req.Filters["name"], req.Offset, req.Limit)
+		if err != nil {
+			logger.Info("QueryBaseRecord sql error->", err.Error())
+			modules.BaseError(ctx, conf.DBError)
+			return
+		}
+	}
+
 	ret := &modules.BaseQueryResponse{
 		Total: total,
 		Data:  dataRet,
