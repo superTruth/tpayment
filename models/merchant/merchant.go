@@ -133,16 +133,31 @@ func QueryMerchantByDeviceID(ctx *gin.Context, deviceSn string, offset, limit ui
 		equalData["agency_id"] = strconv.FormatUint(agency.ID, 10)
 	}
 
+	// conditions
+	var userBean *account.UserBean
+	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+	if ok {
+		userBean = userBeanTmp.(*account.UserBean)
+	} else {
+		return 0, ret, errors.New("can't get user")
+	}
+
 	var tmpDb *gorm.DB
 	if agency != nil { // 如果是agency还需要增加一个判断
 		tmpDb = models.DB().Model(&Merchant{}).
 			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.agency_id=? and d.deleted_at is null and "+
 				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id", deviceSn+"%", agency.ID)
 		tmpDb = tmpDb.Where("agency_id = ?", agency.ID)
-	} else {
+	} else if userBean.Role == string(conf.RoleAdmin) { // 超级管理员
 		tmpDb = models.DB().Model(&Merchant{}).
 			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.deleted_at is null and "+
 				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id", deviceSn+"%")
+	} else { // 普通员工
+		tmpDb = models.DB().Model(&Merchant{}).
+			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.deleted_at is null and "+
+				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id"+
+				" JOIN merchant_user_associate ass ON ass.merchant_id = merchant.id AND ass.user_id = ? AND ass.deleted_at IS NULL",
+				deviceSn+"%", userBean.ID)
 	}
 
 	// 统计总数
