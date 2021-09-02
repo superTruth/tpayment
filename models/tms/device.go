@@ -220,3 +220,7 @@ func (d *DeviceAndTagMid) Get(deviceID, tagID uint64) (*DeviceAndTagMid, error) 
 func (d *DeviceAndTagMid) Create(mid *DeviceAndTagMid) error {
 	return models.DB().Create(mid).Error
 }
+
+func (d *DeviceAndTagMid) DeleteAllTags(deviceID uint64) error {
+	return models.DB().Model(d).Delete(d, "device_id = ?", deviceID).Error
+}

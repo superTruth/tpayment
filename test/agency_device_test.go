@@ -22,7 +22,7 @@ func TestAddDeviceAcquirerByFile(t *testing.T) {
 
 	reqBean := &agencydevice.DeviceBindRequest{
 		AgencyId: 6,
-		FileUrl:  "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/import_devices_template.csv",
+		FileUrl:  "https://mdmfiles.oss-cn-hongkong.aliyuncs.com/other%20file/import_devices_template2.csv",
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
