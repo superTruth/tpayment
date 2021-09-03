@@ -140,7 +140,7 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 		}
 
 		// 处理tag
-		if len(record) < 2 || len(record[1]) < 2 {
+		if len(record) < 2 {
 			logger.Info("device ", device.DeviceSn, " no tag, skip it")
 			continue
 		}
