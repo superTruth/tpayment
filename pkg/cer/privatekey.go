@@ -16,6 +16,7 @@ func ParsePrivateKeyFromPem(priKeyData, pwd string) (crypto.PrivateKey, error) {
 		return nil, errors.New("decode fail")
 	}
 
+	// nolint
 	if x509.IsEncryptedPEMBlock(block) {
 		block.Bytes, err = x509.DecryptPEMBlock(block, []byte(pwd))
 		if err != nil {

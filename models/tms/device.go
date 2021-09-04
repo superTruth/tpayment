@@ -82,6 +82,23 @@ func (d *DeviceInfo) GetBySn(deviceSn string) (*DeviceInfo, error) {
 	return deviceInfo, nil
 }
 
+func (d *DeviceInfo) GetByAgencySn(agencyID uint64, deviceSn string) (*DeviceInfo, error) {
+	deviceInfo := new(DeviceInfo)
+
+	err := models.DB().Model(d).Where(&DeviceInfo{
+		AgencyId: agencyID,
+		DeviceSn: deviceSn}).First(&deviceInfo).Error
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return deviceInfo, nil
+}
+
 // 根据device ID获取设备信息
 func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInfo, error) {
 

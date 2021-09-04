@@ -58,9 +58,9 @@ func (m *Merchant) Get(id uint64) (*Merchant, error) {
 
 	return ret, nil
 }
-func (m *Merchant) GetByName(name string) (*Merchant, error) {
+func (m *Merchant) GetByName(agencyID uint64, name string) (*Merchant, error) {
 	ret := new(Merchant)
-	err := models.DB().Model(m).Where("name=?", name).First(ret).Error
+	err := models.DB().Model(m).Where("agency_id = ? and name=?", agencyID, name).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
