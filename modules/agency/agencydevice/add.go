@@ -41,6 +41,7 @@ func AddHandle(ctx *gin.Context) {
 	if req.DeviceId != 0 {
 		handleRet = AddByID(ctx, req.AgencyId, req.DeviceId)
 	} else {
+		handleRet = conf.Success
 		goroutine.Go(func() {
 			_ = AddByFile(ctx, req.AgencyId, req.FileUrl)
 		}, ctx)
