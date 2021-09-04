@@ -12,6 +12,7 @@ import (
 	"tpayment/modules"
 	"tpayment/pkg/download"
 	"tpayment/pkg/fileutils"
+	"tpayment/pkg/goroutine"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
 
@@ -40,7 +41,9 @@ func AddHandle(ctx *gin.Context) {
 	if req.DeviceId != 0 {
 		handleRet = AddByID(ctx, req.AgencyId, req.DeviceId)
 	} else {
-		handleRet = AddByFile(ctx, req.AgencyId, req.FileUrl)
+		goroutine.Go(func() {
+			_ = AddByFile(ctx, req.AgencyId, req.FileUrl)
+		}, ctx)
 	}
 
 	if handleRet != conf.Success {
@@ -240,6 +243,12 @@ func handleTag(ctx *gin.Context, tagsDest string, device *tms.DeviceInfo, agency
 	}
 
 	for _, tag := range tagsDestArray {
+		// 空字符串去除掉
+		tmpTag := strings.ReplaceAll(tag, " ", "")
+		if tmpTag == "" {
+			continue
+		}
+
 		destTag, ok := (*tags)[tag]
 		if !ok { // 如果不存在的tag，则添加一下
 			destTag = &tms.DeviceTag{
