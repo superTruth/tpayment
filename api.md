@@ -837,6 +837,51 @@ Response Example:
     "total": 1
 }
 ```
+
+### 查询tag里面设备信息
+***POST***
+```https://{base_url}/payment/tms/device_in_tag/query```
+Request Example:
+```json
+{
+  "filters": {
+    "device_sn": "1020221"
+  },
+  "limit": 100,
+  "offset": 0,
+  "tag_id": 49
+}
+```
+Response Example:
+```json
+{
+  "code": "00",
+  "data": {
+    "data": [
+      {
+        "agency_id": 1,
+        "alias": "",
+        "battery": 0,
+        "created_at": "2021-06-25T11:16:43.326383+08:00",
+        "device_csn": "",
+        "device_model": "",
+        "device_sn": "10202211980114",
+        "id": 18902,
+        "location_lat": "",
+        "location_lon": "",
+        "push_token": "",
+        "reboot_day_in_month": 0,
+        "reboot_day_in_week": 0,
+        "reboot_mode": "every_day",
+        "reboot_time": "03:00",
+        "updated_at": "2021-09-01T15:43:11.929912+08:00"
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
 ### 更新设备信息
 ***POST***
 ```https://{base_url}/payment/tms/device/update```
@@ -1150,6 +1195,47 @@ Response Example:
         }
     ],
     "total": 3
+}
+```
+
+### 查询tag下的设备
+***POST***
+```https://{base_url}/payment/tms/device_in_tag/query```
+Request Example:
+```json
+{
+	"limit": 100,
+	"offset": 0,
+    "tag_id": 49
+}
+```
+Response Example:
+```json
+{
+	"code": "00",
+	"data": {
+		"data": [
+			{
+				"agency_id": 10,
+				"alias": "",
+				"battery": 0,
+				"created_at": "2021-06-25T11:16:43.326383+08:00",
+				"device_csn": "",
+				"device_model": "",
+				"device_sn": "10202211980114",
+				"id": 18902,
+				"location_lat": "",
+				"location_lon": "",
+				"push_token": "",
+				"reboot_day_in_month": 0,
+				"reboot_day_in_week": 0,
+				"reboot_mode": "every_day",
+				"reboot_time": "03:00",
+				"updated_at": "2021-06-25T11:16:43.326383+08:00"
+			}
+		],
+		"total": 1
+	}
 }
 ```
 

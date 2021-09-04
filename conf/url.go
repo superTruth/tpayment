@@ -81,10 +81,11 @@ const (
 	UrlTmsModelUpdate = "/payment/tms/model/update"
 	UrlTmsModelQuery  = "/payment/tms/model/query"
 
-	UrlTmsTagAdd    = "/payment/tms/tag/add"
-	UrlTmsTagDelete = "/payment/tms/tag/delete"
-	UrlTmsTagUpdate = "/payment/tms/tag/update"
-	UrlTmsTagQuery  = "/payment/tms/tag/query"
+	UrlTmsTagAdd           = "/payment/tms/tag/add"
+	UrlTmsTagDelete        = "/payment/tms/tag/delete"
+	UrlTmsTagUpdate        = "/payment/tms/tag/update"
+	UrlTmsTagQuery         = "/payment/tms/tag/query"
+	UrlTmsDeviceInTagQuery = "/payment/tms/device_in_tag/query"
 
 	UrlTmsBatchUpdateAdd         = "/payment/tms/batchupdate/add"
 	UrlTmsBatchUpdateDelete      = "/payment/tms/batchupdate/delete"

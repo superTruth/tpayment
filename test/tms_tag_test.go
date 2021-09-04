@@ -94,3 +94,28 @@ func TestDeleteTmsTag(t *testing.T) {
 
 	fmt.Println("rep->", string(repByte))
 }
+
+func TestQueryTmsDeviceInTag(t *testing.T) {
+	TestLogin(t)
+	fmt.Println("query agency", line)
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &modules.BaseQueryRequest{
+		Offset: 0,
+		Limit:  100,
+		TagId:  49,
+		Filters: map[string]string{
+			"device_sn": "1020221",
+		},
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsDeviceInTagQuery, time.Second*10)
+
+	fmt.Println("rep->", string(repByte))
+	formatJson(repByte)
+	//fmt.Println("rep->", string(repByte))
+}
