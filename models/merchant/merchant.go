@@ -22,6 +22,8 @@ type Merchant struct {
 	Tel      string `json:"tel,omitempty"  gorm:"column:tel"`
 	Addr     string `json:"addr,omitempty" gorm:"column:addr"`
 	Email    string `json:"email,omitempty" gorm:"column:email"`
+
+	FileUrl string `json:"file_url" gorm:"-"`
 }
 
 func (Merchant) TableName() string {
@@ -46,6 +48,19 @@ func GetMerchantById(db *models.MyDB, ctx *gin.Context, id uint64) (*Merchant, e
 func (m *Merchant) Get(id uint64) (*Merchant, error) {
 	ret := new(Merchant)
 	err := models.DB().Model(m).Where("id=?", id).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+func (m *Merchant) GetByName(agencyID uint64, name string) (*Merchant, error) {
+	ret := new(Merchant)
+	err := models.DB().Model(m).Where("agency_id = ? and name=?", agencyID, name).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

@@ -126,3 +126,24 @@ func TestQueryMerchantInAgency(t *testing.T) {
 
 	formatJson(repByte)
 }
+
+func TestImportMerchantByFile(t *testing.T) {
+	TestLogin(t)
+
+	fmt.Println("TestAddDeviceAcquirer", line)
+
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &merchant.Merchant{
+		AgencyId: 10,
+		FileUrl:  "https://tpayment.s3.cn-northwest-1.amazonaws.com.cn/appfile/6f0783444edc4f9c91f334e06059535d/merchant_import_demo.xlsx",
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlMerchantAdd, time.Second*10)
+
+	formatJson(repByte)
+}

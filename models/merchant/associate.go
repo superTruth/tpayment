@@ -9,6 +9,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var UserMerchantAssociateDao = &UserMerchantAssociate{}
+
 type UserMerchantAssociate struct {
 	models.BaseModel
 
@@ -40,6 +42,21 @@ func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Con
 	ret := new(UserMerchantAssociate)
 
 	err := db.Model(&UserMerchantAssociate{}).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
+
+	if err != nil {
+		if gorm.ErrRecordNotFound == err { // 没有记录
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func (u *UserMerchantAssociate) GetByMerchantIdAndUserId(merchantId, userId uint64) (*UserMerchantAssociate, error) {
+	ret := new(UserMerchantAssociate)
+
+	err := models.DB().Model(ret).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

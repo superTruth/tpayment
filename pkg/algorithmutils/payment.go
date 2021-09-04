@@ -129,16 +129,13 @@ func generateCipherBlock(key []byte) (cipher.Block, error) {
 	switch len(key) {
 	case 8:
 		ret, err = des.NewCipher(key)
-		break
 	case 16:
 		newKey := make([]byte, 24)
 		mix_utils.BytesArrayCopy(key, 0, newKey, 0, 16)
 		mix_utils.BytesArrayCopy(key, 0, newKey, 16, 8)
 		ret, err = des.NewTripleDESCipher(newKey)
-		break
 	case 24:
 		ret, err = des.NewTripleDESCipher(key)
-		break
 	}
 
 	return ret, err
