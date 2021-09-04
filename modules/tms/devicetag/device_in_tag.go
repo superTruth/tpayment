@@ -26,7 +26,7 @@ func DeviceInTagHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.DeviceTagDao.QueryDeviceInTag(req.TagId, req.Offset, req.Limit)
+	total, dataRet, err := tms.DeviceTagDao.QueryDeviceInTag(req.TagId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryDeviceInTag sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -106,6 +106,9 @@ func TestQueryTmsDeviceInTag(t *testing.T) {
 		Offset: 0,
 		Limit:  100,
 		TagId:  49,
+		Filters: map[string]string{
+			"device_sn": "1020221",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

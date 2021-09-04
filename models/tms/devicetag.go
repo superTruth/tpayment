@@ -114,10 +114,13 @@ func (d *DeviceTag) Create(tag *DeviceTag) error {
 	return models.DB().Create(tag).Error
 }
 
-func (d *DeviceTag) QueryDeviceInTag(tagID, offset, limit uint64) (uint64, []*DeviceInfo, error) {
+func (d *DeviceTag) QueryDeviceInTag(tagID, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
 	var ret []*DeviceInfo
 
-	tmpDb := models.DB().Model(&DeviceInfo{}).
+	equalData := make(map[string]string)
+	sqlCondition := models.CombQueryCondition(equalData, filters)
+
+	tmpDb := models.DB().Model(&DeviceInfo{}).Where(sqlCondition).
 		Joins("join tms_device_and_tag_mid mid on tms_device.id = mid.device_id and mid.tag_id =? and mid.deleted_at is null", tagID)
 
 	// 统计总数
