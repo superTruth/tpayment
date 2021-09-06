@@ -12,7 +12,7 @@ import (
 )
 
 func PermissionFilter(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	if ctx.Request.RequestURI == conf.UrlAccountLogin ||
 		ctx.Request.RequestURI == conf.UrlAccountRegister ||

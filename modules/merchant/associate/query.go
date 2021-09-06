@@ -2,7 +2,6 @@ package associate
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
 	merchantModule "tpayment/modules/merchant"
@@ -13,7 +12,7 @@ import (
 )
 
 func QueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -35,7 +34,7 @@ func QueryHandle(ctx *gin.Context) {
 		return
 	}
 
-	total, dataRet, err := merchant.QueryUsersByMerchantId(models.DB(), ctx, req.MerchantId, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := merchant.QueryUsersByMerchantId(req.MerchantId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

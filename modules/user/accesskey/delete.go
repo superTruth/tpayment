@@ -12,7 +12,7 @@ import (
 )
 
 func DeleteHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -24,7 +24,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	keyBean, err := account.GetUserAccessKeyFromID(models.DB(), ctx, req.ID)
+	keyBean, err := account.GetUserAccessKeyFromID(req.ID)
 	if err != nil {
 		logger.Info("GetUserAccessKeyFromID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

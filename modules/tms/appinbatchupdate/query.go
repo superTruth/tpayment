@@ -2,7 +2,6 @@ package appinbatchupdate
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func QueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -27,7 +26,7 @@ func QueryHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.GetAppsInDevice(models.DB(), ctx, req.BatchId, tms.AppInDeviceExternalIdTypeBatchUpdate, req.Offset, req.Limit)
+	total, dataRet, err := tms.GetAppsInDevice(req.BatchId, tms.AppInDeviceExternalIdTypeBatchUpdate, req.Offset, req.Limit)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

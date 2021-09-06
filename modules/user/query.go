@@ -2,7 +2,6 @@ package user
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
@@ -13,7 +12,7 @@ import (
 )
 
 func QueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -57,7 +56,7 @@ func QueryHandle(ctx *gin.Context) {
 		agencyId = agencys[0].ID
 	}
 
-	total, dataRet, err := account.QueryUserRecord(models.DB(), ctx, req.Offset, req.Limit, agencyId, req.Filters)
+	total, dataRet, err := account.QueryUserRecord(req.Offset, req.Limit, agencyId, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -17,13 +17,10 @@ func Logger(ctx *gin.Context) {
 	// 生成log
 	//logger := new(tlog.Logger)
 	//logger.Init(requestId)
-
-	logger := tlog.NewLog(requestId)
-
-	tlog.SetLogger(ctx, logger)
-	defer logger.Destroy()
+	tag := make(map[string]string)
+	tag[conf.HeaderTagRequestId] = requestId
+	logger := tlog.NewLog(tag)
 	tlog.SetGoroutineLogger(logger)
-	defer tlog.FreeGoroutineLogger()
 
 	ctx.Request.Header[conf.HeaderTagRequestId] = []string{requestId}
 	ctx.Writer.Header()[conf.HeaderTagRequestId] = []string{requestId}

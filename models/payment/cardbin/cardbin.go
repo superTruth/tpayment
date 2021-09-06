@@ -3,7 +3,7 @@ package cardbin
 import (
 	"tpayment/models"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var Dao = &CardBin{}
@@ -34,12 +34,12 @@ func (CardBin) TableName() string {
 }
 
 func (k *CardBin) Create(key *CardBin) error {
-	return models.DB().Model(k).Create(key).Error
+	return models.DB.Model(k).Create(key).Error
 }
 
 func (k *CardBin) IsExist(cardNumberPrefix string) (bool, error) {
 	ret := new(CardBin)
-	err := models.DB().Model(k).Select("id").
+	err := models.DB.Model(k).Select("id").
 		Where("card_number_prefix=?", cardNumberPrefix).First(ret).Error
 
 	if err != nil {

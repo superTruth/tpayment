@@ -12,7 +12,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(merchant.PaymentSettingInDevice)
 
@@ -23,7 +23,7 @@ func UpdateHandle(ctx *gin.Context) {
 		return
 	}
 
-	deviceBean, err := merchant.GetPaymentSettingInDeviceById(models.DB(), ctx, req.ID)
+	deviceBean, err := merchant.GetPaymentSettingInDeviceById(req.ID)
 	if err != nil {
 		logger.Error("GetPaymentSettingInDeviceById fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

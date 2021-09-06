@@ -5,7 +5,7 @@ import (
 	"tpayment/models/agency"
 	"tpayment/models/payment/acquirer"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var Dao = &MerchantAccount{}
@@ -29,7 +29,7 @@ func (MerchantAccount) TableName() string {
 
 func (m *MerchantAccount) Get(merchantID uint64) (*MerchantAccount, error) {
 	var ret = new(MerchantAccount)
-	err := models.DB().Model(m).Where("id=?", merchantID).Find(ret).Error
+	err := models.DB.Model(m).Where("id=?", merchantID).Find(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -42,7 +42,7 @@ func (m *MerchantAccount) Get(merchantID uint64) (*MerchantAccount, error) {
 
 func (m *MerchantAccount) GetByAcquirerID(acqID, offset, limit uint64) ([]*MerchantAccount, error) {
 	var ret []*MerchantAccount
-	err := models.DB().Model(m).Where("acquirer_id=?", acqID).Offset(offset).Limit(limit).Find(ret).Error
+	err := models.DB.Model(m).Where("acquirer_id=?", acqID).Offset(int(offset)).Limit(int(limit)).Find(ret).Error
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(tms.UploadFile)
 
@@ -24,7 +24,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	// 现在找到对应的机器，看看机器所属的机构
-	deviceBean, err := tms.GetDeviceBySn(models.DB(), ctx, req.DeviceSn)
+	deviceBean, err := tms.GetDeviceBySn(req.DeviceSn)
 	if err != nil {
 		logger.Warn("GetDeviceBySn fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

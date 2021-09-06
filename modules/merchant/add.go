@@ -23,7 +23,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(merchant.Merchant)
 
@@ -66,7 +66,7 @@ func AddHandle(ctx *gin.Context) {
 
 // 常规添加
 func addNormal(ctx *gin.Context, req *merchant.Merchant) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 	err := models.CreateBaseRecord(req)
 
 	if err != nil {
@@ -100,7 +100,7 @@ type fileItemBean struct {
 }
 
 func addByFile(ctx *gin.Context, req *merchant.Merchant) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 先下载文件
 	_, fileName, _ := fileutils.SeparateFilePath(req.FileUrl)
@@ -170,7 +170,7 @@ func convertArray(src string) *models.StringArray {
 }
 
 func handleFileItem(ctx *gin.Context, agencyID uint64, fileItem *fileItemBean) error {
-	log := tlog.GetLogger(ctx)
+	log := tlog.GetGoroutineLogger()
 
 	// 添加商户
 	merchantBean, err := merchant.Dao.GetByName(agencyID, fileItem.MerchantName)

@@ -2,7 +2,6 @@ package associate
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func QueryAssociateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -32,7 +31,7 @@ func QueryAssociateHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := agency.QueryUsersByAgencyId(models.DB(), ctx, req.AgencyId, req.Offset, req.Limit)
+	total, dataRet, err := agency.QueryUsersByAgencyId(req.AgencyId, req.Offset, req.Limit)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

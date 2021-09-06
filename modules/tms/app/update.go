@@ -12,7 +12,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(tms.App)
 
@@ -32,7 +32,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetAppByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetAppByID(req.ID)
 	if err != nil {
 		logger.Info("GetDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

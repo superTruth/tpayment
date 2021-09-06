@@ -4,8 +4,7 @@ import (
 	"strconv"
 	"tpayment/models"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var AcquirerDao = &Acquirer{}
@@ -28,7 +27,7 @@ func (Acquirer) TableName() string {
 func (acq *Acquirer) Get(id uint64) (*Acquirer, error) {
 	ret := new(Acquirer)
 
-	err := models.DB().Model(acq).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(acq).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -43,7 +42,7 @@ func (acq *Acquirer) Get(id uint64) (*Acquirer, error) {
 func GetAcquirerById(id uint64) (*Acquirer, error) {
 	ret := new(Acquirer)
 
-	err := models.DB().Model(&Acquirer{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&Acquirer{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -55,7 +54,7 @@ func GetAcquirerById(id uint64) (*Acquirer, error) {
 	return ret, nil
 }
 
-func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint64, filters map[string]string) (uint64, []*Acquirer, error) {
+func QueryAcquirerRecord(agencyId, offset, limit uint64, filters map[string]string) (uint64, []*Acquirer, error) {
 	equalData := make(map[string]string)
 	if agencyId != 0 {
 		equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
@@ -63,28 +62,28 @@ func QueryAcquirerRecord(db *models.MyDB, ctx *gin.Context, agencyId, offset, li
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&Acquirer{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&Acquirer{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*Acquirer
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
 // 查找需要结算的收单
 func (acq *Acquirer) GetNeedSettlement(hour string) ([]*Acquirer, error) {
 	var ret []*Acquirer
 
-	err := models.DB().Model(acq).Where("auto_settlement_time LIKE ?%", hour).Find(&ret).Error
+	err := models.DB.Model(acq).Where("auto_settlement_time LIKE ?%", hour).Find(&ret).Error
 
 	if err != nil {
 		return nil, err
@@ -95,7 +94,7 @@ func (acq *Acquirer) GetNeedSettlement(hour string) ([]*Acquirer, error) {
 
 func (acq *Acquirer) GetByName(agencyID uint64, name string) (*Acquirer, error) {
 	ret := &Acquirer{}
-	err := models.DB().Model(ret).
+	err := models.DB.Model(ret).
 		Where("agency_id = ? and name = ?", agencyID, name).
 		First(&ret).Error
 

@@ -13,7 +13,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(tms.AppInDevice)
 
@@ -25,7 +25,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetAppInDeviceByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetAppInDeviceByID(req.ID)
 	if err != nil {
 		logger.Info("GetDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -38,7 +38,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 获取设备标识，查看是否有权限
-	deviceBean, err := tms.GetDeviceByID(models.DB(), ctx, bean.ExternalId)
+	deviceBean, err := tms.GetDeviceByID(bean.ExternalId)
 	if err != nil {
 		logger.Error("GetDeviceByID fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -7,7 +7,7 @@ import (
 	"tpayment/modules"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type BatchUpdate struct {
@@ -34,10 +34,10 @@ func (BatchUpdate) TableName() string {
 	return "tms_batch_update"
 }
 
-func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint64) (*BatchUpdate, error) {
+func GetBatchUpdateRecordById(id uint64) (*BatchUpdate, error) {
 	ret := new(BatchUpdate)
 
-	err := db.Model(&BatchUpdate{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&BatchUpdate{}).Where("id=?", id).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -49,7 +49,7 @@ func GetBatchUpdateRecordById(db *models.MyDB, ctx *gin.Context, id uint64) (*Ba
 	return ret, nil
 }
 
-func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*BatchUpdate, error) {
+func QueryBatchUpdateRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*BatchUpdate, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -59,28 +59,28 @@ func QueryBatchUpdateRecord(db *models.MyDB, ctx *gin.Context, offset, limit uin
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&BatchUpdate{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&BatchUpdate{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*BatchUpdate
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
 //select * from tms_device where
 //id in (select device_id from tms_device_and_tag_mid where tag_id IN (1,2) and deleted_at IS NULL group by device_id)
 //and deleted_at is null;
-func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *BatchUpdate, offset uint64, limit uint64) ([]*DeviceInfo, error) {
-	tmpDb := db.Model(&DeviceInfo{})
+func GetBatchUpdateDevices(ctx *gin.Context, batchUpdate *BatchUpdate, offset uint64, limit uint64) ([]*DeviceInfo, error) {
+	tmpDb := models.DB.Model(&DeviceInfo{})
 
 	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
@@ -152,7 +152,7 @@ func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *Batch
 	//}
 
 	var ret []*DeviceInfo
-	if err = tmpDb.Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
+	if err = tmpDb.Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
 		return ret, err
 	}
 

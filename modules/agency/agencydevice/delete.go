@@ -2,7 +2,6 @@ package agencydevice
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func DeleteHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -23,7 +22,7 @@ func DeleteHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = tms.ResetDeviceAgency(models.DB(), ctx, req.ID)
+	err = tms.ResetDeviceAgency(req.ID)
 	if err != nil {
 		logger.Info("UpdateBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -13,9 +13,9 @@ func Go(f func(), ctx *gin.Context) {
 	go func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				logger := tlog.GetLogger(ctx)
+				logger := tlog.GetGoroutineLogger()
 				stack := debug.Stack()
-				logger.Error("goroutine panic: %v\n%s", err, stack)
+				logger.Error("goroutine panic: %v\n%s", err, string(stack))
 			}
 		}()
 		f()

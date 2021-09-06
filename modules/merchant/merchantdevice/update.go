@@ -13,7 +13,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(merchant.DeviceInMerchant)
 
@@ -24,7 +24,7 @@ func UpdateHandle(ctx *gin.Context) {
 		return
 	}
 
-	deviceBean, err := merchant.GetDeviceInMerchantAssociateById(models.DB(), ctx, req.ID)
+	deviceBean, err := merchant.GetDeviceInMerchantAssociateById(req.ID)
 	if err != nil {
 		logger.Error("GetDeviceInMerchantAssociateById fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

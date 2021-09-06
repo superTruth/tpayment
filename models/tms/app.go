@@ -6,7 +6,7 @@ import (
 	"tpayment/modules"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type App struct {
@@ -23,11 +23,11 @@ func (App) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint64) (*App, error) {
+func GetAppByID(id uint64) (*App, error) {
 
 	ret := new(App)
 
-	err := db.Model(&App{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&App{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -39,7 +39,7 @@ func GetAppByID(db *models.MyDB, ctx *gin.Context, id uint64) (*App, error) {
 	return ret, nil
 }
 
-func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*App, error) {
+func QueryAppRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*App, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -49,19 +49,19 @@ func QueryAppRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, fil
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&App{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&App{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*App
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }

@@ -5,8 +5,7 @@ import (
 	"tpayment/models"
 	"tpayment/models/agency"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var PaymentSettingDao = &PaymentSettingInDevice{}
@@ -29,10 +28,10 @@ func (PaymentSettingInDevice) TableName() string {
 	return "merchant_payment_setting_in_device"
 }
 
-func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint64) (*PaymentSettingInDevice, error) {
+func GetPaymentSettingInDeviceById(id uint64) (*PaymentSettingInDevice, error) {
 	ret := new(PaymentSettingInDevice)
 
-	err := db.Model(&PaymentSettingInDevice{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&PaymentSettingInDevice{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -44,34 +43,34 @@ func GetPaymentSettingInDeviceById(db *models.MyDB, ctx *gin.Context, id uint64)
 	return ret, nil
 }
 
-func QueryPaymentSettingInDeviceRecord(db *models.MyDB, ctx *gin.Context, merchantDeviceId, offset, limit uint64, filters map[string]string) (uint64, []*PaymentSettingInDevice, error) {
+func QueryPaymentSettingInDeviceRecord(merchantDeviceId, offset, limit uint64, filters map[string]string) (uint64, []*PaymentSettingInDevice, error) {
 	var ret []*PaymentSettingInDevice
 
 	equalData := make(map[string]string)
 	equalData["merchant_device_id"] = strconv.FormatUint(merchantDeviceId, 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	tmpDB := db.Model(&PaymentSettingInDevice{}).Where(sqlCondition)
+	tmpDB := models.DB.Model(&PaymentSettingInDevice{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	// 查询记录
-	err = tmpDB.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
 func (p *PaymentSettingInDevice) GetByMidTid(deviceID uint64, mid, tid string) (*PaymentSettingInDevice, error) {
 	ret := &PaymentSettingInDevice{}
-	err := models.DB().Model(ret).
+	err := models.DB.Model(ret).
 		Where("merchant_device_id=? and mid=? and tid=?", deviceID, mid, tid).
 		First(ret).Error
 	if err != nil {

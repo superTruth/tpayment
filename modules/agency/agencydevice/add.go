@@ -20,7 +20,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(DeviceBindRequest)
 
@@ -57,7 +57,7 @@ func AddHandle(ctx *gin.Context) {
 
 // 单个添加设备
 func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 	device := tms.DeviceInfo{
 		BaseModel: models.BaseModel{
 			ID: deviceId,
@@ -78,7 +78,7 @@ func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
 const downloadDir = "./agencydevicefiles/"
 
 func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 先下载文件
 	_, fileName, _ := fileutils.SeparateFilePath(fileUrl)
@@ -160,7 +160,7 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 
 func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
 	//
-	model, err := tms.GetModelByName(models.DB(), ctx, deviceModel)
+	model, err := tms.GetModelByName(deviceModel)
 	if err != nil {
 		return 0, err
 	}
@@ -181,10 +181,10 @@ func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
 }
 
 func handleDevice(ctx *gin.Context, deviceSn string, agencyId, modelID uint64) (*tms.DeviceInfo, conf.ResultCode) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 查询一下是否已经存在这个device id
-	device, err := tms.GetDeviceBySn(models.DB(), ctx, deviceSn)
+	device, err := tms.GetDeviceBySn(deviceSn)
 	if err != nil {
 		logger.Error("GetDeviceBySn fail->", err.Error())
 		return nil, conf.DBError
@@ -227,7 +227,7 @@ func handleDevice(ctx *gin.Context, deviceSn string, agencyId, modelID uint64) (
 }
 
 func handleTag(ctx *gin.Context, tagsDest string, device *tms.DeviceInfo, agencyId uint64, tags *map[string]*tms.DeviceTag) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 删除掉现有所有tag
 	err := tms.DeviceAndTagMidDao.DeleteAllTags(device.ID)

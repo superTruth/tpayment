@@ -13,7 +13,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(tms.DeviceInfo)
 
@@ -25,7 +25,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetDeviceByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetDeviceByID(req.ID)
 	if err != nil {
 		logger.Info("GetDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -65,14 +65,14 @@ func UpdateHandle(ctx *gin.Context) {
 
 // 合并tags
 func mergeTags(ctx *gin.Context, device *tms.DeviceInfo) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 前端没传入
 	if device.Tags == nil {
 		return conf.Success
 	}
 
-	dbTags, err := tms.QueryTagsInDevice(models.DB(), ctx, device)
+	dbTags, err := tms.QueryTagsInDevice(ctx, device)
 
 	if err != nil {
 		logger.Warn("QueryTagsInDevice fail->", err.Error())
@@ -95,7 +95,7 @@ func mergeTags(ctx *gin.Context, device *tms.DeviceInfo) conf.ResultCode {
 		// 删除掉关联数据
 		if !findFlag {
 			logger.Info("need delete record->", dbTags[i].MidId)
-			err := models.DB().Delete(&tms.DeviceAndTagMid{
+			err := models.DB.Delete(&tms.DeviceAndTagMid{
 				BaseModel: models.BaseModel{ID: dbTags[i].MidId},
 			}).Error
 
@@ -119,7 +119,7 @@ func mergeTags(ctx *gin.Context, device *tms.DeviceInfo) conf.ResultCode {
 		// 添加关联数据
 		if !findFlag {
 			logger.Info("need create record->", (*device.Tags)[i].ID)
-			err := models.DB().Create(&tms.DeviceAndTagMid{
+			err := models.DB.Create(&tms.DeviceAndTagMid{
 				TagID:    (*device.Tags)[i].ID,
 				DeviceId: device.ID,
 			}).Error

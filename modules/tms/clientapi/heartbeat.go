@@ -22,7 +22,7 @@ import (
 var once sync.Once
 
 func HearBeat(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	once.Do(func() {
 		readDeviceModels(ctx)
@@ -50,7 +50,7 @@ func HearBeat(ctx *gin.Context) {
 	}
 
 	// 查询出当前设备的信息
-	deviceInfo, err := tms.GetDeviceBySn(models.DB(), ctx, bean.DeviceSn)
+	deviceInfo, err := tms.GetDeviceBySn(bean.DeviceSn)
 	if err != nil {
 		logger.Info("GetDeviceBySn sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -79,7 +79,7 @@ func HearBeat(ctx *gin.Context) {
 	var retApps []*AppInfo
 	for i := 0; ; i++ {
 		logger.Info("查询一次记录->", i)
-		_, dbApps, err := tms.GetAppsInDevice(models.DB(), ctx, deviceInfo.ID,
+		_, dbApps, err := tms.GetAppsInDevice(deviceInfo.ID,
 			tms.AppInDeviceExternalIdTypeDevice, uint64(i*PageLen), PageLen) // 最多查出200条记录
 		if err != nil {
 			logger.Error("GetAppsInDevice error->", err.Error())
@@ -160,7 +160,7 @@ func HearBeat(ctx *gin.Context) {
 */
 // 返回数据：
 func compareApps(ctx *gin.Context, requestApps []*AppInfo, dbApps []*tms.AppInDevice) ([]*AppInfo, []*AppInfo, conf.ResultCode) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 未匹配到的上送数据
 	var unmatchApps []*AppInfo
@@ -418,8 +418,9 @@ var DeviceModels map[string]uint64
 
 func readDeviceModels(ctx *gin.Context) {
 	goroutine.Go(func() {
-		logger := tlog.NewLog(uuid.New().String()) //tlog.Logger{}
-		//logger.Init(uuid.New().String())
+		tag := make(map[string]string)
+		tag[conf.HeaderTagRequestId] = uuid.New().String()
+		logger := tlog.NewLog(tag)
 		for {
 			modelArray, err := tms.GetModels()
 			if err == nil {

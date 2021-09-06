@@ -4,8 +4,7 @@ import (
 	"strconv"
 	"tpayment/models"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type AppFile struct {
@@ -27,11 +26,11 @@ func (AppFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppFile, error) {
+func GetAppFileByID(id uint64) (*AppFile, error) {
 
 	ret := new(AppFile)
 
-	err := db.Model(&AppFile{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&AppFile{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -43,25 +42,25 @@ func GetAppFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppFile, err
 	return ret, nil
 }
 
-func QueryAppFileRecord(db *models.MyDB, ctx *gin.Context, appId, offset, limit uint64, filters map[string]string) (uint64, []*AppFile, error) {
+func QueryAppFileRecord(appId, offset, limit uint64, filters map[string]string) (uint64, []*AppFile, error) {
 	equalData := make(map[string]string)
 	equalData["app_id"] = strconv.FormatUint(uint64(appId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&AppFile{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&AppFile{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*AppFile
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }

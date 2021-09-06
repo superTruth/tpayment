@@ -3,8 +3,6 @@ package paymentprocessrule
 import (
 	"tpayment/models"
 	"tpayment/models/payment/merchantaccount"
-
-	"github.com/gin-gonic/gin"
 )
 
 type PaymentProcessRule struct {
@@ -24,9 +22,9 @@ func (PaymentProcessRule) TableName() string {
 	return "payment_process_rule"
 }
 
-func (rule *PaymentProcessRule) GetByMerchantID(db *models.MyDB, ctx *gin.Context, merchantID uint64) ([]*PaymentProcessRule, error) {
+func (rule *PaymentProcessRule) GetByMerchantID(merchantID uint64) ([]*PaymentProcessRule, error) {
 	var ret []*PaymentProcessRule
-	err := db.Model(rule).Where("merchant_id=?", merchantID).Find(&ret).Error
+	err := models.DB.Model(rule).Where("merchant_id=?", merchantID).Find(&ret).Error
 	if err != nil {
 		return nil, err
 	}

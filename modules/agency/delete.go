@@ -12,7 +12,7 @@ import (
 )
 
 func DeleteHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -30,7 +30,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := agency.GetAgencyById(models.DB(), ctx, req.ID)
+	bean, err := agency.GetAgencyById(req.ID)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

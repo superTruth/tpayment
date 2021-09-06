@@ -13,7 +13,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(agency.UserAgencyAssociate)
 
@@ -31,7 +31,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否存在这2个ID
-	userBean, err := account.GetUserById(models.DB(), ctx, req.UserId)
+	userBean, err := account.GetUserById(req.UserId)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -43,7 +43,7 @@ func AddHandle(ctx *gin.Context) {
 		return
 	}
 
-	agencyBean, err := agency.GetAgencyById(models.DB(), ctx, req.AgencyId)
+	agencyBean, err := agency.GetAgencyById(req.AgencyId)
 	if err != nil {
 		logger.Info("GetAssociateById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -56,7 +56,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	// 一个用户只可以关联一个agency
-	associateBean, err := agency.GetAssociateByUserId(models.DB(), ctx, req.UserId)
+	associateBean, err := agency.GetAssociateByUserId(req.UserId)
 	if err != nil {
 		logger.Info("GetAssociateByUserId sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

@@ -12,7 +12,7 @@ import (
 )
 
 func DeleteHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -32,7 +32,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	bean, err := tms.GetUploadFileByID(models.DB(), ctx, req.ID)
+	bean, err := tms.GetUploadFileByID(req.ID)
 	if err != nil {
 		logger.Info("GetAppInDeviceByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

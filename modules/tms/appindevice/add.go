@@ -13,7 +13,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	logger.Info("In App AddHandle")
 
@@ -32,7 +32,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	// 获取设备标识，查看是否有权限
-	bean, err := tms.GetDeviceByID(models.DB(), ctx, req.ExternalId)
+	bean, err := tms.GetDeviceByID(req.ExternalId)
 	if err != nil {
 		logger.Error("GetDeviceByID fail->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -60,10 +60,10 @@ func AddHandle(ctx *gin.Context) {
 
 // 智能添加app到设备
 func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppInDevice) conf.ResultCode {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 查找是否已经存在这个app，如果存在，就更新当前规则，如果不存在，再创建新的记录
-	bean, err := tms.FindAppInDevice(models.DB(), ctx, device.ID, app)
+	bean, err := tms.FindAppInDevice(ctx, device.ID, app)
 	if err != nil {
 		logger.Error("FindAppInDevice fail->", err.Error())
 		return conf.DBError

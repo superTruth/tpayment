@@ -7,7 +7,7 @@ import (
 	"tpayment/models/account"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var Dao = &Agency{}
@@ -27,7 +27,7 @@ func (Agency) TableName() string {
 
 func (a *Agency) Get(id uint64) (*Agency, error) {
 	ret := new(Agency)
-	err := models.DB().Model(a).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(a).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -39,13 +39,13 @@ func (a *Agency) Get(id uint64) (*Agency, error) {
 	return ret, nil
 }
 
-func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*Agency, error) {
+func QueryAgencyRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*Agency, error) {
 	var ret []*Agency
 
 	equalData := make(map[string]string)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	tmpDB := db.Model(&Agency{}).Where(sqlCondition)
+	tmpDB := models.DB.Model(&Agency{}).Where(sqlCondition)
 
 	// 非系统管理员，只查看跟他有关的机构
 	var userBean *account.UserBean
@@ -61,14 +61,14 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, 
 	}
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	// 查询记录
-	err = tmpDB.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -77,13 +77,13 @@ func QueryAgencyRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, 
 		return 0, nil, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
-func GetAgencyById(db *models.MyDB, ctx *gin.Context, id uint64) (*Agency, error) {
+func GetAgencyById(id uint64) (*Agency, error) {
 	ret := new(Agency)
 
-	err := db.Model(&Agency{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&Agency{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

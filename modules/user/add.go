@@ -13,7 +13,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(account.UserBean)
 
@@ -36,7 +36,7 @@ func AddHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)
+	user, err := account.GetUserByEmail(req.Email)
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

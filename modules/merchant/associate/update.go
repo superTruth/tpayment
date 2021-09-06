@@ -13,7 +13,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(merchant.UserMerchantAssociate)
 
@@ -25,7 +25,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	associateBean, err := merchant.GetUserMerchantAssociateById(models.DB(), ctx, req.ID)
+	associateBean, err := merchant.GetUserMerchantAssociateById(req.ID)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
