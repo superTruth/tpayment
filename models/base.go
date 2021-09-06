@@ -8,10 +8,10 @@ import (
 )
 
 type BaseModel struct {
-	ID        uint64     `gorm:"primary_key" json:"id,omitempty"`
-	CreatedAt time.Time  `gorm:"created_at" json:"created_at,omitempty"`
-	UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at,omitempty"`
-	DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at,omitempty"`
+	ID        uint64         `gorm:"primary_key" json:"id,omitempty"`
+	CreatedAt time.Time      `gorm:"created_at" json:"created_at,omitempty"`
+	UpdatedAt time.Time      `gorm:"updated_at" json:"updated_at,omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"deleted_at" json:"deleted_at,omitempty"`
 }
 
 func CreateBaseRecord(record interface{}) error {
