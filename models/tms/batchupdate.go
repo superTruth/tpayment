@@ -158,3 +158,38 @@ func GetBatchUpdateDevices(db *models.MyDB, ctx *gin.Context, batchUpdate *Batch
 
 	return ret, nil
 }
+
+var DeviceInBatchDao = &DeviceInBatchUpdate{}
+
+type DeviceInBatchUpdate struct {
+	models.BaseModel
+
+	BatchID  uint64 `gorm:"column:batch_id" json:"-"`
+	DeviceID uint64 `gorm:"column:device_id" json:"-"`
+	Status   string `gorm:"column:status" json:"-"`
+
+	DeviceInfo *DeviceInfo `gorm:"-" json:"device_info"`
+
+	BatchUpdate *BatchUpdate `gorm:"-" json:"-"`
+}
+
+func (DeviceInBatchUpdate) TableName() string {
+	return "tms_device_batch_update"
+}
+
+func (d *DeviceInBatchUpdate) GetDevicesByBatch(batchID, offset uint64, limit uint64, filters map[string]string) ([]*DeviceInBatchUpdate, error) {
+
+	return nil, nil
+}
+
+func (d *DeviceInBatchUpdate) Create(data *DeviceInBatchUpdate) error {
+	return models.DB().Create(data).Error
+}
+
+func (d *DeviceInBatchUpdate) GetBatchByDevice(deviceID uint64) (*DeviceInBatchUpdate, error) {
+	return nil, nil
+}
+
+func (d *DeviceInBatchUpdate) UpdateStatus(data *DeviceInBatchUpdate) error {
+	return models.DB().Model(d).Select("status").Updates(data).Error
+}
