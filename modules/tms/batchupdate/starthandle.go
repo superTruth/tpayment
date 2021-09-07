@@ -30,8 +30,9 @@ func StartHandle(ctx *gin.Context) {
 
 	// 异步解析
 	goroutine.Go(func() {
+		tlog.SetGoroutineLogger(logger) // 切换协程，承接log
 		StartUpdate(ctx, req.ID)
-	}, ctx)
+	})
 }
 
 func StartUpdate(ctx *gin.Context, id uint64) {

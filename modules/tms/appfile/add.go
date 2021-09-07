@@ -75,11 +75,12 @@ func AddHandle(ctx *gin.Context) {
 
 	// 异步解析
 	goroutine.Go(func() {
-		StartDecode(ctx, req.ID)
-	}, ctx)
+		tlog.SetGoroutineLogger(logger) // 切换协程，承接log
+		StartDecode(req.ID)
+	})
 }
 
-func StartDecode(ctx *gin.Context, id uint64) {
+func StartDecode(id uint64) {
 	logger := tlog.GetGoroutineLogger()
 
 	logger.Info("start decode app file->", id)

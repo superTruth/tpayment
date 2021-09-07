@@ -25,7 +25,7 @@ func HearBeat(ctx *gin.Context) {
 	logger := tlog.GetGoroutineLogger()
 
 	once.Do(func() {
-		readDeviceModels(ctx)
+		readDeviceModels()
 	}) // 启动一次读取设备类型，并且后面每10分钟同步一次，减少没必要的IO操作
 
 	data, err := ioutil.ReadAll(ctx.Request.Body)
@@ -416,7 +416,7 @@ func generateAppFromConfig(configApp *tms.AppInDevice) *AppInfo {
 
 var DeviceModels map[string]uint64
 
-func readDeviceModels(ctx *gin.Context) {
+func readDeviceModels() {
 	goroutine.Go(func() {
 		tag := make(map[string]string)
 		tag[conf.HeaderTagRequestId] = uuid.New().String()
@@ -433,5 +433,5 @@ func readDeviceModels(ctx *gin.Context) {
 			logger.Info("读取一次models->", len(modelArray))
 			time.Sleep(time.Minute * 10) // 10分钟同步一次
 		}
-	}, ctx)
+	})
 }

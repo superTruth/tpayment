@@ -53,8 +53,9 @@ func AddHandle(ctx *gin.Context) {
 	} else {
 		retCode = conf.Success
 		goroutine.Go(func() {
-			_ = addByFile(ctx, req)
-		}, ctx)
+			tlog.SetGoroutineLogger(logger) // 切换协程，承接log
+			_ = addByFile(req)
+		})
 	}
 
 	if retCode != conf.Success {
@@ -99,7 +100,7 @@ type fileItemBean struct {
 	StuffRole      string
 }
 
-func addByFile(ctx *gin.Context, req *merchant.Merchant) conf.ResultCode {
+func addByFile(req *merchant.Merchant) conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 
 	// 先下载文件
@@ -152,7 +153,7 @@ func addByFile(ctx *gin.Context, req *merchant.Merchant) conf.ResultCode {
 			StuffRole:      record[15],
 		}
 
-		_ = handleFileItem(ctx, req.AgencyId, fileItem)
+		_ = handleFileItem(req.AgencyId, fileItem)
 	}
 
 	return conf.Success
@@ -169,7 +170,7 @@ func convertArray(src string) *models.StringArray {
 	return &ret
 }
 
-func handleFileItem(ctx *gin.Context, agencyID uint64, fileItem *fileItemBean) error {
+func handleFileItem(agencyID uint64, fileItem *fileItemBean) error {
 	log := tlog.GetGoroutineLogger()
 
 	// 添加商户

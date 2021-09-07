@@ -39,12 +39,13 @@ func AddHandle(ctx *gin.Context) {
 
 	var handleRet conf.ResultCode
 	if req.DeviceId != 0 {
-		handleRet = AddByID(ctx, req.AgencyId, req.DeviceId)
+		handleRet = AddByID(req.AgencyId, req.DeviceId)
 	} else {
 		handleRet = conf.Success
 		goroutine.Go(func() {
-			_ = AddByFile(ctx, req.AgencyId, req.FileUrl)
-		}, ctx)
+			tlog.SetGoroutineLogger(logger) // 切换协程，承接log
+			_ = AddByFile(req.AgencyId, req.FileUrl)
+		})
 	}
 
 	if handleRet != conf.Success {
@@ -56,7 +57,7 @@ func AddHandle(ctx *gin.Context) {
 }
 
 // 单个添加设备
-func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
+func AddByID(agencyId, deviceId uint64) conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 	device := tms.DeviceInfo{
 		BaseModel: models.BaseModel{
@@ -77,7 +78,7 @@ func AddByID(ctx *gin.Context, agencyId, deviceId uint64) conf.ResultCode {
 // 批量文件添加设备
 const downloadDir = "./agencydevicefiles/"
 
-func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCode {
+func AddByFile(agencyId uint64, fileUrl string) conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 
 	// 先下载文件
@@ -135,10 +136,10 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 		}
 
 		// 处理设备类型
-		modelID, _ := handleDeviceModel(ctx, record[2])
+		modelID, _ := handleDeviceModel(record[2])
 
 		// 处理device
-		device, handleRet := handleDevice(ctx, record[0], agencyId, modelID)
+		device, handleRet := handleDevice(record[0], agencyId, modelID)
 		if handleRet != conf.Success {
 			return handleRet
 		}
@@ -149,7 +150,7 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 			continue
 		}
 
-		handleRet = handleTag(ctx, record[1], device, agencyId, &tagMap)
+		handleRet = handleTag(record[1], device, agencyId, &tagMap)
 		if handleRet != conf.Success {
 			return handleRet
 		}
@@ -158,7 +159,7 @@ func AddByFile(ctx *gin.Context, agencyId uint64, fileUrl string) conf.ResultCod
 	return conf.Success
 }
 
-func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
+func handleDeviceModel(deviceModel string) (uint64, error) {
 	//
 	model, err := tms.GetModelByName(deviceModel)
 	if err != nil {
@@ -180,7 +181,7 @@ func handleDeviceModel(ctx *gin.Context, deviceModel string) (uint64, error) {
 	return newModel.ID, nil
 }
 
-func handleDevice(ctx *gin.Context, deviceSn string, agencyId, modelID uint64) (*tms.DeviceInfo, conf.ResultCode) {
+func handleDevice(deviceSn string, agencyId, modelID uint64) (*tms.DeviceInfo, conf.ResultCode) {
 	logger := tlog.GetGoroutineLogger()
 
 	// 查询一下是否已经存在这个device id
@@ -226,7 +227,7 @@ func handleDevice(ctx *gin.Context, deviceSn string, agencyId, modelID uint64) (
 	return newDevice, conf.Success
 }
 
-func handleTag(ctx *gin.Context, tagsDest string, device *tms.DeviceInfo, agencyId uint64, tags *map[string]*tms.DeviceTag) conf.ResultCode {
+func handleTag(tagsDest string, device *tms.DeviceInfo, agencyId uint64, tags *map[string]*tms.DeviceTag) conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 
 	// 删除掉现有所有tag
