@@ -76,6 +76,17 @@ func StartUpdate(ctx *gin.Context, id uint64) {
 		logger.Info("search devices -->", len(devices))
 
 		for j := 0; j < len(devices); j++ { // 每一个设备
+			deviceInBatch, err := tms.DeviceInBatchDao.GetByBatchIDDeviceID(updateRecord.ID, devices[j].ID)
+			if err != nil {
+				updateRecord.Status = "fail"
+				updateRecord.UpdateFailMsg = "GetByBatchIDDeviceID DB error"
+				_ = models.UpdateBaseRecord(updateRecord)
+				return
+			}
+			if deviceInBatch != nil { // 已经设定过了，跳过
+				continue
+			}
+
 			logger.Info("device updating -->", devices[j].DeviceSn, ",", devices[j].ID)
 			for k := 0; k < len(apps); k++ { // 每一个app
 				ret := appindevice.SmartAddAppInDevice(ctx, devices[j], apps[k])
@@ -90,6 +101,16 @@ func StartUpdate(ctx *gin.Context, id uint64) {
 					_ = models.UpdateBaseRecord(updateRecord)
 					return
 				}
+			}
+
+			// 添加到更新列表里面
+			err = tms.DeviceInBatchDao.Create(&tms.DeviceInBatchUpdate{
+				BatchID:  updateRecord.ID,
+				DeviceID: devices[j].ID,
+				Status:   tms.BatchUpdateStatusPending,
+			})
+			if err != nil {
+				logger.Errorf("DeviceInBatchDao.Create fail: %s", err.Error())
 			}
 		}
 

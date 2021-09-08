@@ -77,37 +77,37 @@ func HearBeat(ctx *gin.Context) {
 
 	requestApps := bean.AppInfos
 	var retApps []*AppInfo
-	for i := 0; ; i++ {
-		logger.Info("查询一次记录->", i)
-		_, dbApps, err := tms.GetAppsInDevice(deviceInfo.ID,
-			tms.AppInDeviceExternalIdTypeDevice, uint64(i*PageLen), PageLen) // 最多查出200条记录
-		if err != nil {
-			logger.Error("GetAppsInDevice error->", err.Error())
-			modules.BaseError(ctx, conf.DBError)
-			return
-		}
-		logger.Info("最多查出1000条记录->", len(dbApps))
-
-		// 每次compare后，会返回requestApps变量，用来表示未在当前查询批次匹配到的记录，用于下次查询批次再次匹配
-		var returnTmp []*AppInfo
-		logger.Info("开始对比数据==============")
-		var errorCode conf.ResultCode
-		requestApps, returnTmp, errorCode = compareApps(ctx, requestApps, dbApps)
-		logger.Info("结束对比数据==============")
-		if errorCode != conf.Success {
-			modules.BaseError(ctx, errorCode)
-			return
-		}
-		for i := 0; i < len(returnTmp); i++ {
-			retApps = append(retApps, returnTmp[i])
-		}
-
-		// 数据已经遍历完毕
-		if len(dbApps) < PageLen {
-			logger.Info("数据库遍历完毕")
-			break
-		}
+	//for i := 0; ; i++ {
+	//	logger.Info("查询一次记录->", i)
+	_, dbApps, err := tms.GetAppsInDevice(deviceInfo.ID,
+		tms.AppInDeviceExternalIdTypeDevice, 0, PageLen) // 最多查出200条记录
+	if err != nil {
+		logger.Error("GetAppsInDevice error->", err.Error())
+		modules.BaseError(ctx, conf.DBError)
+		return
 	}
+	logger.Info("最多查出1000条记录->", len(dbApps))
+
+	// 每次compare后，会返回requestApps变量，用来表示未在当前查询批次匹配到的记录，用于下次查询批次再次匹配
+	var returnTmp []*AppInfo
+	logger.Info("开始对比数据==============")
+	var errorCode conf.ResultCode
+	requestApps, returnTmp, errorCode = compareApps(requestApps, dbApps)
+	logger.Info("结束对比数据==============")
+	if errorCode != conf.Success {
+		modules.BaseError(ctx, errorCode)
+		return
+	}
+	for i := 0; i < len(returnTmp); i++ {
+		retApps = append(retApps, returnTmp[i])
+	}
+
+	//	// 数据已经遍历完毕
+	//	if len(dbApps) < PageLen {
+	//		logger.Info("数据库遍历完毕")
+	//		break
+	//	}
+	//}
 
 	// 未遍历到的数据，需要添加进数据库
 	for i := 0; i < len(requestApps); i++ {
@@ -146,6 +146,11 @@ func HearBeat(ctx *gin.Context) {
 	}
 	ret.AppInfos = retApps
 
+	goroutine.Go(func() {
+		tlog.SetGoroutineLogger(logger) // 承接log对象
+		handleBatchUpdateStatus(deviceInfo, dbApps)
+	})
+
 	modules.BaseSuccess(ctx, ret)
 }
 
@@ -159,7 +164,7 @@ func HearBeat(ctx *gin.Context) {
 		3. 错误信息
 */
 // 返回数据：
-func compareApps(ctx *gin.Context, requestApps []*AppInfo, dbApps []*tms.AppInDevice) ([]*AppInfo, []*AppInfo, conf.ResultCode) {
+func compareApps(requestApps []*AppInfo, dbApps []*tms.AppInDevice) ([]*AppInfo, []*AppInfo, conf.ResultCode) {
 	logger := tlog.GetGoroutineLogger()
 
 	// 未匹配到的上送数据
@@ -434,4 +439,84 @@ func readDeviceModels() {
 			time.Sleep(time.Minute * 10) // 10分钟同步一次
 		}
 	})
+}
+
+// 处理批量升级状态
+func handleBatchUpdateStatus(deviceInfo *tms.DeviceInfo, dbApps []*tms.AppInDevice) {
+	log := tlog.GetGoroutineLogger()
+
+	batchRecords, err := tms.DeviceInBatchDao.GetUnCompletedBatchByDevice(deviceInfo.ID)
+	if err != nil {
+		return
+	}
+
+	dbAppsMap := make(map[string]*tms.AppInDevice)
+	for i := 0; i < len(dbApps); i++ {
+		packageID := ""
+		if dbApps[i].App == nil { // 如果数据库里面没有配置，则直接使用缓存的package id
+			if dbApps[i].PackageId == "" {
+				_ = models.DeleteBaseRecord(dbApps[i]) // 无用数据
+				continue
+			}
+			packageID = dbApps[i].PackageId
+		} else {
+			if dbApps[i].App.PackageId == "" {
+				_ = models.DeleteBaseRecord(dbApps[i]) // 无用数据
+				continue
+			}
+			packageID = dbApps[i].App.PackageId
+		}
+
+		if dbApps[i].Status == "" { // 无用数据
+			_ = models.DeleteBaseRecord(dbApps[i])
+			continue
+		}
+
+		// 当前app已经存在的情况，意味着有2个app，需要删除掉后面那个
+		if _, ok := dbAppsMap[packageID]; ok {
+			_ = models.DeleteBaseRecord(dbApps[i])
+		} else {
+			dbAppsMap[packageID] = dbApps[i]
+		}
+	}
+
+	for i := 0; i < len(batchRecords); i++ {
+		_, destRecords, err := tms.GetAppsInDevice(batchRecords[i].ID,
+			tms.AppInDeviceExternalIdTypeBatchUpdate, 0, 100)
+		if err != nil {
+			log.Errorf("GetAppsInDevice fail: %s", err.Error())
+			return
+		}
+		if len(destRecords) == 0 {
+			return
+		}
+
+		isNotCompleted := true
+		for j := 0; j < len(destRecords); j++ {
+			dbApp, ok := dbAppsMap[destRecords[j].PackageId]
+			switch destRecords[j].Status {
+			case conf.TmsStatusPendingInstall, conf.TmsStatusPendingUninstalled: // 下发当前配置数据
+				if !ok { // 如果已经消失了，那就说明卸载掉了，覆盖
+					continue
+				}
+				// 如果还在，而且状态已经不是等待卸载，说明被后面覆盖，也可以当成成功
+				if dbApp.Status != destRecords[j].Status {
+					continue
+				}
+				isNotCompleted = false
+			default:
+			}
+		}
+
+		if isNotCompleted { // 如果已经完成，则不需要处理
+			batchRecords[i].Status = tms.BatchUpdateStatusSuccess
+			err = tms.DeviceInBatchDao.UpdateStatus(batchRecords[i])
+			if err != nil {
+				log.Errorf("UpdateStatus fail: %s", err.Error())
+				return
+			}
+		}
+
+	}
+
 }

@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var BatchUpdateDao = &BatchUpdate{}
+
 type BatchUpdate struct {
 	models.BaseModel
 
@@ -159,6 +161,11 @@ func GetBatchUpdateDevices(ctx *gin.Context, batchUpdate *BatchUpdate, offset ui
 	return ret, nil
 }
 
+const (
+	BatchUpdateStatusPending = "pending"
+	BatchUpdateStatusSuccess = "success"
+)
+
 var DeviceInBatchDao = &DeviceInBatchUpdate{}
 
 type DeviceInBatchUpdate struct {
@@ -177,19 +184,62 @@ func (DeviceInBatchUpdate) TableName() string {
 	return "tms_device_batch_update"
 }
 
-func (d *DeviceInBatchUpdate) GetDevicesByBatch(batchID, offset uint64, limit uint64, filters map[string]string) ([]*DeviceInBatchUpdate, error) {
+func (d *DeviceInBatchUpdate) GetDevicesByBatch(batchID, offset, limit uint64) (uint64, []*DeviceInBatchUpdate, error) {
+	var ret []*DeviceInBatchUpdate
 
-	return nil, nil
+	tmpDb := models.DB.Model(&DeviceInBatchUpdate{}).
+		Where("batch_id=?", batchID)
+	// 统计总数
+	var total int64 = 0
+	err := tmpDb.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	err = tmpDb.Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	for i := 0; i < len(ret); i++ {
+		ret[i].DeviceInfo, err = DeviceInfoDao.GetByID(ret[i].DeviceID)
+		if err != nil {
+			return 0, nil, err
+		}
+	}
+
+	return uint64(total), ret, nil
 }
 
 func (d *DeviceInBatchUpdate) Create(data *DeviceInBatchUpdate) error {
-	return models.DB().Create(data).Error
+	return models.DB.Create(data).Error
 }
 
-func (d *DeviceInBatchUpdate) GetBatchByDevice(deviceID uint64) (*DeviceInBatchUpdate, error) {
-	return nil, nil
+func (d *DeviceInBatchUpdate) GetUnCompletedBatchByDevice(deviceID uint64) ([]*DeviceInBatchUpdate, error) {
+	var ret []*DeviceInBatchUpdate
+	err := models.DB.Model(&DeviceInBatchUpdate{}).
+		Where("device_id=? and status != ?", deviceID, BatchUpdateStatusSuccess).Find(&ret).Error
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
 }
 
 func (d *DeviceInBatchUpdate) UpdateStatus(data *DeviceInBatchUpdate) error {
-	return models.DB().Model(d).Select("status").Updates(data).Error
+	return models.DB.Model(d).Select("status").Updates(data).Error
+}
+
+func (d *DeviceInBatchUpdate) GetByBatchIDDeviceID(batchID, deviceID uint64) (*DeviceInBatchUpdate, error) {
+	ret := &DeviceInBatchUpdate{}
+	err := models.DB.Model(ret).
+		Where("batch_id=? AND device_id=?", batchID, deviceID).
+		First(ret).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return ret, nil
 }
