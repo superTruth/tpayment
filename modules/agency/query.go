@@ -1,7 +1,9 @@
 package agency
 
 import (
+	"fmt"
 	"tpayment/conf"
+	"tpayment/models/account"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -33,9 +35,41 @@ func QueryHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 获取agency的权限
+	agencyId, err := modules.GetAgencyId2(ctx)
+	if err != nil {
+		logger.Warn("GetAgencyId no permission->", err.Error())
+		modules.BaseError(ctx, conf.NoPermission)
+		return
+	}
+
+	role := ""
+	fmt.Println("agencyId: ", agencyId)
+	if agencyId != 0 {
+		var userBean *account.UserBean
+		userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
+		if ok {
+			userBean = userBeanTmp.(*account.UserBean)
+		} else {
+			return
+		}
+
+		roleBean, err := agency.UserAgencyAssociateDao.GetByAgencyUserID(agencyId, userBean.ID)
+		if err != nil {
+			logger.Errorf("GetByAgencyUserID sql error->", err.Error())
+			modules.BaseError(ctx, conf.DBError)
+			return
+		}
+		if roleBean.Role == "" {
+			roleBean.Role = string(conf.MerchantManager)
+		}
+		role = roleBean.Role
+	}
+
 	ret := &modules.BaseQueryResponse{
-		Total: total,
-		Data:  dataRet,
+		Total:      total,
+		Data:       dataRet,
+		AgencyRole: role,
 	}
 
 	modules.BaseSuccess(ctx, ret)

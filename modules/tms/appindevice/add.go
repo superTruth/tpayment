@@ -91,7 +91,6 @@ func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppI
 		logger.Info("app not change->", app.AppFileId)
 		return conf.Success
 	}
-
 	// app需要update的情况
 	bean.Status = app.Status
 	bean.AppFileId = app.AppFileId

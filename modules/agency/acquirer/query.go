@@ -22,7 +22,7 @@ func QueryHandle(ctx *gin.Context) {
 		return
 	}
 
-	// 管理员必须要传入agency id
+	// agency id
 	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
 		logger.Warn("GetAgencyId no permission->", err.Error())
@@ -36,7 +36,7 @@ func QueryHandle(ctx *gin.Context) {
 
 	total, dataRet, err := agency.QueryAcquirerRecord(agencyId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
-		logger.Info("QueryBaseRecord sql error->", err.Error())
+		logger.Errorf("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return
 	}

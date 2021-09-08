@@ -18,7 +18,7 @@ const (
 )
 
 const (
-	MerchantManager  UserRole = "pay_manage"
+	MerchantManager  UserRole = "manager"
 	MerchantEmployee UserRole = "employee"
 )
 

@@ -7,11 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
+var UserAgencyAssociateDao = &UserAgencyAssociate{}
+
 type UserAgencyAssociate struct {
 	models.BaseModel
 
 	AgencyId uint64 `gorm:"column:agency_id" json:"agency_id"`
 	UserId   uint64 `gorm:"column:user_id" json:"user_id"`
+	Role     string `json:"role" gorm:"column:role"`
 }
 
 func (UserAgencyAssociate) TableName() string {
@@ -76,4 +79,19 @@ func QueryUsersByAgencyId(agencyId, offset, limit uint64) (uint64, []*AssociateA
 	}
 
 	return uint64(total), ret, nil
+}
+
+func (*UserAgencyAssociate) GetByAgencyUserID(agencyID, userID uint64) (*UserAgencyAssociate, error) {
+	ret := &UserAgencyAssociate{}
+	err := models.DB.Model(ret).
+		Where("agency_id = ? AND user_id = ?", agencyID, userID).
+		First(ret).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return ret, nil
 }

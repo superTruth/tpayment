@@ -21,8 +21,9 @@ func TestAddAgencyAssociate(t *testing.T) {
 	}
 
 	reqBean := &agency.UserAgencyAssociate{
-		AgencyId: 5,
-		UserId:   8,
+		AgencyId: 10,
+		UserId:   121,
+		Role:     string(conf.MerchantEmployee),
 	}
 
 	reqByte, _ := json.Marshal(reqBean)

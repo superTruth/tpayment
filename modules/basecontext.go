@@ -53,4 +53,6 @@ type BaseQueryResponse struct {
 	Total uint64 `json:"total"`
 
 	Data interface{} `json:"data"`
+
+	AgencyRole string `json:"agency_role"`
 }
