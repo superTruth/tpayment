@@ -12,7 +12,7 @@ import (
 )
 
 func UpdateHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(agency.Agency)
 
@@ -24,7 +24,7 @@ func UpdateHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	merchantBean, err := agency.GetAgencyById(models.DB(), ctx, req.ID)
+	merchantBean, err := agency.GetAgencyById(req.ID)
 	if err != nil {
 		logger.Info("GetAgencyById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

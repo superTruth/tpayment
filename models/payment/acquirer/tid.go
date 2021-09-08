@@ -7,7 +7,7 @@ import (
 	"tpayment/models"
 	"tpayment/pkg/tlog"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var TerminalDao = &Terminal{
@@ -33,7 +33,7 @@ func (Terminal) TableName() string {
 // 获取
 func (t *Terminal) Get(id uint64) (*Terminal, error) {
 	ret := new(Terminal)
-	err := models.DB().Model(t).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(t).Where("id=?", id).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -47,7 +47,7 @@ func (t *Terminal) Get(id uint64) (*Terminal, error) {
 //
 func (t *Terminal) GetByTID(mid uint64, tid string) (*Terminal, error) {
 	ret := new(Terminal)
-	err := models.DB().Model(t).Where("merchant_account_id=? and device_id=?", mid, tid).First(ret).Error
+	err := models.DB.Model(t).Where("merchant_account_id=? and device_id=?", mid, tid).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -70,7 +70,7 @@ func (t *Terminal) GetOneAvailable(merchantAccountID uint64, deviceID string) (*
 	nowTimeStamp := time.Now().Unix()
 	// 先查找是否有绑定这台设备的TID
 	if deviceID != "" {
-		err = models.DB().Model(t).Where("merchant_account_id=? AND device_id=?",
+		err = models.DB.Model(t).Where("merchant_account_id=? AND device_id=?",
 			merchantAccountID, deviceID).First(ret).Error
 		if err != nil {
 			if gorm.ErrRecordNotFound != err {
@@ -88,7 +88,7 @@ func (t *Terminal) GetOneAvailable(merchantAccountID uint64, deviceID string) (*
 	}
 
 	// 分配一条公共TID给使用，公共TID是指device id数据为""
-	err = models.DB().Model(t).Where("merchant_account_id=? AND available_at<? AND (device_id='' OR device_id IS NULL)",
+	err = models.DB.Model(t).Where("merchant_account_id=? AND available_at<? AND (device_id='' OR device_id IS NULL)",
 		merchantAccountID, nowTimeStamp).Find(&freeTIDs).Error
 	if err != nil {
 		return nil, conf.DBError
@@ -113,7 +113,7 @@ func (t *Terminal) GetByMID(merchantAccountID uint64) ([]*Terminal, error) {
 		err  error
 	)
 
-	err = models.DB().Model(t).Where("merchant_account_id=?",
+	err = models.DB.Model(t).Where("merchant_account_id=?",
 		merchantAccountID).Find(&tids).Error
 	if err != nil {
 		return nil, err
@@ -124,14 +124,14 @@ func (t *Terminal) GetByMID(merchantAccountID uint64) ([]*Terminal, error) {
 
 // 查看一共有多少TID
 func (t *Terminal) GetTotal(merchantAccountID uint64) (int, error) {
-	ret := 0
-	err := models.DB().Model(t).Where("merchant_account_id=?",
+	ret := int64(0)
+	err := models.DB.Model(t).Where("merchant_account_id=?",
 		merchantAccountID).Count(&ret).Error
 	if err != nil {
 		return 0, err
 	}
 
-	return ret, nil
+	return int(ret), nil
 }
 
 // 锁定TID
@@ -143,11 +143,11 @@ func (t *Terminal) Lock(timeOut time.Duration) conf.ResultCode {
 	}
 
 	expTime := timeNow + int64(timeOut/time.Second)
-	db := models.DB().Model(t).
+	db := models.DB.Model(t).
 		Where("id=? AND available_at=?", t.ID, t.AvailableAt).
 		Update("available_at", expTime)
 
-	err := db.Error
+	err := models.DB.Error
 	if err != nil {
 		logger.Error("lock t fail(update)->", err.Error())
 		return conf.DBError
@@ -165,11 +165,11 @@ func (t *Terminal) Lock(timeOut time.Duration) conf.ResultCode {
 func (t *Terminal) UnLock() conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 
-	db := models.DB().Model(t).
+	db := models.DB.Model(t).
 		Where("id=? AND available_at=?", t.ID, t.AvailableAt).
 		Update("available_at", 0)
 
-	err := db.Error
+	err := models.DB.Error
 	if err != nil {
 		logger.Error("unlock t fail(update)->", err.Error())
 		return conf.DBError
@@ -189,7 +189,7 @@ func (t *Terminal) IncTraceNum() error {
 		t.TraceNum = 1
 	}
 
-	return models.DB().Model(t).Update(map[string]interface{}{"trace_num": t.TraceNum}).Error
+	return models.DB.Model(t).UpdateColumns(map[string]interface{}{"trace_num": t.TraceNum}).Error
 }
 
 func (t *Terminal) IncBatchNum() error {
@@ -198,5 +198,5 @@ func (t *Terminal) IncBatchNum() error {
 		t.BatchNum = 1
 	}
 
-	return models.DB().Model(t).Update(map[string]interface{}{"batch_num": t.BatchNum}).Error
+	return models.DB.Model(t).UpdateColumns(map[string]interface{}{"batch_num": t.BatchNum}).Error
 }

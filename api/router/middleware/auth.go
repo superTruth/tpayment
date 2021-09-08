@@ -3,7 +3,6 @@ package middleware
 import (
 	"strings"
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/modules/user"
@@ -13,7 +12,7 @@ import (
 )
 
 func AuthHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	if ctx.Request.RequestURI == conf.UrlAccountLogin ||
 		ctx.Request.RequestURI == conf.UrlAccountRegister ||
@@ -51,7 +50,7 @@ func AuthHandle(ctx *gin.Context) {
 
 	// 查看是否是机构管理员
 	if userBean.Role == string(conf.RoleUser) { // 机器人和系统管理员不需要验证
-		_, agencyBean, err := agency.QueryAgencyRecord(models.DB(), ctx, 0, 1000, nil)
+		_, agencyBean, err := agency.QueryAgencyRecord(ctx, 0, 1000, nil)
 		if err != nil {
 			logger.Error("QueryAgencyRecord db error->", err.Error())
 			modules.BaseError(ctx, conf.DBError)

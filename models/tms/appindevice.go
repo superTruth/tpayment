@@ -5,7 +5,7 @@ import (
 	"tpayment/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type AppInDevice struct {
@@ -36,7 +36,7 @@ const (
 	AppInDeviceExternalIdTypeBatchUpdate = "batch"
 )
 
-func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint64, externalIdType string, offset uint64, limit uint64) (uint64, []*AppInDevice, error) {
+func GetAppsInDevice(externalId uint64, externalIdType string, offset uint64, limit uint64) (uint64, []*AppInDevice, error) {
 	var ret []*AppInDevice
 
 	equalData := make(map[string]string)
@@ -44,43 +44,43 @@ func GetAppsInDevice(db *models.MyDB, ctx *gin.Context, externalId uint64, exter
 	equalData["external_id_type"] = externalIdType
 	sqlCondition := models.CombQueryCondition(equalData, make(map[string]string))
 
-	tmpDb := db.Model(&AppInDevice{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&AppInDevice{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
 	for i := 0; i < len(ret); i++ {
 		if ret[i].AppID != 0 {
-			ret[i].App, err = GetAppByID(db, ctx, ret[i].AppID)
+			ret[i].App, err = GetAppByID(ret[i].AppID)
 			if err != nil {
 				return 0, ret, err
 			}
 		}
 		if ret[i].AppFileId != 0 {
-			ret[i].AppFile, err = GetAppFileByID(db, ctx, ret[i].AppFileId)
+			ret[i].AppFile, err = GetAppFileByID(ret[i].AppFileId)
 			if err != nil {
 				return 0, ret, err
 			}
 		}
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
 // 根据device ID获取设备信息
-func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppInDevice, error) {
+func GetAppInDeviceByID(id uint64) (*AppInDevice, error) {
 
 	ret := new(AppInDevice)
 
-	err := db.Model(&AppInDevice{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&AppInDevice{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -94,9 +94,9 @@ func GetAppInDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppInDev
 
 // 1. 只有package id这种非法安装的app
 // 2. 包含app id这种配置安装的app
-func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint64, appInDevice *AppInDevice) (*AppInDevice, error) {
+func FindAppInDevice(ctx *gin.Context, deviceId uint64, appInDevice *AppInDevice) (*AppInDevice, error) {
 	ret := new(AppInDevice)
-	//err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
+	//err := models.DB.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((package_id=app.package_id) OR (app_id=app.id)) ",
 	//	appInDevice.ExternalId, AppInDeviceExternalIdTypeDevice).Joins("tms_app app ON app.id=? AND deleted_at is null", appInDevice.AppID).
 	//	First(ret).Error
 	//if err != nil {
@@ -106,7 +106,7 @@ func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint64, appInDe
 	//	return nil, err
 	//}
 
-	err := db.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((tms_app_in_device.package_id=app.package_id) OR (tms_app_in_device.app_id=app.id)) ",
+	err := models.DB.Model(&AppInDevice{}).Where("external_id=? AND external_id_type=? AND ((tms_app_in_device.package_id=app.package_id) OR (tms_app_in_device.app_id=app.id)) ",
 		deviceId, AppInDeviceExternalIdTypeDevice).
 		Joins("JOIN tms_app app ON app.id=? AND app.deleted_at is null", appInDevice.AppID).
 		First(ret).Error
@@ -118,13 +118,13 @@ func FindAppInDevice(db *models.MyDB, ctx *gin.Context, deviceId uint64, appInDe
 	}
 
 	if ret.AppID != 0 {
-		ret.App, err = GetAppByID(db, ctx, ret.AppID)
+		ret.App, err = GetAppByID(ret.AppID)
 		if err != nil {
 			return ret, err
 		}
 	}
 	if ret.AppFileId != 0 {
-		ret.AppFile, err = GetAppFileByID(db, ctx, ret.AppFileId)
+		ret.AppFile, err = GetAppFileByID(ret.AppFileId)
 		if err != nil {
 			return ret, err
 		}

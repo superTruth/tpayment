@@ -5,8 +5,7 @@ import (
 	"tpayment/models"
 	"tpayment/models/account"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var UserMerchantAssociateDao = &UserMerchantAssociate{}
@@ -23,10 +22,10 @@ func (UserMerchantAssociate) TableName() string {
 	return "merchant_user_associate"
 }
 
-func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint64) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateById(id uint64) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
-	err := db.Model(&UserMerchantAssociate{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&UserMerchantAssociate{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -38,10 +37,10 @@ func GetUserMerchantAssociateById(db *models.MyDB, ctx *gin.Context, id uint64) 
 	return ret, nil
 }
 
-func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Context, merchantId, userId uint64) (*UserMerchantAssociate, error) {
+func GetUserMerchantAssociateByMerchantIdAndUserId(merchantId, userId uint64) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
-	err := db.Model(&UserMerchantAssociate{}).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
+	err := models.DB.Model(&UserMerchantAssociate{}).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -56,7 +55,7 @@ func GetUserMerchantAssociateByMerchantIdAndUserId(db *models.MyDB, ctx *gin.Con
 func (u *UserMerchantAssociate) GetByMerchantIdAndUserId(merchantId, userId uint64) (*UserMerchantAssociate, error) {
 	ret := new(UserMerchantAssociate)
 
-	err := models.DB().Model(ret).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
+	err := models.DB.Model(ret).Where("merchant_id=? AND user_id=?", merchantId, userId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -76,26 +75,26 @@ type AssociateMerchantUserBean struct {
 	Role  string `json:"role"`
 }
 
-func QueryUsersByMerchantId(db *models.MyDB, ctx *gin.Context, merchantId, offset, limit uint64, filters map[string]string) (uint64, []*AssociateMerchantUserBean, error) {
+func QueryUsersByMerchantId(merchantId, offset, limit uint64, filters map[string]string) (uint64, []*AssociateMerchantUserBean, error) {
 	equalData := make(map[string]string)
 	equalData["merchant_id"] = strconv.FormatUint(uint64(merchantId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Table(account.UserBean{}.TableName()).Model(&account.UserBean{}).Where(sqlCondition).Order("id desc")
+	tmpDb := models.DB.Table(account.UserBean{}.TableName()).Model(&account.UserBean{}).Where(sqlCondition).Order("id desc")
 	tmpDb = tmpDb.Joins("JOIN merchant_user_associate ass ON ass.merchant_id = ? AND ass.user_id = user.id AND ass.deleted_at IS NULL", merchantId)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*AssociateMerchantUserBean
-	if err = tmpDb.Offset(offset).Limit(limit).Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, user.name as name, user.email as email, ass.role as role").Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Offset(int(offset)).Limit(int(limit)).Select("ass.id as id, ass.created_at as created_at, ass.updated_at as updated_at, user.name as name, user.email as email, ass.role as role").Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }

@@ -8,7 +8,7 @@ import (
 	"tpayment/modules"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var DeviceInfoDao = &DeviceInfo{}
@@ -51,11 +51,11 @@ func GenerateDeviceInfo() *DeviceInfo {
 }
 
 // 根据Device SN 获取设备信息
-func GetDeviceBySn(db *models.MyDB, ctx *gin.Context, deviceSn string) (*DeviceInfo, error) {
+func GetDeviceBySn(deviceSn string) (*DeviceInfo, error) {
 
 	deviceInfo := new(DeviceInfo)
 
-	err := db.Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
+	err := models.DB.Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -70,7 +70,7 @@ func GetDeviceBySn(db *models.MyDB, ctx *gin.Context, deviceSn string) (*DeviceI
 func (d *DeviceInfo) GetBySn(deviceSn string) (*DeviceInfo, error) {
 	deviceInfo := new(DeviceInfo)
 
-	err := models.DB().Model(d).Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
+	err := models.DB.Model(d).Where(&DeviceInfo{DeviceSn: deviceSn}).First(&deviceInfo).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -85,7 +85,7 @@ func (d *DeviceInfo) GetBySn(deviceSn string) (*DeviceInfo, error) {
 func (d *DeviceInfo) GetByAgencySn(agencyID uint64, deviceSn string) (*DeviceInfo, error) {
 	deviceInfo := new(DeviceInfo)
 
-	err := models.DB().Model(d).Where(&DeviceInfo{
+	err := models.DB.Model(d).Where(&DeviceInfo{
 		AgencyId: agencyID,
 		DeviceSn: deviceSn}).First(&deviceInfo).Error
 	if err != nil {
@@ -100,11 +100,11 @@ func (d *DeviceInfo) GetByAgencySn(agencyID uint64, deviceSn string) (*DeviceInf
 }
 
 // 根据device ID获取设备信息
-func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInfo, error) {
+func GetDeviceByID(id uint64) (*DeviceInfo, error) {
 
 	ret := new(DeviceInfo)
 
-	err := db.Model(&DeviceInfo{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&DeviceInfo{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -116,8 +116,8 @@ func GetDeviceByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceInfo, e
 	return ret, nil
 }
 
-func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint64) error {
-	err := db.Model(&DeviceInfo{}).Where("id=?", id).Update("agency_id", 0).Error
+func ResetDeviceAgency(id uint64) error {
+	err := models.DB.Model(&DeviceInfo{}).Where("id=?", id).Update("agency_id", 0).Error
 
 	if err != nil {
 		return err
@@ -126,30 +126,30 @@ func ResetDeviceAgency(db *models.MyDB, ctx *gin.Context, id uint64) error {
 	return nil
 }
 
-func QueryDeviceRecordByAgencyId(db *models.MyDB, ctx *gin.Context, agencyId, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
+func QueryDeviceRecordByAgencyId(agencyId, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
 	equalData := make(map[string]string)
 	equalData["agency_id"] = strconv.FormatUint(uint64(agencyId), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&DeviceInfo{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*DeviceInfo
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
-func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
+func QueryDeviceRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceInfo, error) {
 
 	agency := modules.IsAgencyAdmin(ctx)
 
@@ -160,24 +160,24 @@ func QueryDeviceRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, 
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&DeviceInfo{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&DeviceInfo{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*DeviceInfo
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
-func QueryTagsInDevice(db *models.MyDB, ctx *gin.Context, device *DeviceInfo) ([]*DeviceTagFull, error) {
+func QueryTagsInDevice(ctx *gin.Context, device *DeviceInfo) ([]*DeviceTagFull, error) {
 	var ret []*DeviceTagFull
 	filterTmp := make(map[string]interface{})
 	if modules.IsAdmin(ctx) == nil {
@@ -188,7 +188,7 @@ func QueryTagsInDevice(db *models.MyDB, ctx *gin.Context, device *DeviceInfo) ([
 		filterTmp["agency_id"] = agency.ID
 	}
 
-	err := db.Table(DeviceTag{}.TableName()).Model(&DeviceTag{}).Joins("JOIN tms_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=tms_tags.id and mid.deleted_at is null", device.ID).
+	err := models.DB.Table(DeviceTag{}.TableName()).Model(&DeviceTag{}).Joins("JOIN tms_device_and_tag_mid mid ON mid.device_id=? AND mid.tag_id=tms_tags.id and mid.deleted_at is null", device.ID).
 		Where(filterTmp).Order("id desc").
 		Select("tms_tags.id as id, tms_tags.agency_id as agency_id, tms_tags.name as name, tms_tags.created_at as created_at, tms_tags.updated_at as updated_at, mid.id as mid_id").
 		Find(&ret).Error
@@ -222,7 +222,7 @@ func (DeviceAndTagMid) TableName() string {
 func (d *DeviceAndTagMid) Get(deviceID, tagID uint64) (*DeviceAndTagMid, error) {
 	ret := new(DeviceAndTagMid)
 
-	err := models.DB().Model(d).Where("device_id=? AND tag_id=?", deviceID, tagID).First(&ret).Error
+	err := models.DB.Model(d).Where("device_id=? AND tag_id=?", deviceID, tagID).First(&ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -235,9 +235,9 @@ func (d *DeviceAndTagMid) Get(deviceID, tagID uint64) (*DeviceAndTagMid, error) 
 }
 
 func (d *DeviceAndTagMid) Create(mid *DeviceAndTagMid) error {
-	return models.DB().Create(mid).Error
+	return models.DB.Create(mid).Error
 }
 
 func (d *DeviceAndTagMid) DeleteAllTags(deviceID uint64) error {
-	return models.DB().Model(d).Delete(d, "device_id = ?", deviceID).Error
+	return models.DB.Model(d).Delete(d, "device_id = ?", deviceID).Error
 }

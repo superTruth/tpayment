@@ -11,11 +11,11 @@ import (
 )
 
 func LogoutHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	token := ctx.Request.Header[conf.HeaderTagToken][0]
 
-	tokenBean, err := account.GetTokenBeanByToken(models.DB(), ctx, token)
+	tokenBean, err := account.GetTokenBeanByToken(token)
 
 	if err != nil {
 		logger.Error("GetTokenBeanByToken sql error->", err.Error())

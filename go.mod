@@ -8,15 +8,16 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
-	github.com/golang/protobuf v1.4.1
 	github.com/google/uuid v1.1.2
-	github.com/jinzhu/gorm v1.9.12
 	github.com/shopspring/decimal v1.2.0
+	github.com/xuri/excelize/v2 v2.4.1
 	github.com/zhulingbiezhi/pkcs7 v0.0.0-20171102021638-a793d8b5348d
-	go.uber.org/zap v1.14.1
+	go.uber.org/zap v1.16.0
 	google.golang.org/grpc v1.33.2
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
+	gorm.io/driver/mysql v1.0.4
+	gorm.io/gorm v1.20.12
 )
 
 require (
@@ -25,7 +26,9 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.2.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
+	github.com/golang/protobuf v1.4.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.3.0 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/klauspost/compress v1.11.0 // indirect
@@ -38,7 +41,6 @@ require (
 	github.com/richardlehane/msoleps v1.0.1 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 // indirect
-	github.com/xuri/excelize/v2 v2.4.1 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect

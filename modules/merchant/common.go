@@ -3,7 +3,6 @@ package merchant
 import (
 	"errors"
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/models/merchant"
 	"tpayment/modules"
@@ -13,7 +12,7 @@ import (
 
 func CheckPermission(ctx *gin.Context, merchantId uint64, needMerchantManager bool) error {
 	// 1. 是否存在这2个账号
-	merchantBean, err := merchant.GetMerchantById(models.DB(), ctx, merchantId)
+	merchantBean, err := merchant.GetMerchantById(merchantId)
 	if err != nil {
 		return err
 	}
@@ -40,8 +39,7 @@ func CheckPermission(ctx *gin.Context, merchantId uint64, needMerchantManager bo
 	}
 
 	// 当前账号是否是此merchant下面关联的管理账号
-	associateBean, err := merchant.GetUserMerchantAssociateByMerchantIdAndUserId(models.DB(), ctx,
-		merchantId, userBean.ID)
+	associateBean, err := merchant.GetUserMerchantAssociateByMerchantIdAndUserId(merchantId, userBean.ID)
 	if err != nil {
 		return err
 	}

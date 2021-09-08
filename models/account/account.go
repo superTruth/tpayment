@@ -6,9 +6,7 @@ import (
 	"time"
 	"tpayment/models"
 
-	"github.com/gin-gonic/gin"
-
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var UserBeanDao = &UserBean{}
@@ -29,10 +27,10 @@ func (UserBean) TableName() string {
 }
 
 // 通过email查询
-func GetUserByEmail(db *models.MyDB, ctx *gin.Context, email string) (*UserBean, error) {
+func GetUserByEmail(email string) (*UserBean, error) {
 	ret := new(UserBean)
 
-	err := db.Model(&UserBean{}).Where("email=?", email).First(ret).Error
+	err := models.DB.Model(&UserBean{}).Where("email=?", email).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -44,10 +42,10 @@ func GetUserByEmail(db *models.MyDB, ctx *gin.Context, email string) (*UserBean,
 	return ret, nil
 }
 
-func GetUserById(db *models.MyDB, ctx *gin.Context, id uint64) (*UserBean, error) {
+func GetUserById(id uint64) (*UserBean, error) {
 	ret := new(UserBean)
 
-	err := db.Model(&UserBean{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&UserBean{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -59,7 +57,7 @@ func GetUserById(db *models.MyDB, ctx *gin.Context, id uint64) (*UserBean, error
 	return ret, nil
 }
 
-func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId uint64, filters map[string]string) (uint64, []*UserBean, error) {
+func QueryUserRecord(offset, limit, agencyId uint64, filters map[string]string) (uint64, []*UserBean, error) {
 	var ret []*UserBean
 
 	equalData := make(map[string]string)
@@ -68,17 +66,17 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 	}
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	tmpDB := db.Model(&UserBean{}).Where(sqlCondition)
+	tmpDB := models.DB.Model(&UserBean{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	// 查询记录
-	err = tmpDB.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -91,18 +89,18 @@ func QueryUserRecord(db *models.MyDB, ctx *gin.Context, offset, limit, agencyId 
 		ret[i].Pwd = ""
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
-func DeleteUser(db *models.MyDB, ctx *gin.Context, user *UserBean) error {
+func DeleteUser(user *UserBean) error {
 	// 只是增加一下后缀，不实际删除
 	data := time.Now().Unix()
 	user.Email = user.Email + "-" + strconv.FormatInt(data, 10)
-	return db.Model(user).Select("email").Updates(user).Error
+	return models.DB.Model(user).Select("email").Updates(user).Error
 }
 
 func (u *UserBean) UpdatePwd() error {
-	tmpDB := models.DB().Model(u).Select("pwd").Updates(u)
+	tmpDB := models.DB.Model(u).Select("pwd").Updates(u)
 	err := tmpDB.Error
 	if err != nil {
 		return err
@@ -116,7 +114,7 @@ func (u *UserBean) UpdatePwd() error {
 func (u *UserBean) GetByEmail(agencyID uint64, email string) (*UserBean, error) {
 	ret := new(UserBean)
 
-	err := models.DB().Model(ret).Where("email=? and agency_id=?", email, agencyID).First(ret).Error
+	err := models.DB.Model(ret).Where("email=? and agency_id=?", email, agencyID).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -140,10 +138,10 @@ func (AppIdBean) TableName() string {
 }
 
 // 查询AppID
-func GetAppIdByAppID(db *models.MyDB, ctx *gin.Context, appId string) (*AppIdBean, error) {
+func GetAppIdByAppID(appId string) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
-	err := db.Model(&AppIdBean{}).Where("app_id=?", appId).First(ret).Error
+	err := models.DB.Model(&AppIdBean{}).Where("app_id=?", appId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -155,10 +153,10 @@ func GetAppIdByAppID(db *models.MyDB, ctx *gin.Context, appId string) (*AppIdBea
 	return ret, nil
 }
 
-func GetAppIdByID(db *models.MyDB, ctx *gin.Context, id uint64) (*AppIdBean, error) {
+func GetAppIdByID(id uint64) (*AppIdBean, error) {
 	ret := new(AppIdBean)
 
-	err := db.Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&AppIdBean{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -184,10 +182,10 @@ func (TokenBean) TableName() string {
 	return "user_token"
 }
 
-func GetTokenByUserId(db *models.MyDB, ctx *gin.Context, userId, appId uint64) (*TokenBean, error) {
+func GetTokenByUserId(userId, appId uint64) (*TokenBean, error) {
 	ret := new(TokenBean)
 
-	err := db.Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
+	err := models.DB.Model(&TokenBean{}).Where("user_id=? AND app_id=?", userId, appId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -199,10 +197,10 @@ func GetTokenByUserId(db *models.MyDB, ctx *gin.Context, userId, appId uint64) (
 	return ret, nil
 }
 
-func GetTokenBeanByToken(db *models.MyDB, ctx *gin.Context, token string) (*TokenBean, error) {
+func GetTokenBeanByToken(token string) (*TokenBean, error) {
 	ret := new(TokenBean)
 
-	err := db.Model(&TokenBean{}).Where("token=?", token).First(ret).Error
+	err := models.DB.Model(&TokenBean{}).Where("token=?", token).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -217,7 +215,7 @@ func GetTokenBeanByToken(db *models.MyDB, ctx *gin.Context, token string) (*Toke
 func (t *TokenBean) IsUserLogined(userId uint64) (bool, error) {
 	ret := new(TokenBean)
 
-	err := models.DB().Model(t).Where("user_id=?", userId).First(ret).Error
+	err := models.DB.Model(t).Where("user_id=?", userId).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

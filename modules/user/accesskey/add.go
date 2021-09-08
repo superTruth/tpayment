@@ -16,7 +16,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	var userBean *account.UserBean
 	userBeanTmp, ok := ctx.Get(conf.ContextTagUser)

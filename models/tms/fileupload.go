@@ -6,7 +6,7 @@ import (
 	"tpayment/modules"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type UploadFile struct {
@@ -23,11 +23,11 @@ func (UploadFile) TableName() string {
 }
 
 // 根据device ID获取设备信息
-func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*UploadFile, error) {
+func GetUploadFileByID(id uint64) (*UploadFile, error) {
 
 	ret := new(UploadFile)
 
-	err := db.Model(&UploadFile{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&UploadFile{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -39,7 +39,7 @@ func GetUploadFileByID(db *models.MyDB, ctx *gin.Context, id uint64) (*UploadFil
 	return ret, nil
 }
 
-func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UploadFile, error) {
+func QueryUploadFileRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UploadFile, error) {
 	agency := modules.IsAgencyAdmin(ctx)
 
 	equalData := make(map[string]string)
@@ -49,19 +49,19 @@ func QueryUploadFileRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&UploadFile{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&UploadFile{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*UploadFile
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }

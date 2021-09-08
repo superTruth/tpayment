@@ -2,7 +2,6 @@ package merchant
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/merchant"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func InAgencyQueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -34,7 +33,7 @@ func InAgencyQueryHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := merchant.QueryMerchantInAgency(models.DB(), ctx, agencyId, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := merchant.QueryMerchantInAgency(agencyId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryBaseRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

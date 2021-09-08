@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/pkg/algorithmutils"
 	"tpayment/pkg/tlog"
@@ -28,10 +27,10 @@ func Auth(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, error) {
 
 // token验证
 func AuthByToken(ctx *gin.Context, token string) (*account.UserBean, *account.AppIdBean, error) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 创建 或者 更新  token记录
-	tokenBean, err := account.GetTokenBeanByToken(models.DB(), ctx, token)
+	tokenBean, err := account.GetTokenBeanByToken(token)
 	if err != nil {
 		logger.Warn("GetTokenBeanByToken fail->", err.Error())
 		return nil, nil, err
@@ -42,7 +41,7 @@ func AuthByToken(ctx *gin.Context, token string) (*account.UserBean, *account.Ap
 	}
 
 	//
-	accountBean, err := account.GetUserById(models.DB(), ctx, tokenBean.UserId)
+	accountBean, err := account.GetUserById(tokenBean.UserId)
 	if err != nil {
 		logger.Warn("GetUserById fail->", err.Error())
 		return nil, nil, err
@@ -59,7 +58,7 @@ func AuthByToken(ctx *gin.Context, token string) (*account.UserBean, *account.Ap
 
 // accessKey验证
 func AuthByAccessKey(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, error) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 	keys := ctx.Request.Header[conf.HeaderTagAccessKey]
 	if len(keys) == 0 {
 		return nil, nil, nil
@@ -71,7 +70,7 @@ func AuthByAccessKey(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, e
 	}
 
 	// 获取相关access
-	accessBean, err := account.GetUserAccessKeyFromKey(models.DB(), ctx, keys[0])
+	accessBean, err := account.GetUserAccessKeyFromKey(keys[0])
 	if err != nil {
 		return nil, nil, err
 	}
@@ -94,7 +93,7 @@ func AuthByAccessKey(ctx *gin.Context) (*account.UserBean, *account.AppIdBean, e
 	}
 
 	// 获取真正的账号数据
-	userBean, err := account.GetUserById(models.DB(), ctx, accessBean.UserId)
+	userBean, err := account.GetUserById(accessBean.UserId)
 	if err != nil {
 		logger.Error("account.GetUserById->", err.Error())
 		return nil, nil, err

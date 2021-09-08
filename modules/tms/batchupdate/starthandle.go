@@ -15,7 +15,7 @@ import (
 )
 
 func StartHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -30,15 +30,16 @@ func StartHandle(ctx *gin.Context) {
 
 	// 异步解析
 	goroutine.Go(func() {
+		tlog.SetGoroutineLogger(logger) // 切换协程，承接log
 		StartUpdate(ctx, req.ID)
-	}, ctx)
+	})
 }
 
 func StartUpdate(ctx *gin.Context, id uint64) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	// 获取批次记录
-	updateRecord, err := tms.GetBatchUpdateRecordById(models.DB(), ctx, id)
+	updateRecord, err := tms.GetBatchUpdateRecordById(id)
 	if err != nil {
 		logger.Error("GetBatchUpdateRecordById error->", err.Error())
 		return
@@ -47,7 +48,7 @@ func StartUpdate(ctx *gin.Context, id uint64) {
 	logger.Info("start batch update->", updateRecord.ID)
 
 	// 获取批次的升级app
-	_, apps, err := tms.GetAppsInDevice(models.DB(), ctx, updateRecord.ID,
+	_, apps, err := tms.GetAppsInDevice(updateRecord.ID,
 		tms.AppInDeviceExternalIdTypeBatchUpdate, 0, 1000)
 	if err != nil {
 		logger.Error("GetAppsInDevice error->", err.Error())
@@ -62,7 +63,7 @@ func StartUpdate(ctx *gin.Context, id uint64) {
 	// 获取匹配的设备
 	const OnePageSize = 1000
 	for i := 0; ; i++ {
-		devices, err := tms.GetBatchUpdateDevices(models.DB(), ctx, updateRecord, uint64(i*OnePageSize), uint64((i+1)*OnePageSize))
+		devices, err := tms.GetBatchUpdateDevices(ctx, updateRecord, uint64(i*OnePageSize), uint64((i+1)*OnePageSize))
 		if err != nil {
 			logger.Error("GetBatchUpdateDevices error->", err.Error())
 

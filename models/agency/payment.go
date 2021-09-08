@@ -3,8 +3,7 @@ package agency
 import (
 	"tpayment/models"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type PaymentMethod struct {
@@ -37,9 +36,9 @@ func (EntryType) TableName() string {
 	return "agency_entry_type"
 }
 
-func GetPaymentMethods(db *models.MyDB, ctx *gin.Context) ([]string, error) {
+func GetPaymentMethods() ([]string, error) {
 	var ret []PaymentMethod
-	err := db.Model(&PaymentMethod{}).Find(&ret).Error
+	err := models.DB.Model(&PaymentMethod{}).Find(&ret).Error
 
 	var retStr []string
 
@@ -57,9 +56,9 @@ func GetPaymentMethods(db *models.MyDB, ctx *gin.Context) ([]string, error) {
 	return retStr, nil
 }
 
-func GetPaymentTypes(db *models.MyDB, ctx *gin.Context) ([]string, error) {
+func GetPaymentTypes() ([]string, error) {
 	var ret []PaymentType
-	err := db.Model(&PaymentType{}).Find(&ret).Error
+	err := models.DB.Model(&PaymentType{}).Find(&ret).Error
 
 	var retStr []string
 
@@ -77,9 +76,9 @@ func GetPaymentTypes(db *models.MyDB, ctx *gin.Context) ([]string, error) {
 	return retStr, nil
 }
 
-func GetEntryTypes(db *models.MyDB, ctx *gin.Context) ([]string, error) {
+func GetEntryTypes() ([]string, error) {
 	var ret []EntryType
-	err := db.Model(&EntryType{}).Find(&ret).Error
+	err := models.DB.Model(&EntryType{}).Find(&ret).Error
 
 	var retStr []string
 

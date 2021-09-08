@@ -17,7 +17,7 @@ import (
 )
 
 func AddHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(tms.AppFile)
 
@@ -41,7 +41,7 @@ func AddHandle(ctx *gin.Context) {
 		return
 	}
 
-	bean, err := tms.GetAppByID(models.DB(), ctx, req.AppId)
+	bean, err := tms.GetAppByID(req.AppId)
 	if err != nil {
 		logger.Error("GetAppByID sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -75,16 +75,17 @@ func AddHandle(ctx *gin.Context) {
 
 	// 异步解析
 	goroutine.Go(func() {
-		StartDecode(ctx, req.ID)
-	}, ctx)
+		tlog.SetGoroutineLogger(logger) // 切换协程，承接log
+		StartDecode(req.ID)
+	})
 }
 
-func StartDecode(ctx *gin.Context, id uint64) {
-	logger := tlog.GetLogger(ctx)
+func StartDecode(id uint64) {
+	logger := tlog.GetGoroutineLogger()
 
 	logger.Info("start decode app file->", id)
 
-	appFile, err := tms.GetAppFileByID(models.DB(), ctx, id)
+	appFile, err := tms.GetAppFileByID(id)
 	if err != nil {
 		logger.Error("GetAppFileByID sql error->", err.Error())
 		return
@@ -96,7 +97,7 @@ func StartDecode(ctx *gin.Context, id uint64) {
 	}
 
 	// 获取文件所属的app，用来判断解析后的apk文件package id和app设定package id是相同的防止错误
-	app, err := tms.GetAppByID(models.DB(), ctx, appFile.AppId)
+	app, err := tms.GetAppByID(appFile.AppId)
 	if err != nil {
 		appFile.Status = conf.AppFileStatusFail
 		appFile.DecodeFailMsg = "Can't get parent app"

@@ -16,7 +16,7 @@ func NewRecovery(c *gin.Context) {
 }
 
 func newRecovery(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	err := recover()
 	if err == nil {

@@ -2,7 +2,6 @@ package user
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func DeleteHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseIDRequest)
 
@@ -24,7 +23,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserById(models.DB(), ctx, req.ID)
+	user, err := account.GetUserById(req.ID)
 	if err != nil {
 		logger.Info("GetUserById sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -37,7 +36,7 @@ func DeleteHandle(ctx *gin.Context) {
 	}
 
 	//err = models.DeleteBaseRecord(user)
-	err = account.DeleteUser(models.DB(), ctx, user)
+	err = account.DeleteUser(user)
 
 	if err != nil {
 		logger.Info("DeleteBaseRecord sql error->", err.Error())

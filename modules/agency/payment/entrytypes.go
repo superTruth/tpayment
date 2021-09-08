@@ -2,7 +2,6 @@ package payment
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/agency"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -11,9 +10,9 @@ import (
 )
 
 func QueryEntryTypesHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
-	paymentTypes, err := agency.GetEntryTypes(models.DB(), ctx)
+	paymentTypes, err := agency.GetEntryTypes()
 	if err != nil {
 		logger.Info("GetEntryTypes sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

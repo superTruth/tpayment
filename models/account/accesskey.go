@@ -7,7 +7,7 @@ import (
 	"tpayment/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type UserAccessKeyBean struct {
@@ -22,10 +22,10 @@ func (UserAccessKeyBean) TableName() string {
 	return "user_access_key"
 }
 
-func GetUserAccessKeyFromID(db *models.MyDB, ctx *gin.Context, id uint64) (*UserAccessKeyBean, error) {
+func GetUserAccessKeyFromID(id uint64) (*UserAccessKeyBean, error) {
 	ret := new(UserAccessKeyBean)
 
-	err := db.Model(&UserAccessKeyBean{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&UserAccessKeyBean{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -37,10 +37,10 @@ func GetUserAccessKeyFromID(db *models.MyDB, ctx *gin.Context, id uint64) (*User
 	return ret, nil
 }
 
-func GetUserAccessKeyFromKey(db *models.MyDB, ctx *gin.Context, key string) (*UserAccessKeyBean, error) {
+func GetUserAccessKeyFromKey(key string) (*UserAccessKeyBean, error) {
 	ret := new(UserAccessKeyBean)
 
-	err := db.Model(&UserAccessKeyBean{}).Where("key=?", key).First(ret).Error
+	err := models.DB.Model(&UserAccessKeyBean{}).Where("key=?", key).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -52,7 +52,7 @@ func GetUserAccessKeyFromKey(db *models.MyDB, ctx *gin.Context, key string) (*Us
 	return ret, nil
 }
 
-func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UserAccessKeyBean, error) {
+func QueryAccessKeysRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*UserAccessKeyBean, error) {
 	var ret []*UserAccessKeyBean
 
 	equalData := make(map[string]string)
@@ -68,17 +68,17 @@ func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 	equalData["user_id"] = strconv.FormatUint(uint64(userBean.ID), 10)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
-	tmpDB := db.Model(&UserAccessKeyBean{}).Where(sqlCondition)
+	tmpDB := models.DB.Model(&UserAccessKeyBean{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDB.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	// 查询记录
-	err = tmpDB.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = tmpDB.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -91,5 +91,5 @@ func QueryAccessKeysRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint
 		ret[i].Secret = ""
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }

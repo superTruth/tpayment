@@ -2,7 +2,6 @@ package accesskey
 
 import (
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/account"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -12,7 +11,7 @@ import (
 )
 
 func QueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -27,7 +26,7 @@ func QueryHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := account.QueryAccessKeysRecord(models.DB(), ctx, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := account.QueryAccessKeysRecord(ctx, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryAccessKeysRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

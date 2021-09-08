@@ -3,8 +3,7 @@ package tms
 import (
 	"tpayment/models"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // merchantdevice model
@@ -20,7 +19,7 @@ func (DeviceModel) TableName() string {
 func GetModels() ([]DeviceModel, error) {
 	var deviceModels []DeviceModel
 
-	if err := models.DB().Model(&DeviceModel{}).Find(&deviceModels).Error; err != nil {
+	if err := models.DB.Model(&DeviceModel{}).Find(&deviceModels).Error; err != nil {
 		if gorm.ErrRecordNotFound == err {
 			return deviceModels, nil
 		}
@@ -31,10 +30,10 @@ func GetModels() ([]DeviceModel, error) {
 }
 
 // 根据Model 获取设备信息
-func GetModelByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceModel, error) {
+func GetModelByID(id uint64) (*DeviceModel, error) {
 	ret := new(DeviceModel)
 
-	err := db.Model(&DeviceModel{}).Where("id=?", id).First(ret).Error
+	err := models.DB.Model(&DeviceModel{}).Where("id=?", id).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
@@ -46,10 +45,10 @@ func GetModelByID(db *models.MyDB, ctx *gin.Context, id uint64) (*DeviceModel, e
 	return ret, nil
 }
 
-func GetModelByIDs(db *models.MyDB, ctx *gin.Context, ids *models.IntArray) ([]*DeviceModel, error) {
+func GetModelByIDs(ids *models.IntArray) ([]*DeviceModel, error) {
 	var ret []*DeviceModel
 
-	err := db.Model(&DeviceModel{}).Where("id IN (?)", ids.Change2UintArray()).Find(&ret).Error
+	err := models.DB.Model(&DeviceModel{}).Where("id IN (?)", ids.Change2UintArray()).Find(&ret).Error
 
 	if err != nil {
 		return nil, err
@@ -58,32 +57,32 @@ func GetModelByIDs(db *models.MyDB, ctx *gin.Context, ids *models.IntArray) ([]*
 	return ret, nil
 }
 
-func QueryModelRecord(db *models.MyDB, ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceModel, error) {
+func QueryModelRecord(offset, limit uint64, filters map[string]string) (uint64, []*DeviceModel, error) {
 	equalData := make(map[string]string)
 	sqlCondition := models.CombQueryCondition(equalData, filters)
 
 	// conditions
-	tmpDb := db.Model(&DeviceModel{}).Where(sqlCondition)
+	tmpDb := models.DB.Model(&DeviceModel{}).Where(sqlCondition)
 
 	// 统计总数
-	var total uint64 = 0
+	var total int64 = 0
 	err := tmpDb.Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
 	var ret []*DeviceModel
-	if err = tmpDb.Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error; err != nil {
-		return total, ret, err
+	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error; err != nil {
+		return uint64(total), ret, err
 	}
 
-	return total, ret, nil
+	return uint64(total), ret, nil
 }
 
-func GetModelByName(db *models.MyDB, ctx *gin.Context, name string) (*DeviceModel, error) {
+func GetModelByName(name string) (*DeviceModel, error) {
 	ret := new(DeviceModel)
 
-	err := db.Model(&DeviceModel{}).Where("name=?", name).First(ret).Error
+	err := models.DB.Model(&DeviceModel{}).Where("name=?", name).First(ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

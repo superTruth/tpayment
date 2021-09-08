@@ -3,9 +3,7 @@ package key
 import (
 	"tpayment/models"
 
-	"github.com/jinzhu/gorm"
-
-	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ApplePayKey struct {
@@ -25,9 +23,9 @@ func (ApplePayKey) TableName() string {
 	return "payment_apple_pay_key"
 }
 
-func (key *ApplePayKey) GetKeyByHash(db *models.MyDB, ctx *gin.Context, publicHash string) (*ApplePayKey, error) {
+func (key *ApplePayKey) GetKeyByHash(publicHash string) (*ApplePayKey, error) {
 	ret := new(ApplePayKey)
-	err := db.Model(key).Where("public_key_hash=?", publicHash).First(ret).Error
+	err := models.DB.Model(key).Where("public_key_hash=?", publicHash).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil
@@ -38,9 +36,9 @@ func (key *ApplePayKey) GetKeyByHash(db *models.MyDB, ctx *gin.Context, publicHa
 	return ret, nil
 }
 
-func (key *ApplePayKey) GetKeyByDomain(db *models.MyDB, ctx *gin.Context, domain string) (*ApplePayKey, error) {
+func (key *ApplePayKey) GetKeyByDomain(domain string) (*ApplePayKey, error) {
 	ret := new(ApplePayKey)
-	err := db.Model(key).Where("domain=?", domain).First(ret).Error
+	err := models.DB.Model(key).Where("domain=?", domain).First(ret).Error
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录
 			return nil, nil

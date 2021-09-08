@@ -18,7 +18,7 @@ import (
 )
 
 func RegisterHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(AddUserRequest)
 
@@ -33,7 +33,7 @@ func RegisterHandle(ctx *gin.Context) {
 	req.Pwd = basekey.Hash([]byte(req.Pwd))
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(models.DB(), ctx, req.Email)
+	user, err := account.GetUserByEmail(req.Email)
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -139,7 +139,7 @@ func sendActiveEmail(email string) error {
 func ActiveHandel(ctx *gin.Context) {
 	userId := ctx.Param("user")
 
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	email, err := base64.StdEncoding.DecodeString(userId)
 	if err != nil {
@@ -149,7 +149,7 @@ func ActiveHandel(ctx *gin.Context) {
 	}
 
 	// 查询是否已经存在的账号
-	user, err := account.GetUserByEmail(models.DB(), ctx, string(email))
+	user, err := account.GetUserByEmail(string(email))
 	if err != nil {
 		logger.Info("GetUserByEmail sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)

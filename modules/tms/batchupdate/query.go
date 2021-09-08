@@ -3,7 +3,6 @@ package batchupdate
 import (
 	"fmt"
 	"tpayment/conf"
-	"tpayment/models"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -13,7 +12,7 @@ import (
 )
 
 func QueryHandle(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(modules.BaseQueryRequest)
 
@@ -28,7 +27,7 @@ func QueryHandle(ctx *gin.Context) {
 		req.Limit = conf.MaxQueryCount
 	}
 
-	total, dataRet, err := tms.QueryBatchUpdateRecord(models.DB(), ctx, req.Offset, req.Limit, req.Filters)
+	total, dataRet, err := tms.QueryBatchUpdateRecord(ctx, req.Offset, req.Limit, req.Filters)
 	if err != nil {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
@@ -37,7 +36,7 @@ func QueryHandle(ctx *gin.Context) {
 
 	for i := 0; i < len(dataRet); i++ {
 		fmt.Println("Truth device tags->", dataRet[i].Tags)
-		dataRet[i].ConfigTags, err = tms.GetDeviceTagByIDs(models.DB(), ctx, dataRet[i].Tags)
+		dataRet[i].ConfigTags, err = tms.GetDeviceTagByIDs(dataRet[i].Tags)
 		if err != nil {
 			logger.Error("GetDeviceTagByIDs fail->", err.Error())
 			modules.BaseError(ctx, conf.DBError)
@@ -45,7 +44,7 @@ func QueryHandle(ctx *gin.Context) {
 		}
 
 		fmt.Println("Truth device models->", dataRet[i].DeviceModels)
-		dataRet[i].ConfigModels, err = tms.GetModelByIDs(models.DB(), ctx, dataRet[i].DeviceModels)
+		dataRet[i].ConfigModels, err = tms.GetModelByIDs(dataRet[i].DeviceModels)
 		if err != nil {
 			logger.Error("GetModelByIDs fail->", err.Error())
 			modules.BaseError(ctx, conf.DBError)

@@ -4,26 +4,26 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type BaseModel struct {
-	ID        uint64     `gorm:"primary_key" json:"id,omitempty"`
-	CreatedAt time.Time  `gorm:"created_at" json:"created_at,omitempty"`
-	UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at,omitempty"`
-	DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at,omitempty"`
+	ID        uint64         `gorm:"primary_key" json:"id,omitempty"`
+	CreatedAt time.Time      `gorm:"created_at" json:"created_at,omitempty"`
+	UpdatedAt time.Time      `gorm:"updated_at" json:"updated_at,omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"deleted_at" json:"deleted_at,omitempty"`
 }
 
 func CreateBaseRecord(record interface{}) error {
-	return DB().Create(record).Error
+	return DB.Create(record).Error
 }
 
 func DeleteBaseRecord(record interface{}) error {
-	return DB().Delete(record).Error
+	return DB.Delete(record).Error
 }
 
 func UpdateBaseRecord(record interface{}) error {
-	return DB().Model(record).Update(record).Error
+	return DB.Model(record).Updates(record).Error
 }
 
 func QueryBaseRecord(orgModel interface{}, offset, limit uint64, filters map[string]string) (uint64, []map[string]interface{}, error) {
@@ -37,8 +37,8 @@ func QueryBaseRecord(orgModel interface{}, offset, limit uint64, filters map[str
 	fmt.Println("filterTmp->", filterTmp)
 
 	// 统计总数
-	var total uint64 = 0
-	err := DB().Model(orgModel).Where(filterTmp).Count(&total).Error
+	var total int64 = 0
+	err := DB.Model(orgModel).Where(filterTmp).Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
@@ -47,7 +47,7 @@ func QueryBaseRecord(orgModel interface{}, offset, limit uint64, filters map[str
 	// 查询记录
 	var ret []map[string]interface{}
 
-	err = DB().Model(orgModel).Where(filterTmp).Order("id desc").Offset(offset).Limit(limit).Find(&ret).Error
+	err = DB.Model(orgModel).Where(filterTmp).Order("id desc").Offset(int(offset)).Limit(int(limit)).Find(&ret).Error
 
 	if err != nil {
 		if gorm.ErrRecordNotFound == err { // 没有记录

@@ -6,12 +6,12 @@ import (
 	"tpayment/models/payment/record"
 	"tpayment/pkg/tlog"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func CreateTransactionAndDetail(txnRecord *record.TxnRecord, detail *record.TxnRecordDetail) error {
 	logger := tlog.GetGoroutineLogger()
-	return models.DB().Transaction(func(tx *gorm.DB) error {
+	return models.DB.Transaction(func(tx *gorm.DB) error {
 		err := tx.Model(txnRecord).Create(txnRecord).Error
 		if err != nil {
 			logger.Error("create detail record error->", err.Error())
@@ -28,7 +28,7 @@ func CreateTransactionAndDetail(txnRecord *record.TxnRecord, detail *record.TxnR
 }
 
 func UpdateSaleResult(txnRecord *record.TxnRecord, detail *record.TxnRecordDetail) error {
-	return models.DB().Transaction(func(tx *gorm.DB) error {
+	return models.DB.Transaction(func(tx *gorm.DB) error {
 		err := txnRecord.UpdateTxnResult(tx)
 		if err != nil {
 			return err
@@ -43,7 +43,7 @@ func UpdateSaleResult(txnRecord *record.TxnRecord, detail *record.TxnRecordDetai
 }
 
 func CreateAndUpdateKey(createKeys []*acquirer.Key, deleteKeys []*acquirer.Key) error {
-	return models.DB().Transaction(func(tx *gorm.DB) error {
+	return models.DB.Transaction(func(tx *gorm.DB) error {
 		var err error
 		for i := 0; i < len(createKeys); i++ {
 			err = tx.Create(createKeys[i]).Error

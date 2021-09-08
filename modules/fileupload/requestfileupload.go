@@ -20,7 +20,7 @@ import (
 
 // 申请一个上传文件的URL
 func RequestUploadFileUrl(ctx *gin.Context) {
-	logger := tlog.GetLogger(ctx)
+	logger := tlog.GetGoroutineLogger()
 
 	req := new(UploadFileRequest)
 
