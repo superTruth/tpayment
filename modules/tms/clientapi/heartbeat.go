@@ -481,7 +481,7 @@ func handleBatchUpdateStatus(deviceInfo *tms.DeviceInfo, dbApps []*tms.AppInDevi
 	}
 
 	for i := 0; i < len(batchRecords); i++ {
-		_, destRecords, err := tms.GetAppsInDevice(batchRecords[i].ID,
+		_, destRecords, err := tms.GetAppsInDevice(batchRecords[i].BatchID,
 			tms.AppInDeviceExternalIdTypeBatchUpdate, 0, 100)
 		if err != nil {
 			log.Errorf("GetAppsInDevice fail: %s", err.Error())

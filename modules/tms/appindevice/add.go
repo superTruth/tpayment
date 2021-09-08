@@ -98,7 +98,7 @@ func SmartAddAppInDevice(ctx *gin.Context, device *tms.DeviceInfo, app *tms.AppI
 	bean.AppID = app.AppID
 
 	if err := models.UpdateBaseRecord(bean); err != nil {
-		logger.Error("Update fail->", err.Error)
+		logger.Errorf("Update fail->%s", err.Error())
 		return conf.DBError
 	}
 

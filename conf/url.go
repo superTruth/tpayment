@@ -87,12 +87,12 @@ const (
 	UrlTmsTagQuery         = "/payment/tms/tag/query"
 	UrlTmsDeviceInTagQuery = "/payment/tms/device_in_tag/query"
 
-	UrlTmsBatchUpdateAdd           = "/payment/tms/batchupdate/add"
-	UrlTmsBatchUpdateDelete        = "/payment/tms/batchupdate/delete"
-	UrlTmsBatchUpdateUpdate        = "/payment/tms/batchupdate/update"
-	UrlTmsBatchUpdateQuery         = "/payment/tms/batchupdate/query"
-	UrlTmsBatchUpdateStartHandle   = "/payment/tms/batchupdate/starthandle"
-	UrlTmsDeviceInBatchStartHandle = "/payment/tms/device_in_batchupdate/query"
+	UrlTmsBatchUpdateAdd         = "/payment/tms/batchupdate/add"
+	UrlTmsBatchUpdateDelete      = "/payment/tms/batchupdate/delete"
+	UrlTmsBatchUpdateUpdate      = "/payment/tms/batchupdate/update"
+	UrlTmsBatchUpdateQuery       = "/payment/tms/batchupdate/query"
+	UrlTmsBatchUpdateStartHandle = "/payment/tms/batchupdate/starthandle"
+	UrlTmsDeviceInBatch          = "/payment/tms/device_in_batchupdate/query"
 
 	UrlTmsAppInBatchUpdateAdd    = "/payment/tms/appinbatchupdate/add"
 	UrlTmsAppInBatchUpdateDelete = "/payment/tms/appinbatchupdate/delete"

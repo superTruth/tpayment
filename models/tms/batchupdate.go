@@ -173,7 +173,7 @@ type DeviceInBatchUpdate struct {
 
 	BatchID  uint64 `gorm:"column:batch_id" json:"-"`
 	DeviceID uint64 `gorm:"column:device_id" json:"-"`
-	Status   string `gorm:"column:status" json:"-"`
+	Status   string `gorm:"column:status" json:"status"`
 
 	DeviceInfo *DeviceInfo `gorm:"-" json:"device_info"`
 
@@ -226,7 +226,7 @@ func (d *DeviceInBatchUpdate) GetUnCompletedBatchByDevice(deviceID uint64) ([]*D
 }
 
 func (d *DeviceInBatchUpdate) UpdateStatus(data *DeviceInBatchUpdate) error {
-	return models.DB.Model(d).Select("status").Updates(data).Error
+	return models.DB.Model(d).Select("status").Where("id=?", data.ID).Updates(data).Error
 }
 
 func (d *DeviceInBatchUpdate) GetByBatchIDDeviceID(batchID, deviceID uint64) (*DeviceInBatchUpdate, error) {

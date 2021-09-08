@@ -30,7 +30,7 @@ func TestHeartBeat(t *testing.T) {
 		},
 	}
 	reqBean := &clientapi.RequestBean{
-		DeviceSn:    "PAX-A920-0820340310",
+		DeviceSn:    "98210613995100",
 		LocationLat: "123",
 		LocationLon: "456",
 		DeviceModel: "A920",

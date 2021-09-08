@@ -133,12 +133,12 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlTmsModelUpdate, devicemodel.UpdateHandle) // 更新
 	e.POST(conf.UrlTmsModelQuery, devicemodel.QueryHandle)   // 查询
 
-	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)                    // 添加batch update
-	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle)              // 删除
-	e.POST(conf.UrlTmsBatchUpdateUpdate, batchupdate.UpdateHandle)              // 更新
-	e.POST(conf.UrlTmsBatchUpdateQuery, batchupdate.QueryHandle)                // 查询
-	e.POST(conf.UrlTmsBatchUpdateStartHandle, batchupdate.StartHandle)          // 处理
-	e.POST(conf.UrlTmsDeviceInBatchStartHandle, batchupdate.QueryDevicesHandle) // 查询batch下的devices
+	e.POST(conf.UrlTmsBatchUpdateAdd, batchupdate.AddHandle)           // 添加batch update
+	e.POST(conf.UrlTmsBatchUpdateDelete, batchupdate.DeleteHandle)     // 删除
+	e.POST(conf.UrlTmsBatchUpdateUpdate, batchupdate.UpdateHandle)     // 更新
+	e.POST(conf.UrlTmsBatchUpdateQuery, batchupdate.QueryHandle)       // 查询
+	e.POST(conf.UrlTmsBatchUpdateStartHandle, batchupdate.StartHandle) // 处理
+	e.POST(conf.UrlTmsDeviceInBatch, batchupdate.QueryDevicesHandle)   // 查询batch下的devices
 
 	e.POST(conf.UrlTmsAppInBatchUpdateAdd, appinbatchupdate.AddHandle)       // 添加app in batch update
 	e.POST(conf.UrlTmsAppInBatchUpdateDelete, appinbatchupdate.DeleteHandle) // 删除

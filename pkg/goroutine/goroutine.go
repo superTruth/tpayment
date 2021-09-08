@@ -13,7 +13,7 @@ func Go(f func()) {
 			if err := recover(); err != nil {
 				logger := tlog.GetGoroutineLogger()
 				stack := debug.Stack()
-				logger.Error("goroutine panic: %v\n%s", err, string(stack))
+				logger.Errorf("goroutine panic: %v\n%s", err, string(stack))
 			}
 		}()
 		f()

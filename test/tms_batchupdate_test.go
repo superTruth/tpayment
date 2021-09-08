@@ -142,6 +142,26 @@ func TestDeleteBatchUpdate(t *testing.T) {
 	fmt.Println("rep->", string(repByte))
 }
 
+func TestQueryDeviceInBatch(t *testing.T) {
+	TestLogin(t)
+	fmt.Println("query agency", line)
+	header := http.Header{
+		conf.HeaderTagToken: []string{token},
+	}
+
+	reqBean := &modules.BaseQueryRequest{
+		BatchId: 42,
+		Offset:  0,
+		Limit:   100,
+	}
+
+	reqByte, _ := json.Marshal(reqBean)
+
+	repByte, _ := post(reqByte, header, BaseUrl+conf.UrlTmsDeviceInBatch, time.Second*10)
+
+	formatJson(repByte)
+}
+
 func TestStartHandleBatchUpdate(t *testing.T) {
 	TestLogin(t)
 
@@ -151,7 +171,7 @@ func TestStartHandleBatchUpdate(t *testing.T) {
 		conf.HeaderTagToken: []string{token},
 	}
 
-	reqBean := &modules.BaseIDRequest{ID: 23}
+	reqBean := &modules.BaseIDRequest{ID: 42}
 
 	reqByte, _ := json.Marshal(reqBean)
 
