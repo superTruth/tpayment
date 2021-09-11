@@ -19,6 +19,7 @@ type Agency struct {
 	Tel   string `gorm:"column:tel" json:"tel"`
 	Addr  string `gorm:"column:addr" json:"addr"`
 	Email string `gorm:"column:email" json:"email"`
+	Role  string `gorm:"-" json:"role,omitempty"`
 }
 
 func (Agency) TableName() string {

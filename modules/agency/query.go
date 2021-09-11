@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"fmt"
 	"tpayment/conf"
 	"tpayment/models/account"
 	"tpayment/models/agency"
@@ -44,7 +43,6 @@ func QueryHandle(ctx *gin.Context) {
 	}
 
 	role := ""
-	fmt.Println("agencyId: ", agencyId)
 	if agencyId != 0 {
 		var userBean *account.UserBean
 		userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
@@ -54,16 +52,18 @@ func QueryHandle(ctx *gin.Context) {
 			return
 		}
 
-		roleBean, err := agency.UserAgencyAssociateDao.GetByAgencyUserID(agencyId, userBean.ID)
-		if err != nil {
-			logger.Errorf("GetByAgencyUserID sql error->", err.Error())
-			modules.BaseError(ctx, conf.DBError)
-			return
+		for i := 0; i < len(dataRet); i++ {
+			roleBean, err := agency.UserAgencyAssociateDao.GetByAgencyUserID(dataRet[i].ID, userBean.ID)
+			if err != nil {
+				logger.Errorf("GetByAgencyUserID sql error->", err.Error())
+				modules.BaseError(ctx, conf.DBError)
+				return
+			}
+			if roleBean.Role == "" {
+				roleBean.Role = string(conf.MerchantManager)
+			}
+			dataRet[i].Role = roleBean.Role
 		}
-		if roleBean.Role == "" {
-			roleBean.Role = string(conf.MerchantManager)
-		}
-		role = roleBean.Role
 	}
 
 	ret := &modules.BaseQueryResponse{
