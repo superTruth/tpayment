@@ -42,7 +42,6 @@ func QueryHandle(ctx *gin.Context) {
 		return
 	}
 
-	role := ""
 	if agencyId != 0 {
 		var userBean *account.UserBean
 		userBeanTmp, ok := ctx.Get(conf.ContextTagUser)
@@ -67,9 +66,8 @@ func QueryHandle(ctx *gin.Context) {
 	}
 
 	ret := &modules.BaseQueryResponse{
-		Total:      total,
-		Data:       dataRet,
-		AgencyRole: role,
+		Total: total,
+		Data:  dataRet,
 	}
 
 	modules.BaseSuccess(ctx, ret)

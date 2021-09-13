@@ -56,6 +56,7 @@ type AssociateAgencyUserBean struct {
 
 	Email string `gorm:"column:email" json:"email"`
 	Name  string `gorm:"column:name" json:"name"`
+	Role  string `gorm:"column:role" json:"role"`
 }
 
 func QueryUsersByAgencyId(agencyId, offset, limit uint64) (uint64, []*AssociateAgencyUserBean, error) {
@@ -72,7 +73,7 @@ func QueryUsersByAgencyId(agencyId, offset, limit uint64) (uint64, []*AssociateA
 
 	var ret []*AssociateAgencyUserBean
 	if err = tmpDb.Order("id desc").Offset(int(offset)).Limit(int(limit)).Select(
-		"ass.id as id, ass.created_at as created_at, " +
+		"ass.id as id, ass.created_at as created_at, ass.role as role, " +
 			"ass.updated_at as updated_at, user.name as name, " +
 			"user.email as email").Find(&ret).Error; err != nil {
 		return uint64(total), ret, err
