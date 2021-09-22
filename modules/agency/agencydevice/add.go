@@ -1,10 +1,6 @@
 package agencydevice
 
 import (
-	"bufio"
-	"encoding/csv"
-	"io"
-	"os"
 	"strings"
 	"tpayment/conf"
 	"tpayment/models"
@@ -15,6 +11,8 @@ import (
 	"tpayment/pkg/goroutine"
 	"tpayment/pkg/tlog"
 	"tpayment/pkg/utils"
+
+	"github.com/xuri/excelize/v2"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,18 +92,14 @@ func AddByFile(agencyId uint64, fileUrl string) conf.ResultCode {
 	defer fileutils.DeleteFile(localFilePath)
 
 	// 读取里面的数据
-	f, err := os.Open(localFilePath)
-	// nolint
-	defer f.Close()
+	f, err := excelize.OpenFile(localFilePath)
 	if err != nil {
-		logger.Warn("open file err->", err.Error())
+		logger.Warn("read file fail->", err.Error())
 		return conf.UnknownError
 	}
-	buf := bufio.NewReader(f)
-	r := csv.NewReader(buf)
-	_, err = r.Read() // 跳过抬头
+	rows, err := f.GetRows("Sheet1")
 	if err != nil {
-		logger.Warn("skip first row error->", err.Error())
+		logger.Warn("can not find data from sheet1:", err.Error())
 		return conf.UnknownError
 	}
 
@@ -120,15 +114,8 @@ func AddByFile(agencyId uint64, fileUrl string) conf.ResultCode {
 		tagMap[tagArray[i].Name] = tagArray[i]
 	}
 
-	for i := 0; ; i++ {
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			logger.Warn("read file err->", err.Error())
-			return conf.UnknownError
-		}
+	for i := 1; i < len(rows); i++ {
+		record := rows[i]
 
 		// 跳过空值
 		if len(record) == 0 || len(record[0]) < 5 {
