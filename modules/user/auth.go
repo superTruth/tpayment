@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"time"
 	"tpayment/conf"
 	"tpayment/models/account"
 	"tpayment/pkg/algorithmutils"
@@ -45,6 +46,10 @@ func AuthByToken(ctx *gin.Context, token string) (*account.UserBean, *account.Ap
 	if err != nil {
 		logger.Warn("GetUserById fail->", err.Error())
 		return nil, nil, err
+	}
+
+	if time.Since(accountBean.UpdatedAt) > time.Hour*24 { // 如果超过24小时没有更新过，则更新一次，防止更新过快，影响数据库
+		_ = accountBean.UpdateTime()
 	}
 
 	//appBean, err := account.GetAppIdByID(models.DB(), ctx, tokenBean.AppId)
