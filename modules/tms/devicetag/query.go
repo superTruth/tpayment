@@ -2,6 +2,7 @@ package devicetag
 
 import (
 	"tpayment/conf"
+	"tpayment/models/agency"
 	"tpayment/models/tms"
 	"tpayment/modules"
 	"tpayment/pkg/tlog"
@@ -31,6 +32,14 @@ func QueryHandle(ctx *gin.Context) {
 		logger.Info("QueryAppInDeviceRecord sql error->", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return
+	}
+
+	// 获取agency name
+	for i := 0; i < len(dataRet); i++ {
+		agencyBean, _ := agency.Dao.Get(dataRet[i].AgencyId)
+		if agencyBean != nil {
+			dataRet[i].AgencyName = agencyBean.Name
+		}
 	}
 
 	ret := &modules.BaseQueryResponse{

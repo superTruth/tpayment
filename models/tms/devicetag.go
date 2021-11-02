@@ -19,6 +19,7 @@ type DeviceTag struct {
 	AgencyId    uint64 `json:"agency_id" gorm:"column:agency_id"`
 	Name        string `json:"name" gorm:"column:name"` // 外键
 	Description string `json:"description" gorm:"column:description"`
+	AgencyName  string `json:"agency_name" gorm:"-"`
 }
 
 func (DeviceTag) TableName() string {
@@ -56,7 +57,6 @@ func GetDeviceTagByIDs(ids *models.IntArray) ([]*DeviceTag, error) {
 }
 
 func QueryDeviceTagRecord(ctx *gin.Context, offset, limit uint64, filters map[string]string) (uint64, []*DeviceTag, error) {
-
 	agencyId, err := modules.GetAgencyId2(ctx)
 	if err != nil {
 		return 0, nil, errors.New(conf.NoPermission.String())
