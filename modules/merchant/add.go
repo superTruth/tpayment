@@ -191,6 +191,14 @@ func handleFileItem(agencyID uint64, fileItem *fileItemBean) error {
 			log.Errorf("create merchant fail: %s", err.Error())
 			return err
 		}
+	} else {
+		merchantBean.Tel = fileItem.MerchantTel
+		merchantBean.Addr = fileItem.MerchantAddr
+		merchantBean.Email = fileItem.MerchantEmail
+		if err = models.UpdateBaseRecord(merchantBean); err != nil {
+			log.Errorf("update merchant fail: %s", err.Error())
+			return err
+		}
 	}
 
 	// 添加设备关联
@@ -249,6 +257,18 @@ func handleFileItem(agencyID uint64, fileItem *fileItemBean) error {
 			err = models.CreateBaseRecord(paymentSetting)
 			if err != nil {
 				return fmt.Errorf("create acq fail: %s", err.Error())
+			}
+		} else {
+			paymentSetting.PaymentMethods = fileItem.PaymentMethods
+			paymentSetting.EntryTypes = fileItem.EntryTypes
+			paymentSetting.PaymentTypes = fileItem.PaymentTypes
+			paymentSetting.Mid = fileItem.MID
+			paymentSetting.Tid = fileItem.TID
+			paymentSetting.Addition = fileItem.Addition
+
+			if err = models.UpdateBaseRecord(merchantBean); err != nil {
+				log.Errorf("update paymentSetting fail: %s", err.Error())
+				return err
 			}
 		}
 	}

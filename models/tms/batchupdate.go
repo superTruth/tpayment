@@ -188,7 +188,7 @@ func (d *DeviceInBatchUpdate) GetDevicesByBatch(batchID, offset, limit uint64) (
 	var ret []*DeviceInBatchUpdate
 
 	tmpDb := models.DB.Model(&DeviceInBatchUpdate{}).
-		Where("batch_id=?", batchID)
+		Where("batch_id=?", batchID).Order("batch_id ASC").Order("status ASC")
 	// 统计总数
 	var total int64 = 0
 	err := tmpDb.Count(&total).Error
