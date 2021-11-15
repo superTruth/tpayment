@@ -126,6 +126,10 @@ func (u *UserBean) GetByEmail(agencyID uint64, email string) (*UserBean, error) 
 	return ret, nil
 }
 
+func (u *UserBean) UpdateTime() error {
+	return models.DB.Model(u).Select("updated_at").Updates(u).Error
+}
+
 type AppIdBean struct {
 	models.BaseModel
 
