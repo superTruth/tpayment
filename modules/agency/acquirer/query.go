@@ -36,7 +36,7 @@ func QueryHandle(ctx *gin.Context) {
 
 	total, dataRet, err := agency.QueryAcquirerRecord(agencyId, req.Offset, req.Limit, req.Filters)
 	if err != nil {
-		logger.Errorf("QueryBaseRecord sql error->", err.Error())
+		logger.Errorf("QueryBaseRecord sql error-> %s", err.Error())
 		modules.BaseError(ctx, conf.DBError)
 		return
 	}

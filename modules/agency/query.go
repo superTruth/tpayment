@@ -54,7 +54,7 @@ func QueryHandle(ctx *gin.Context) {
 		for i := 0; i < len(dataRet); i++ {
 			roleBean, err := agency.UserAgencyAssociateDao.GetByAgencyUserID(dataRet[i].ID, userBean.ID)
 			if err != nil {
-				logger.Errorf("GetByAgencyUserID sql error->", err.Error())
+				logger.Errorf("GetByAgencyUserID sql error-> %s", err.Error())
 				modules.BaseError(ctx, conf.DBError)
 				return
 			}
