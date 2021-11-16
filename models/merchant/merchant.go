@@ -162,7 +162,7 @@ func QueryMerchantByDeviceID(ctx *gin.Context, deviceSn string, offset, limit ui
 		tmpDb = models.DB.Model(&Merchant{}).
 			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.agency_id=? and d.deleted_at is null and "+
 				"d.id = md.device_id and md.deleted_at is null and md.merchant_id = merchant.id", deviceSn+"%", agency.ID)
-		tmpDb = tmpDb.Where("agency_id = ?", agency.ID)
+		tmpDb = tmpDb.Where("merchant.agency_id = ?", agency.ID)
 	} else if userBean.Role == string(conf.RoleAdmin) { // 超级管理员
 		tmpDb = models.DB.Model(&Merchant{}).
 			Joins("join merchant_device md join tms_device d on d.device_sn like ? and d.deleted_at is null and "+
