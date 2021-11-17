@@ -14,6 +14,7 @@ import (
 	"tpayment/modules/merchant/associate"
 	"tpayment/modules/merchant/merchantdevice"
 	"tpayment/modules/merchant/merchantdevicepayment"
+	"tpayment/modules/payment/pay_manage"
 	"tpayment/modules/tms/app"
 	"tpayment/modules/tms/appfile"
 	"tpayment/modules/tms/appinbatchupdate"
@@ -153,6 +154,9 @@ func Init() (*gin.Engine, error) {
 	e.POST(conf.UrlTmsHeartBeat, clientapi.HearBeat) // 客户端心跳逻辑
 
 	e.POST(conf.UrlFileAdd, fileupload.RequestUploadFileUrl) // 创建文件
+
+	e.POST(conf.UrlCheck, pay_manage.Check)
+	e.POST(conf.UrlPaymentConfig, pay_manage.GetPaymentConfig)
 
 	return e, nil
 }
