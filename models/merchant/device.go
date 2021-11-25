@@ -60,6 +60,9 @@ func QueryMerchantDeviceRecord(merchantId, offset, limit uint64, filters map[str
 	// conditions
 	tmpDb := models.DB.Table(tms.DeviceInfo{}.TableName()).Model(&tms.DeviceInfo{})
 	tmpDb = tmpDb.Joins("JOIN merchant_device ass ON ass.device_id = tms_device.id AND ass.merchant_id = ? AND ass.deleted_at IS NULL", merchantId)
+	if _, ok := filters["device_sn"]; ok {
+		tmpDb = tmpDb.Where("tms_device.device_sn LIKE ?", filters["device_sn"]+"%")
+	}
 
 	// 统计总数
 	var total int64 = 0

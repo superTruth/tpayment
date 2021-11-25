@@ -45,7 +45,6 @@ func PermissionFilter(ctx *gin.Context) {
 		ctx.Request.RequestURI == conf.UrlTmsModelAdd ||
 		ctx.Request.RequestURI == conf.UrlTmsModelDelete ||
 		ctx.Request.RequestURI == conf.UrlTmsModelUpdate ||
-		ctx.Request.RequestURI == conf.UrlAgencyDeviceAdd ||
 		ctx.Request.RequestURI == conf.UrlAgencyDeviceDelete {
 		logger.Warn("no agency permission")
 		modules.BaseError(ctx, conf.NoPermission)
@@ -65,6 +64,7 @@ func PermissionFilter(ctx *gin.Context) {
 		ctx.Request.RequestURI == conf.UrlAccountQuery ||
 		ctx.Request.RequestURI == conf.UrlMerchantAdd ||
 		ctx.Request.RequestURI == conf.UrlMerchantUpdate ||
+		ctx.Request.RequestURI == conf.UrlAgencyDeviceAdd ||
 		ctx.Request.RequestURI == conf.UrlAgencyDeviceQuery ||
 		strings.Contains(ctx.Request.RequestURI, "/payment/tms") {
 

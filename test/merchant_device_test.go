@@ -90,6 +90,9 @@ func TestQueryMerchantDevice(t *testing.T) {
 		MerchantId: 10,
 		Offset:     0,
 		Limit:      100,
+		Filters: map[string]string{
+			"device_sn": "2010",
+		},
 	}
 
 	reqByte, _ := json.Marshal(reqBean)
