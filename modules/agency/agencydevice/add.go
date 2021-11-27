@@ -40,9 +40,22 @@ func AddHandle(ctx *gin.Context) {
 		handleRet = AddByID(req.AgencyId, req.DeviceId)
 	} else {
 		handleRet = conf.Success
+		// 获取机构ID，系统管理员为0
+		agencyId, err := modules.GetAgencyId2(ctx)
+		if err != nil {
+			logger.Warn("GetAgencyId2->", err.Error())
+			modules.BaseError(ctx, conf.NoPermission)
+			return
+		}
+
+		isAgency := agencyId != 0
+		if agencyId != 0 { // 如果是机构导入，则需要单独区分
+			req.AgencyId = agencyId
+		}
+
 		goroutine.Go(func() {
 			tlog.SetGoroutineLogger(logger) // 切换协程，承接log
-			_ = AddByFile(req.AgencyId, req.FileUrl)
+			_ = AddByFile(req.AgencyId, req.FileUrl, isAgency)
 		})
 	}
 
@@ -76,7 +89,7 @@ func AddByID(agencyId, deviceId uint64) conf.ResultCode {
 // 批量文件添加设备
 const downloadDir = "./agencydevicefiles/"
 
-func AddByFile(agencyId uint64, fileUrl string) conf.ResultCode {
+func AddByFile(agencyId uint64, fileUrl string, isAgency bool) conf.ResultCode {
 	logger := tlog.GetGoroutineLogger()
 
 	// 先下载文件
@@ -122,13 +135,28 @@ func AddByFile(agencyId uint64, fileUrl string) conf.ResultCode {
 			continue
 		}
 
-		// 处理设备类型
-		modelID, _ := handleDeviceModel(record[2])
+		var device *tms.DeviceInfo
+		var handleRet conf.ResultCode
+		if !isAgency {
+			// 处理设备类型
+			modelID, _ := handleDeviceModel(record[2])
 
-		// 处理device
-		device, handleRet := handleDevice(record[0], agencyId, modelID)
-		if handleRet != conf.Success {
-			return handleRet
+			// 处理device
+			device, handleRet = handleDevice(record[0], agencyId, modelID)
+			if handleRet != conf.Success {
+				return handleRet
+			}
+		} else {
+			// 查询一下是否已经存在这个device id
+			device, err = tms.GetDeviceBySn(record[0])
+			if err != nil {
+				logger.Error("GetDeviceBySn fail->", err.Error())
+				return conf.DBError
+			}
+
+			if device == nil || device.AgencyId != agencyId { // 不存在，或者不属于这个agency的设备，不需要处理
+				continue
+			}
 		}
 
 		// 处理tag
