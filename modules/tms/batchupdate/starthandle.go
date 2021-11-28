@@ -26,13 +26,14 @@ func StartHandle(ctx *gin.Context) {
 		return
 	}
 
-	modules.BaseSuccess(ctx, nil)
-
 	// 异步解析
+	cCp := ctx.Copy()
 	goroutine.Go(func() {
 		tlog.SetGoroutineLogger(logger) // 切换协程，承接log
-		StartUpdate(ctx, req.ID)
+		StartUpdate(cCp, req.ID)
 	})
+
+	modules.BaseSuccess(ctx, nil)
 }
 
 func StartUpdate(ctx *gin.Context, id uint64) {
